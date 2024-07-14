@@ -1,0 +1,8 @@
+**/appsettings.Development.json
+**/appsettings.json
+**/Properties/
+
+**/bin/
+**/obj/
+
+.vscode/
