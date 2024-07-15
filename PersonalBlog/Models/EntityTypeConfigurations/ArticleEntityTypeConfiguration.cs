@@ -20,55 +20,58 @@ public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
         .ValueGeneratedOnAdd()
         .IsRequired();
 
-        // Title
+        // title - varchar(100) - not null - index
         builder.Property(e => e.title)
             .IsRequired()
             .HasMaxLength(100);
         builder.HasIndex(e => e.title);
 
-        // Content
+        // content - text - not null
         builder.Property(e => e.content)
             .IsRequired()
             .HasColumnType("text");
-        // Full-Text index can be created via migrations or manually on the database
+        
 
         // Foreign Key for Author
-        builder.Property(e => e.AuthorId)
+        builder.Property(e => e.author_id)
             .IsRequired();
-        builder.HasOne(e => e.Author)
+        builder.HasOne(e => e.author)
             .WithMany(a => a.Articles)
-            .HasForeignKey(e => e.AuthorId);
+            .HasForeignKey(e => e.author_id);
 
-        // ViewCount
-        builder.Property(e => e.ViewCount)
+        // view_count - default 0
+        builder.Property(e => e.view_count)
+            .HasDefaultValue(0);
+ 
+        // upvote_count - default 0
+        builder.Property(e => e.upvote_count)
             .HasDefaultValue(0);
 
-        // UpvoteCount
-        builder.Property(e => e.UpvoteCount)
-            .HasDefaultValue(0);
-
-        // IsHide
-        builder.Property(e => e.IsHide)
+        // is_hide - tinyint(1) - default false
+        builder.Property(e => e.is_hide)
             .HasColumnType("TINYINT(1)")
-            .HasDefaultValue(false);
+            .HasDefaultValue(0)
+            .HasComment("0 for show, 1 for hide");
 
-        // CreatedTime
-        builder.Property(e => e.CreatedTime)
-            .IsRequired();
+        // created_time
+        builder.Property(e => e.created_time)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-        // UpdatedTime
-        builder.Property(e => e.UpdatedTime)
-            .IsRequired();
+        // update_time
+        builder.Property(e => e.update_time)
+            .ValueGeneratedOnUpdate()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         // Foreign Key for Category
-        builder.Property(e => e.CategoryId)
+        builder.Property(e => e.category_id)
             .IsRequired();
-        builder.HasOne(e => e.Category)
+        builder.HasOne(e => e.category)
             .WithMany(c => c.Articles)
-            .HasForeignKey(e => e.CategoryId);
+            .HasForeignKey(e => e.category_id);
 
-        // Indexes
-        builder.HasIndex(e => e.CategoryId);
+        // set Indexes for Foreign Key category_id
+        builder.HasIndex(e => e.category_id);
     }
 
 }
