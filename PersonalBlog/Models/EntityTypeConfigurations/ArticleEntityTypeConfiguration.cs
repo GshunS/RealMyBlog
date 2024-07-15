@@ -55,7 +55,7 @@ public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
 
         // created_time
         builder.Property(e => e.created_time)
-            .ValueGeneratedOnAdd()
+            .IsRequired()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         // update_time

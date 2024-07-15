@@ -20,6 +20,15 @@ public class BloggingContext : DbContext
     {
         // Article entity configuration
         modelBuilder.ApplyConfiguration(new ArticleEntityTypeConfiguration());
+
+        // Author entity configuration
+        modelBuilder.ApplyConfiguration(new AuthorEntityTypeConfiguration());
+
+        // Category entity configuration
+        modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
+
+        // ArticleImage entity configuration
+        modelBuilder.ApplyConfiguration(new ArticleImageEntityTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

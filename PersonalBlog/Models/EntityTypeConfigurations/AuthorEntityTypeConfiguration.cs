@@ -12,6 +12,14 @@ public class AuthorEntityTypeConfiguration : IEntityTypeConfiguration<Author>
         // Primary key
         builder.HasKey(e => e.id);
 
+        // id - int - not null - autoincrement
+        builder
+            .Property(e => e.id)
+            .HasColumnName("id")
+            .HasColumnType("int")
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+
         // Unique constraints
         builder.HasIndex(e => e.nickname).IsUnique();
         builder.HasIndex(e => e.username).IsUnique();
