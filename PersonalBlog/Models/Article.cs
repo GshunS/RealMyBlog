@@ -18,6 +18,6 @@ public class Article
     public int category_id { get; set; }
     public Category category { get; set; } = null!;
 
-    public ICollection<ArticleImage> ArticleImages {get; set;}
+    public ICollection<ArticleImage> ArticleImages {get; set;} = new List<ArticleImage>();
 
 }
