@@ -1,8 +1,7 @@
 namespace PersonalBlog.Models;
 
-public class Article
+public class Article: BaseModel
 {
-    public int id { get; set; }
     public string title { get; set; }
     public string text { get; set; }
 
