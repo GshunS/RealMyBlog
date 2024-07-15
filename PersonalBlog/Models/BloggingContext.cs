@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalBlog.Models.Entities;
+using PersonalBlog.Models.EntityTypeConfigurations;
 
 namespace PersonalBlog.Models;
 
@@ -17,6 +18,8 @@ public class BloggingContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Article entity configuration
+        modelBuilder.ApplyConfiguration(new ArticleEntityTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -14,11 +14,11 @@ public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
 
         // id - int - not null - autoincrement
         builder
-        .Property(e => e.id)
-        .HasColumnName("id")
-        .HasColumnType("int")
-        .ValueGeneratedOnAdd()
-        .IsRequired();
+            .Property(e => e.id)
+            .HasColumnName("id")
+            .HasColumnType("int")
+            .ValueGeneratedOnAdd()
+            .IsRequired();
 
         // title - varchar(100) - not null - index
         builder.Property(e => e.title)
