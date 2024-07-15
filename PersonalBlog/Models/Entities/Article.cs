@@ -1,4 +1,4 @@
-namespace PersonalBlog.Models;
+namespace PersonalBlog.Models.Entities;
 
 public class Article: BaseModel
 {
