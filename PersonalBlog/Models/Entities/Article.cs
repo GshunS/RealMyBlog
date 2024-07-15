@@ -10,7 +10,7 @@ public class Article: BaseModel
 
     public int view_count { get; set; }
     public int upvote_count { get; set; }
-    public int is_hide { get; set; }
+    public bool is_hide { get; set; }
     public DateTime created_time { get; set; }
     public DateTime update_time { get; set; }
 

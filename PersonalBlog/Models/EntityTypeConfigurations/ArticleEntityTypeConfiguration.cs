@@ -55,11 +55,13 @@ public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
 
         // created_time
         builder.Property(e => e.created_time)
+            .HasColumnType("TIMESTAMP")
             .IsRequired()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         // update_time
         builder.Property(e => e.update_time)
+            .HasColumnType("TIMESTAMP")
             .ValueGeneratedOnUpdate()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
