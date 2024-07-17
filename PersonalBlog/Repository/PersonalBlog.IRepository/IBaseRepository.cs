@@ -26,4 +26,7 @@ public interface IBaseRepository<T> where T: class
     // query multiple records by conditions
     Task<List<T>> QueryMultipleByCondition(Expression<Func<T, bool>> func);
 
+    // save all change and return true or false
+    Task<bool> DbSaveAllChanges();
+
 }

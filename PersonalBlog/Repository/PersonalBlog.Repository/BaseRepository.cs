@@ -1,53 +1,85 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using PersonalBlog.Models;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
 
 namespace PersonalBlog.Repository.PersonalBlog.Repository;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
-    public Task<bool> CreateMultipleAsync(List<T> entities)
+    private readonly BloggingContext _dbContext;
+    public BaseRepository(BloggingContext bloggingContext)
     {
-        throw new NotImplementedException();
+        this._dbContext = bloggingContext;
     }
 
-    public Task<bool> CreateOneAsync(T entity)
+    public async Task<bool> CreateMultipleAsync(List<T> entities)
     {
-        throw new NotImplementedException();
+        foreach (T entity in entities)
+        {
+            await _dbContext.Set<T>().AddAsync(entity);
+        }
+        return await DbSaveAllChanges();
     }
 
-    public Task<bool> DeleteMultipleByConditionAsync(Expression<Func<T, bool>> func)
+    public async Task<bool> CreateOneAsync(T entity)
     {
-        throw new NotImplementedException();
+        await _dbContext.Set<T>().AddAsync(entity);
+        return await DbSaveAllChanges();
     }
 
-    public Task<bool> DeleteOneByIdAsync(int id)
+    public async Task<bool> DeleteMultipleByConditionAsync(Expression<Func<T, bool>> func)
     {
-        throw new NotImplementedException();
+        var entities = await QueryMultipleByCondition(func);
+        _dbContext.Set<T>().RemoveRange(entities);
+        return await DbSaveAllChanges();
     }
 
-    public Task<List<T>> QueryAllAsync()
+    public async Task<bool> DeleteOneByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var entity = await QueryOneByIdAsync(id);
+        if(entity == null){
+            return false;
+        }
+        _dbContext.Set<T>().Remove(entity);
+        return await DbSaveAllChanges();
     }
 
-    public Task<List<T>> QueryMultipleByCondition(Expression<Func<T, bool>> func)
+    public async Task<List<T>> QueryAllAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Set<T>().ToListAsync();
     }
 
-    public Task<T> QueryOneByConditionAsync(Expression<Func<T, bool>> func)
+    public async Task<List<T>> QueryMultipleByCondition(Expression<Func<T, bool>> func)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Set<T>().Where(func).ToListAsync();
     }
 
-    public Task<T> QueryOneByIdAsync(int id)
+    public async Task<T> QueryOneByConditionAsync(Expression<Func<T, bool>> func)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Set<T>().SingleAsync(func);
     }
 
-    public Task<bool> UpdateOneAsync(T entity)
+    public async Task<T> QueryOneByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Set<T>().FindAsync(id);
+        
+    }
+
+    public async Task<bool> UpdateOneAsync(T entity)
+    {
+        _dbContext.Set<T>().Update(entity);
+        return await DbSaveAllChanges();
+    }
+
+    public async Task<bool> DbSaveAllChanges()
+    {
+        int effectedRows = await _dbContext.SaveChangesAsync();
+        if (effectedRows == 0)
+        {
+            return false;
+        }
+        return true;
     }
 
 }
