@@ -5,10 +5,10 @@ namespace PersonalBlog.Service.PersonalBlog.Service;
 
 public class CategoryService: BaseService<Category>, ICategoryService
 {
-    private readonly ICategoryService _iCategoryService;
-    public CategoryService(ICategoryService iCategoryService)
+    private readonly ICategoryRepository _iCategoryRepository;
+    public CategoryService(ICategoryRepository iCategoryRepository)
     {
-        base._iBaseService = iCategoryService;
-        _iCategoryService = iCategoryService;
+        base._iBaseRepository = iCategoryRepository;
+        _iCategoryRepository = iCategoryRepository;
     }
 }
