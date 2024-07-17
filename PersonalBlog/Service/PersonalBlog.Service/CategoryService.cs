@@ -1,4 +1,5 @@
 using PersonalBlog.Models.Entities;
+using PersonalBlog.Repository.PersonalBlog.IRepository;
 using PersonalBlog.Service.PersonalBlog.IService;
 
 namespace PersonalBlog.Service.PersonalBlog.Service;
