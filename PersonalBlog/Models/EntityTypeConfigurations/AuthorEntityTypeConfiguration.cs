@@ -27,6 +27,6 @@ public class AuthorEntityTypeConfiguration : IEntityTypeConfiguration<Author>
         // Required fields
         builder.Property(e => e.nickname).IsRequired().HasMaxLength(100);
         builder.Property(e => e.username).IsRequired().HasMaxLength(30);
-        builder.Property(e => e.password).IsRequired().HasMaxLength(30);
+        builder.Property(e => e.password).IsRequired().HasMaxLength(100);
     }
 }

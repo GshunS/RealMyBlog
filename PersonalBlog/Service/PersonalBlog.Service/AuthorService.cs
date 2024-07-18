@@ -118,6 +118,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
         try
         {
             var oldUser = await _iAuthorRepository.QueryOneByIdAsync(id);
+
             oldUser.password = MD5Helper.MD5Encrypt32(newPassword);
             return await _iAuthorRepository.DbSaveAllChanges();
         }

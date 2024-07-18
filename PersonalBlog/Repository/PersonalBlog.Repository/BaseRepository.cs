@@ -9,7 +9,7 @@ namespace PersonalBlog.Repository.PersonalBlog.Repository;
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     private readonly BloggingContext _dbContext;
-    public BaseRepository(BloggingContext bloggingContext = null)
+    public BaseRepository(BloggingContext bloggingContext)
     {
         this._dbContext = bloggingContext;
     }
@@ -88,7 +88,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         try
         {
-            return await _dbContext.Set<T>().SingleAsync(func);
+            return await _dbContext.Set<T>().SingleOrDefaultAsync(func);
         }
         catch (Exception ex)
         {

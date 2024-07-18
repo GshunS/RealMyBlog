@@ -17,6 +17,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
+builder.Services.AddDbContext<BloggingContext>(
+        options => options.UseMySql(builder.Configuration["ConnectionString"], serverVersion));
+
+
 // Dependency Injection
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IArticleImageRepository, ArticleImageRepository>();
@@ -48,11 +53,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 
-
-
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
-builder.Services.AddDbContext<BloggingContext>(
-        options => options.UseMySql(builder.Configuration["ConnectionString"], serverVersion));
 
 var app = builder.Build();
 app.UseSwagger();
