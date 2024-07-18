@@ -58,7 +58,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
         {
             throw new ServiceException(ex.Message);
         }
-        
+
 
     }
 
@@ -89,6 +89,46 @@ public class AuthorService : BaseService<Author>, IAuthorService
             throw new RepositoryException(ex.Message);
         }
 
+    }
+
+
+    // update nickname
+    public async Task<bool> UpdateNickname(int id, string newNickName)
+    {
+        try
+        {
+            var a = await _iAuthorRepository.QueryOneByConditionAsync(c => c.nickname == newNickName);
+            if(a != null){
+                throw new ServiceException("nickname has already existed");
+            }
+            var oldUser = await _iAuthorRepository.QueryOneByConditionAsync(c => c.id == id);
+            oldUser.nickname = newNickName;
+            return await _iAuthorRepository.DbSaveAllChanges();
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        
+    }
+
+    // update password
+    public async Task<bool> UpdatePassword(int id, string newPassword)
+    {
+        try
+        {
+            var oldUser = await _iAuthorRepository.QueryOneByConditionAsync(c => c.id == id);
+            if(oldUser == null){
+                throw new ServiceException("user doesn't exist");
+            }
+            oldUser.password = MD5Helper.MD5Encrypt32(newPassword);
+            return await _iAuthorRepository.DbSaveAllChanges();
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        
     }
 
 }
