@@ -8,7 +8,7 @@ using PersonalBlog.Service.PersonalBlog.IService;
 namespace PersonalBlog.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api")]
 public class AuthorController : ControllerBase
 {
     private IAuthorService _iAuthorService;
@@ -18,10 +18,12 @@ public class AuthorController : ControllerBase
     }
 
     [HttpPost("authors")]
-    public async Task<ActionResult> CreateAuthor(string nickname, string username, string password){
+    public async Task<ActionResult> CreateAuthor(string nickname, string username, string password)
+    {
         try
         {
-            Author author = new Author{
+            Author author = new Author
+            {
                 nickname = nickname,
                 username = username,
                 password = password
@@ -31,7 +33,7 @@ public class AuthorController : ControllerBase
         }
         catch (ServiceException e)
         {
-            return BadRequest(new {message = e.Message});
+            return BadRequest(new { message = e.Message });
         }
         catch (RepositoryException e)
         {
@@ -40,7 +42,8 @@ public class AuthorController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> UserLogin(string username, string password){
+    public async Task<ActionResult> UserLogin(string username, string password)
+    {
         try
         {
 
@@ -49,7 +52,7 @@ public class AuthorController : ControllerBase
         }
         catch (ServiceException e)
         {
-            return Unauthorized(new {Error = e.Message});
+            return Unauthorized(new { Error = e.Message });
         }
         catch (RepositoryException e)
         {
@@ -58,8 +61,9 @@ public class AuthorController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("nickname")]
-    public async Task<ActionResult> UpdateNickname(string nickname){
+    [HttpPatch("authors/nickname")]
+    public async Task<ActionResult> UpdateNickname(string nickname)
+    {
         try
         {
             int id = Convert.ToInt32(this.User.FindFirst("Id").Value);
@@ -68,7 +72,28 @@ public class AuthorController : ControllerBase
         }
         catch (ServiceException e)
         {
-            return BadRequest(new {message = e.Message});
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+
+    [Authorize]
+    [HttpPatch("authors/password")]
+    public async Task<ActionResult> UpdatePassowrd(string password)
+    {
+        try
+        {
+            int id = Convert.ToInt32(this.User.FindFirst("Id").Value);
+            await _iAuthorService.UpdatePassword(id, password);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
         }
         catch (RepositoryException e)
         {
