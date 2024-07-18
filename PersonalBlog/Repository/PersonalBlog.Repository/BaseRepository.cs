@@ -67,9 +67,9 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
             _dbContext.Set<T>().Remove(entity);
             return await DbSaveAllChanges();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw new RepositoryException("Delete failure");
+            throw new RepositoryException(ex.Message + " => Delete failure");
         }
 
     }
@@ -86,13 +86,22 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task<T> QueryOneByConditionAsync(Expression<Func<T, bool>> func)
     {
-        return await _dbContext.Set<T>().SingleAsync(func);
+        try
+        {
+            return await _dbContext.Set<T>().SingleAsync(func);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+         
     }
 
     public async Task<T> QueryOneByIdAsync(int id)
     {
         var res = await _dbContext.Set<T>().FindAsync(id);
-        if(res == null){
+        if (res == null)
+        {
             throw new RepositoryException("No record found");
         }
         return res;
@@ -100,8 +109,16 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task<bool> UpdateOneAsync(T entity)
     {
-        _dbContext.Set<T>().Update(entity);
-        return await DbSaveAllChanges();
+        try
+        {
+            _dbContext.Set<T>().Update(entity);
+            return await DbSaveAllChanges();
+        }
+        catch (RepositoryException)
+        {
+            throw new RepositoryException("update failure");
+        }
+
     }
 
     public async Task<bool> DbSaveAllChanges()

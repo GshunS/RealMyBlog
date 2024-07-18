@@ -33,8 +33,15 @@ public class AuthorService:BaseService<Author>, IAuthorService
             throw new ServiceException("username already exists");
         }
 
-
-        var res = await _iAuthorRepository.CreateOneAsync(author);
+        try
+        {
+            var res = await _iAuthorRepository.CreateOneAsync(author);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        
         
     }
 
