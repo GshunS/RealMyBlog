@@ -1,5 +1,6 @@
 using PersonalBlog.CustomException;
 using PersonalBlog.Models.Entities;
+using PersonalBlog.MyUtils.MyEncrypt;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
 using PersonalBlog.Service.PersonalBlog.IService;
 
@@ -35,7 +36,8 @@ public class AuthorService:BaseService<Author>, IAuthorService
 
         try
         {
-            var res = await _iAuthorRepository.CreateOneAsync(author);
+            author.password = MD5Helper.MD5Encrypt32(author.password);
+            return await _iAuthorRepository.CreateOneAsync(author);
         }
         catch (RepositoryException ex)
         {
