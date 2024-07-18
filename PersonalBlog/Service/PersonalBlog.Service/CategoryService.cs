@@ -35,10 +35,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
     {
         try
         {
-            var oldCategory = await _iCategoryRepository.QueryOneByConditionAsync(c => c.id == category.id);
-            if(oldCategory == null){
-                throw new ServiceException("category doesn't exist");
-            }
+            var oldCategory = await _iCategoryRepository.QueryOneByIdAsync(category.id);
             await CheckExistCategory(category);
 
             oldCategory = category;

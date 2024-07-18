@@ -101,7 +101,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
             if(a != null){
                 throw new ServiceException("nickname has already existed");
             }
-            var oldUser = await _iAuthorRepository.QueryOneByConditionAsync(c => c.id == id);
+            var oldUser = await _iAuthorRepository.QueryOneByIdAsync(id);
             oldUser.nickname = newNickName;
             return await _iAuthorRepository.DbSaveAllChanges();
         }
@@ -117,10 +117,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
     {
         try
         {
-            var oldUser = await _iAuthorRepository.QueryOneByConditionAsync(c => c.id == id);
-            if(oldUser == null){
-                throw new ServiceException("user doesn't exist");
-            }
+            var oldUser = await _iAuthorRepository.QueryOneByIdAsync(id);
             oldUser.password = MD5Helper.MD5Encrypt32(newPassword);
             return await _iAuthorRepository.DbSaveAllChanges();
         }
