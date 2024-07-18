@@ -28,7 +28,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
             var author = await _iAuthorRepository.QueryOneByConditionAsync(c => c.username == username && c.password == pwd);
             if (author == null)
             {
-                throw new ServiceException("username or password is incorrect");
+                throw new ServiceException("Invalid username or password");
             }
             var claims = new Claim[]
             {

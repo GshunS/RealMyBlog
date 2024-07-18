@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Create;
@@ -31,6 +32,42 @@ public class AuthorController : ControllerBase
         catch (ServiceException e)
         {
             return BadRequest(new {message = e.Message});
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult> UserLogin(string username, string password){
+        try
+        {
+
+            string token = await _iAuthorService.Login(username, password);
+            return Ok(token);
+        }
+        catch (ServiceException e)
+        {
+            return Unauthorized(new {Error = e.Message});
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPut("{userId}/nickname")]
+    public async Task<ActionResult> UpdateNickname(int userId, string nickname){
+        try
+        {
+            await _iAuthorService.UpdateNickname(userId, nickname);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return Unauthorized(new {Error = e.Message});
         }
         catch (RepositoryException e)
         {
