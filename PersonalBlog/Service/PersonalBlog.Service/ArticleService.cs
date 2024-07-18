@@ -12,4 +12,5 @@ public class ArticleService:BaseService<Article>, IArticleService
         base._iBaseRepository = iArticleRepository;
         _iArticleRepository = iArticleRepository;
     }
+    
 }

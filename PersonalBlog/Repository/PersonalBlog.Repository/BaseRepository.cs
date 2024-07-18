@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using PersonalBlog.CustomException;
 using PersonalBlog.Models;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
 
@@ -8,41 +9,69 @@ namespace PersonalBlog.Repository.PersonalBlog.Repository;
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     private readonly BloggingContext _dbContext;
-    public BaseRepository(BloggingContext bloggingContext)
+    public BaseRepository(BloggingContext bloggingContext = null)
     {
         this._dbContext = bloggingContext;
     }
 
     public async Task<bool> CreateMultipleAsync(List<T> entities)
     {
-        foreach (T entity in entities)
+        try
         {
-            await _dbContext.Set<T>().AddAsync(entity);
+            foreach (T entity in entities)
+            {
+                await _dbContext.Set<T>().AddAsync(entity);
+            }
+            return await DbSaveAllChanges();
         }
-        return await DbSaveAllChanges();
+        catch (Exception)
+        {
+            throw new RepositoryException("Insert failure");
+        }
     }
 
     public async Task<bool> CreateOneAsync(T entity)
     {
-        await _dbContext.Set<T>().AddAsync(entity);
-        return await DbSaveAllChanges();
+        try
+        {
+            await _dbContext.Set<T>().AddAsync(entity);
+            return await DbSaveAllChanges();
+        }
+        catch (Exception)
+        {
+            throw new RepositoryException("Insert failure");
+        }
+
     }
 
     public async Task<bool> DeleteMultipleByConditionAsync(Expression<Func<T, bool>> func)
     {
-        var entities = await QueryMultipleByCondition(func);
-        _dbContext.Set<T>().RemoveRange(entities);
-        return await DbSaveAllChanges();
+        try
+        {
+            var entities = await QueryMultipleByCondition(func);
+            _dbContext.Set<T>().RemoveRange(entities);
+            return await DbSaveAllChanges();
+        }
+        catch (Exception)
+        {
+            throw new RepositoryException("Delete failure");
+        }
     }
 
     public async Task<bool> DeleteOneByIdAsync(int id)
     {
-        var entity = await QueryOneByIdAsync(id);
-        if(entity == null){
-            return false;
+
+        try
+        {
+            var entity = await QueryOneByIdAsync(id);
+            _dbContext.Set<T>().Remove(entity);
+            return await DbSaveAllChanges();
         }
-        _dbContext.Set<T>().Remove(entity);
-        return await DbSaveAllChanges();
+        catch (Exception)
+        {
+            throw new RepositoryException("Delete failure");
+        }
+
     }
 
     public async Task<List<T>> QueryAllAsync()
@@ -62,8 +91,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task<T> QueryOneByIdAsync(int id)
     {
-        return await _dbContext.Set<T>().FindAsync(id);
-        
+        var res = await _dbContext.Set<T>().FindAsync(id);
+        if(res == null){
+            throw new RepositoryException("No record found");
+        }
+        return res;
     }
 
     public async Task<bool> UpdateOneAsync(T entity)
@@ -77,9 +109,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         int effectedRows = await _dbContext.SaveChangesAsync();
         if (effectedRows == 0)
         {
-            return false;
+            throw new RepositoryException();
         }
         return true;
     }
+
 
 }
