@@ -58,16 +58,17 @@ public class AuthorController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("{userId}/nickname")]
-    public async Task<ActionResult> UpdateNickname(int userId, string nickname){
+    [HttpPut("nickname")]
+    public async Task<ActionResult> UpdateNickname(string nickname){
         try
         {
-            await _iAuthorService.UpdateNickname(userId, nickname);
+            int id = Convert.ToInt32(this.User.FindFirst("Id").Value);
+            await _iAuthorService.UpdateNickname(id, nickname);
             return Ok();
         }
         catch (ServiceException e)
         {
-            return Unauthorized(new {Error = e.Message});
+            return BadRequest(new {message = e.Message});
         }
         catch (RepositoryException e)
         {
