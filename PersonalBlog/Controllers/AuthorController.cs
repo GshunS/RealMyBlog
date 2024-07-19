@@ -27,7 +27,7 @@ public class AuthorController : ControllerBase
         {
             var author = _iMapper.Map<Author>(authorCreateDTO);
             await _iAuthorService.Register(author);
-            return Ok(author);
+            return Ok();
         }
         catch (ServiceException e)
         {
