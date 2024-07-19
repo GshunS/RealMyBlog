@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
@@ -11,23 +12,20 @@ namespace PersonalBlog.Controllers;
 [Route("api")]
 public class AuthorController : ControllerBase
 {
-    private IAuthorService _iAuthorService;
-    public AuthorController(IAuthorService iAuthorService)
+    private readonly IAuthorService _iAuthorService;
+    private readonly IMapper _iMapper;
+    public AuthorController(IAuthorService iAuthorService, IMapper iMapper)
     {
         _iAuthorService = iAuthorService;
+        _iMapper = iMapper;
     }
 
     [HttpPost("authors")]
-    public async Task<ActionResult> CreateAuthor(string nickname, string username, string password)
+    public async Task<ActionResult> CreateAuthor(AuthorCreateDTO authorCreateDTO)
     {
         try
         {
-            Author author = new Author
-            {
-                nickname = nickname,
-                username = username,
-                password = password
-            };
+            var author = _iMapper.Map<Author>(authorCreateDTO);
             await _iAuthorService.Register(author);
             return Ok(author);
         }

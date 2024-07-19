@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using PersonalBlog.MyUtils.MyAutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
