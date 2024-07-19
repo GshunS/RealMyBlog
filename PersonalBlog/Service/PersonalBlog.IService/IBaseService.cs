@@ -24,4 +24,7 @@ public interface IBaseService<T> where T: class
 
     // create multiple records
     Task<bool> CreateMultipleAsync(List<T> entities);
+
+    // insert one record
+    Task<bool> CreateOneAsync(T entity);
 }

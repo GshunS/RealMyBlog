@@ -19,7 +19,8 @@ public class AuthorController : ControllerBase
         _iAuthorService = iAuthorService;
         _iMapper = iMapper;
     }
-
+    
+    [Authorize]
     [HttpPost("authors")]
     public async Task<ActionResult> CreateAuthor(AuthorCreateDTO authorCreateDTO)
     {

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Create;
@@ -39,7 +40,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-
+    [Authorize]
     [HttpPatch("categories/{id}")]
     public async Task<ActionResult> UpdateCategory(CategoryUpdateDTO categoryUpdateDTO)
     {
@@ -96,6 +97,7 @@ public class CategoryController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("categories/{id}")]
     public async Task<ActionResult> DeleteCategory(int id)
     {

@@ -11,6 +11,7 @@ public class CustomAutoMapperProfile : Profile
     {
         base.CreateMap<AuthorCreateDTO, Author>();
         base.CreateMap<CategoryCreateDTO, Category>();
+        base.CreateMap<ArticleCreateDTO, Article>();
 
         base.CreateMap<CategoryUpdateDTO, Category>();
     }

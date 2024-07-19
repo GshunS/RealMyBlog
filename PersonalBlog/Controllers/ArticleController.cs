@@ -1,6 +1,8 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
+using PersonalBlog.DTO.Create;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Service.PersonalBlog.IService;
 
@@ -18,13 +20,15 @@ public class ArticleController : ControllerBase
         this._iMapper = iMapper;
     }
 
+    [Authorize]
     [HttpPost("articles")]
-    public async Task<ActionResult> CreateArticles([FromBody] Article article){
+    public async Task<ActionResult> CreateArticles(ArticleCreateDTO articleCreateDTO){
         try
         {
-            var category = _iMapper.Map<Category>(categoryCreateDTO);
-            await _iArticleSercice
-            return Ok(category);
+            var article = _iMapper.Map<Article>(articleCreateDTO);
+            article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
+            await _iArticleSercice.CreateOneAsync(article);
+            return Ok(article);
         }
         catch (ServiceException e)
         {

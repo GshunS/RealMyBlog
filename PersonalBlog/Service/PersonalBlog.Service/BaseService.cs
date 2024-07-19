@@ -86,4 +86,17 @@ public class BaseService<T> : IBaseService<T> where T : class
             throw new RepositoryException(ex.Message);
         }
     }
+
+    public async Task<bool> CreateOneAsync(T entity)
+    {
+        try
+        {
+            return await _iBaseRepository.CreateOneAsync(entity);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+    }
+
 }
