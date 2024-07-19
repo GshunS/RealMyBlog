@@ -62,7 +62,7 @@ public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
         builder.Property(e => e.update_time)
             .HasColumnType("TIMESTAMP")
             .ValueGeneratedOnAddOrUpdate()
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
         // Foreign Key for Category
         builder.Property(e => e.category_id)

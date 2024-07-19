@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Create;
+using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Service.PersonalBlog.IService;
 
@@ -22,7 +23,8 @@ public class ArticleController : ControllerBase
 
     [Authorize]
     [HttpPost("articles")]
-    public async Task<ActionResult> CreateArticles(ArticleCreateDTO articleCreateDTO){
+    public async Task<ActionResult> CreateArticles(ArticleCreateDTO articleCreateDTO)
+    {
         try
         {
             var article = _iMapper.Map<Article>(articleCreateDTO);
@@ -39,5 +41,63 @@ public class ArticleController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [Authorize]
+    [HttpPatch("articles/{id}")]
+    public async Task<ActionResult> UpdateArticles(ArticleUpdateDTO articleUpdateDTO)
+    {
+        try
+        {
+            await _iArticleSercice.UpdateCommon(articleUpdateDTO);
+            return Ok(articleUpdateDTO);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("articles")]
+    public async Task<ActionResult> GetArticles()
+    {
+        try
+        {
+            var articles = await _iArticleSercice.QueryMultipleByConditionAsync(c => c.is_hide == false);
+            return Ok(articles);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpGet("articles/hide")]
+    public async Task<ActionResult> GetHideArticles()
+    {
+        try
+        {
+            var articles = await _iArticleSercice.QueryMultipleByConditionAsync(c => c.is_hide == true);
+            return Ok(articles);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    
 }
 
