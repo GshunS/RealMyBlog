@@ -38,7 +38,10 @@ public class CategoryService : BaseService<Category>, ICategoryService
             var oldCategory = await _iCategoryRepository.QueryOneByIdAsync(category.id);
             await CheckExistCategory(category);
 
-            oldCategory = category;
+            oldCategory.first_category = category.first_category;
+            oldCategory.second_category = category.second_category;
+            oldCategory.third_category = category.third_category;
+            oldCategory.fourth_category = category.fourth_category;
 
             return await _iCategoryRepository.DbSaveAllChanges();
         }

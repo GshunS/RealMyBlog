@@ -126,7 +126,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         int effectedRows = await _dbContext.SaveChangesAsync();
         if (effectedRows == 0)
         {
-            throw new RepositoryException();
+            throw new RepositoryException("0 row has been affected");
         }
         return true;
     }

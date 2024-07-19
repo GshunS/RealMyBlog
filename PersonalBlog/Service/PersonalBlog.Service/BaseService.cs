@@ -5,7 +5,7 @@ using PersonalBlog.Service.PersonalBlog.IService;
 
 namespace PersonalBlog.Service.PersonalBlog.Service;
 
-public class BaseService<T>: IBaseService<T> where T: class
+public class BaseService<T> : IBaseService<T> where T : class
 {
     protected IBaseRepository<T> _iBaseRepository;
 
@@ -45,7 +45,8 @@ public class BaseService<T>: IBaseService<T> where T: class
         }
     }
 
-    public async Task<bool> DeleteOneByIdAsync(int id){
+    public async Task<bool> DeleteOneByIdAsync(int id)
+    {
         try
         {
             return await _iBaseRepository.DeleteOneByIdAsync(id);
@@ -73,4 +74,16 @@ public class BaseService<T>: IBaseService<T> where T: class
         }
     }
 
+
+    public async Task<T> QueryOneByIdAsync(int id)
+    {
+        try
+        {
+            return await _iBaseRepository.QueryOneByIdAsync(id);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+    }
 }

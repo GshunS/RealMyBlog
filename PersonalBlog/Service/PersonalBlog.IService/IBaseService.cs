@@ -10,6 +10,9 @@ public interface IBaseService<T> where T: class
     // query all records
     Task<List<T>> QueryAllAsync();
 
+    // query one record by id
+    Task<T> QueryOneByIdAsync(int id);
+
     // query one record by conditions
     Task<T> QueryOneByConditionAsync(Expression<Func<T, bool>> func);
 
