@@ -57,7 +57,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IArticleImageService, ArticleImageService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 

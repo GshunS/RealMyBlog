@@ -62,7 +62,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
             c.third_category == category.third_category &&
             c.fourth_category == category.fourth_category);
 
-            if(res != null){
+            if(res == null){
                 return true;
             }
             throw new ServiceException("Category has already existed");
