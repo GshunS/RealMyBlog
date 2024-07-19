@@ -1,5 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
+using PersonalBlog.DTO.Create;
+using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Service.PersonalBlog.IService;
 
@@ -10,23 +13,19 @@ namespace PersonalBlog.Controllers;
 public class CategoryController : ControllerBase
 {
     private ICategoryService _iCategoryService;
-    public CategoryController(ICategoryService iCategoryService)
+    private IMapper _iMapper;
+    public CategoryController(ICategoryService iCategoryService, IMapper iMapper)
     {
         this._iCategoryService = iCategoryService;
+        this._iMapper = iMapper;
     }
 
     [HttpPost("categories")]
-    public async Task<ActionResult> CreateCategory(string first, string? second, string? third, string? fourth)
+    public async Task<ActionResult> CreateCategory(CategoryCreateDTO categoryCreateDTO)
     {
         try
         {
-            Category category = new()
-            {
-                first_category =first,
-                second_category = second,
-                third_category = third,
-                fourth_category = fourth
-            };
+            var category = _iMapper.Map<Category>(categoryCreateDTO);
             await _iCategoryService.AddCategory(category);
             return Ok(category);
         }
@@ -42,18 +41,11 @@ public class CategoryController : ControllerBase
 
 
     [HttpPatch("categories/{id}")]
-    public async Task<ActionResult> UpdateCategory(int id, string first, string? second, string? third, string? fourth)
+    public async Task<ActionResult> UpdateCategory(CategoryUpdateDTO categoryUpdateDTO)
     {
         try
         {
-            Category category = new()
-            {
-                id = id,
-                first_category =first,
-                second_category = second,
-                third_category = third,
-                fourth_category = fourth
-            };
+            var category = _iMapper.Map<Category>(categoryUpdateDTO);
             await _iCategoryService.UpdateCategory(category);
             return Ok(category);
         }
