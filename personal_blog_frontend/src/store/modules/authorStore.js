@@ -18,7 +18,7 @@ const {setAuthorList} = authorStore.actions
 
 const fetchAuthorList = () =>{
     return async (dispatch) => {
-       const res =  await axios.get("https://localhost:7219/api/articles")
+       const res =  await axios.get("https://localhost:7219/api/categories")
        dispatch(setAuthorList(res.data))
     }
 }

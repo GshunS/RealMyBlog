@@ -20,7 +20,7 @@ function App() {
       <button onClick={() => dispatch(increment())}>+</button>
 
       <ul>
-        {author_list.map(item =><li key = {item.id}>{item.title}</li>)}
+        {author_list.map(item =><li key = {item.id}>{item.third_category}</li>)}
       </ul>
     </div>
   );
