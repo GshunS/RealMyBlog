@@ -1,7 +1,12 @@
+import Header from "./Components/Header/Header"
+import './index.css'
 
-
-const Main = () => {
-    return <div>this is a s page</div>
+const BlogContent = () => {
+    return (
+        <div className="blog-container">
+            <Header />
+        </div>
+    )
 }
 
-export default Main
+export default BlogContent
