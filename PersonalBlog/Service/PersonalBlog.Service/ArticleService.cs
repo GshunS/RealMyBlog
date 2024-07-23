@@ -29,7 +29,14 @@ public class ArticleService : BaseService<Article>, IArticleService
             {
                 var art = _iMapper.Map<ArticleDisplayDTO>(article);
                 var content = art.content;
-                int index = content.IndexOf(searchStr, StringComparison.OrdinalIgnoreCase);
+                int index = -1;
+                foreach(var term in searchStr.Split(" ")){
+                    index = content.IndexOf(term.Trim(), StringComparison.OrdinalIgnoreCase);
+                    if(index != -1){
+                        break;
+                    }
+                }
+                
                 int beforePuncIndex = -1;
                 int afterPuncIndex = -1;
                 for (int i = index; i > 0 ; i--){
@@ -64,6 +71,10 @@ public class ArticleService : BaseService<Article>, IArticleService
         catch (RepositoryException ex)
         {
             throw new RepositoryException(ex.Message);
+        }
+        catch (Exception)
+        {
+            throw new Exception();
         }
 
     }

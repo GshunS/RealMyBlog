@@ -116,6 +116,10 @@ public class ArticleController : ControllerBase
         {
             return StatusCode(500, e.Message);
         }
+        catch (Exception)
+        {
+            return StatusCode(500, "something wrong happened");
+        }
     }
 
     
