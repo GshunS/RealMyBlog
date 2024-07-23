@@ -14,6 +14,7 @@ const Header = () => {
     const [inputValue, setInputValue] = useState('');
     const dispatch = useDispatch();
     const buttonRef = useRef(null);
+    const hideRef = useRef(null);
 
     const viewExp = () => {
         dispatch(editStatus())
@@ -82,7 +83,8 @@ const Header = () => {
                     </div>
                     <div
                         className={classNames("header__view_dropdown", { dropdown_expand: editable })}
-                        onClick={() => selectDropdown()}>
+                        onClick={() => selectDropdown()}
+                        ref={hideRef}>
                         <span>{'Edit' === dropDownValue ? 'View' : 'Edit'}</span>
                         <img
                             className={classNames('header__view_arrow')}
