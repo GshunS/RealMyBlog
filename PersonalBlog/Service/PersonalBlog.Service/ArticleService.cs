@@ -15,6 +15,20 @@ public class ArticleService : BaseService<Article>, IArticleService
         _iArticleRepository = iArticleRepository;
     }
 
+    public Task<List<Article>> FullTextSearchAsync(string searchStr)
+    {
+        try
+        {
+            return _iArticleRepository.FullTextSearchAsync(searchStr);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        
+    }
+
+
     public async Task<bool> UpdateCommon(ArticleUpdateDTO articleUpdateDTO)
     {
         try
@@ -34,5 +48,6 @@ public class ArticleService : BaseService<Article>, IArticleService
             throw new RepositoryException(ex.Message);
         }
     }
+    
 
 }

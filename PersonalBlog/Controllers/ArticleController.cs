@@ -98,6 +98,24 @@ public class ArticleController : ControllerBase
         }
     }
 
+    [HttpGet("articles/{word}")]
+    public async Task<ActionResult> SearchArticles(string word)
+    {
+        try
+        {
+            var articles = await _iArticleSercice.FullTextSearchAsync(word);
+            return Ok(articles);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     
 }
 
