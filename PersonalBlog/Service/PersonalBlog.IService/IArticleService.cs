@@ -1,3 +1,4 @@
+using PersonalBlog.DTO.Display;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 
@@ -8,5 +9,5 @@ public interface IArticleService: IBaseService<Article>
     Task<bool> UpdateCommon(ArticleUpdateDTO articleUpdateDTO);
 
     // full text search
-    Task<List<Article>> FullTextSearchAsync(string searchStr);
+    Task<List<ArticleDisplayDTO>> FullTextSearchAsync(string searchStr);
 }
