@@ -1,8 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Create;
+using PersonalBlog.DTO.Display;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Service.PersonalBlog.IService;
@@ -103,7 +105,13 @@ public class ArticleController : ControllerBase
     {
         try
         {
+            List<Article> res = new();
             var articles = await _iArticleSercice.FullTextSearchAsync(word);
+            foreach (var article in articles)
+            {
+                var art = _iMapper.Map<ArticleDisplayDTO>(article);
+                article.content = null;
+            }
             return Ok(articles);
         }
         catch (ServiceException e)

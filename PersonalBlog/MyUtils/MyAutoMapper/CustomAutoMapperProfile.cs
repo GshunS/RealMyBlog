@@ -1,5 +1,6 @@
 using AutoMapper;
 using PersonalBlog.DTO.Create;
+using PersonalBlog.DTO.Display;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 
@@ -14,6 +15,8 @@ public class CustomAutoMapperProfile : Profile
         base.CreateMap<ArticleCreateDTO, Article>();
 
         base.CreateMap<CategoryUpdateDTO, Category>();
+
+        base.CreateMap<Article, ArticleDisplayDTO>();
     }
 }
 
