@@ -105,13 +105,7 @@ public class ArticleController : ControllerBase
     {
         try
         {
-            List<Article> res = new();
             var articles = await _iArticleSercice.FullTextSearchAsync(word);
-            foreach (var article in articles)
-            {
-                var art = _iMapper.Map<ArticleDisplayDTO>(article);
-                article.content = null;
-            }
             return Ok(articles);
         }
         catch (ServiceException e)

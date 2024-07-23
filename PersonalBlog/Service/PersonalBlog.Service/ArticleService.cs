@@ -1,4 +1,6 @@
+using AutoMapper;
 using PersonalBlog.CustomException;
+using PersonalBlog.DTO.Display;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
@@ -9,23 +11,52 @@ namespace PersonalBlog.Service.PersonalBlog.Service;
 public class ArticleService : BaseService<Article>, IArticleService
 {
     private readonly IArticleRepository _iArticleRepository;
-    public ArticleService(IArticleRepository iArticleRepository)
+    private IMapper _iMapper;
+    public ArticleService(IArticleRepository iArticleRepository, IMapper iMapper)
     {
         base._iBaseRepository = iArticleRepository;
         _iArticleRepository = iArticleRepository;
+        this._iMapper = iMapper;
     }
 
-    public Task<List<Article>> FullTextSearchAsync(string searchStr)
+    public async Task<List<ArticleDisplayDTO>> FullTextSearchAsync(string searchStr)
     {
         try
         {
-            return _iArticleRepository.FullTextSearchAsync(searchStr);
+            var articles = await _iArticleRepository.FullTextSearchAsync(searchStr);
+            List<ArticleDisplayDTO> res = new();
+            foreach (var article in articles)
+            {
+                var art = _iMapper.Map<ArticleDisplayDTO>(article);
+                var content = art.content;
+                int index = content.IndexOf(searchStr, StringComparison.OrdinalIgnoreCase);
+                int beforePuncIndex = 0;
+                int afterPuncIndex = 0;
+                for (int i = index; i > 0 ; i--){
+                    Char c = content[i];
+                    if(Char.IsPunctuation(c)){
+                        beforePuncIndex = i;
+                        break;
+                    }
+                }
+
+                for (int i = index; i < content.Length ; i++){
+                    Char c = content[i];
+                    if(Char.IsPunctuation(c)){
+                        afterPuncIndex = i;
+                        break;
+                    }
+                }
+                art.part_content = content.Substring(beforePuncIndex, afterPuncIndex - beforePuncIndex);
+                res.Add(art);
+            }
+            return res;
         }
         catch (RepositoryException ex)
         {
             throw new RepositoryException(ex.Message);
         }
-        
+
     }
 
 
@@ -48,6 +79,6 @@ public class ArticleService : BaseService<Article>, IArticleService
             throw new RepositoryException(ex.Message);
         }
     }
-    
+
 
 }
