@@ -1,14 +1,15 @@
+/*#region header */
 .header{
-    /* border: 0.1rem solid grey; */
     margin: 0 auto;
-    /* width: 1200px; */
     height: 2.5rem;
     display: flex;
     justify-content: space-between;
     
 }
+/* #endregion */
+
+/* #region header-avatar */
 .header .header__avatar{
-    /* background-color: aquamarine; */
     width: 10rem;
     display: flex;
     margin-right: 10rem;
@@ -16,14 +17,20 @@
     justify-content: center;
 }
 
+.header__avatar img{
+    width: 2rem;
+    height: 2rem;
+
+}
+/* #endregion */
+
+/* #region header-input */
 .header .header__search_bar{
-    /* background-color: bisque; */
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    /* flex-grow: 0; */
 }
 
 .header__search {
@@ -32,7 +39,6 @@
     height: 1.8rem;
     border-width: 0.5px;
     padding-left: 1.0rem;
-    /* text-align: center; */
 }
 .header__search::placeholder{
     font-size: 1rem;
@@ -62,28 +68,28 @@
 .header__display_item:hover{
     background-color: #f0f0f0;
 }
+/* #endregion */
 
-
+/* #region header-attrs */
 .header .header__attrs{
     display: flex;
     justify-content: space-around;
     align-items: center;
     width: 28rem;
-    /* background-color: aqua; */
     font-size: 1.1rem;
     flex-grow: 0;
 }
+/*#endregion */
+
+/* #region header-attrs-view */
 .header__view{
-    /* font-weight: bold; */
     width: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
     position: relative;
-    /* border: 1px solid black; */
 }
 .header__view_button{
-    /* border: 0.1rem solid azure; */
     border-radius: 0.3rem;
     width: 5rem;
     height: 2rem;
@@ -93,11 +99,7 @@
     cursor: default;
     padding-left: 0.1rem;
     transition: all 0.2s linear;
-    /* background-color: rgb(70, 130, 180); */
-    
-    /* padding: 0 0.4rem; */
 }
-
 
 .header__view_arrow {
     width: 1.5rem;
@@ -119,17 +121,11 @@
     border-radius: 0.3rem;
     z-index: 1;
     text-align: center;
-    /* transition:0.1s linear; */
 }
 
 .dropdown_expand{
     opacity: 1;
-    /* border: 1px solid black; */
 }
+/* #endregion*/
 
-.header__avatar img{
-    width: 2rem;
-    height: 2rem;
-
-}
 
