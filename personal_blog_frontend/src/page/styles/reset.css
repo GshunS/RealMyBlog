@@ -22,7 +22,7 @@ ul {
 
 /* Remove list styles */
 ol,
-ul {
+ul{
     list-style: none;
 }
 
@@ -43,7 +43,7 @@ h6 {
 }
 
 /* Reset form elements */
-input,
+/* input, */
 textarea,
 button,
 select {

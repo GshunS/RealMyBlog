@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import classNames from 'classnames';
 import downarrow from '../../../../assets/images/caret-down-solid.svg'
@@ -22,6 +22,28 @@ const Header = () => {
     // displayArticles is a state that is used to store the articles that are found
     const [displayArticles, setDisplayArticles] = useState([]);
 
+    // hasData is a state that is used to control the display of the articles
+    const [hasData, setHasData] = useState(false);
+
+    useEffect(() => {
+
+        if (hasData) {
+            let allText = []
+            Array.from(listRef.current.children).forEach(child => {
+                allText.push(child.children[0].textContent)
+            });
+            
+            for(let i = 0; i < allText.length; i++) {
+                const regex = new RegExp(`\\b${inputValue.trim()}\\b`, 'gi');
+                allText[i] = allText[i].replace(regex, match => `<span class="header__highlight">${match}</span>`);
+            }
+            Array.from(listRef.current.children).forEach(child => {
+                child.children[0].innerHTML = allText.shift()
+            });
+        }
+
+    }, [hasData, inputValue])
+
     const dispatch = useDispatch();
 
     // buttonRef is a reference to the button element (view/edit)
@@ -29,6 +51,9 @@ const Header = () => {
 
     // hideRef is a reference to the dropdown element
     const hideRef = useRef(null);
+
+    const listRef = useRef(null);
+    const inputRef = useRef(null);
 
     const viewExp = () => {
         dispatch(editStatus())
@@ -46,35 +71,40 @@ const Header = () => {
 
     const onInput = async (e) => {
         var term = e.target.value
-        
-        if (term === '' || inputValue === term.trim()) return
-        setInputValue(term)
-        await getArticles(term)
-    }
-
-    const onKeyDown = async (e) => {
-        if (e.key === 'Enter') {
-            var term = e.target.value
-            console.log(term)
-        
-            if (term === '' || inputValue === term.trim()) return
-            setInputValue(term)
-            await getArticles(term)
+        if (term.trim() === '') {
+            setDisplayArticles([])
+            return
         }
+
+        // if (inputValue === term.trim()) return
+        // setInputValue(term)
+        await getArticles(term)
     }
 
     // getArticles is a function that is used to get the articles by full text search from the backend
     const getArticles = async (term) => {
         if (displayArticles.length > 0) {
             setDisplayArticles([])
+            setHasData(false)
+            setInputValue()
         }
         var url = `https://localhost:7219/api/articles/${term}`;
         try {
             const response = await axios.get(url);
             if (response.data.length === 0) {
                 setDisplayArticles([`No articles found for ${term}`])
-            }else{
-                setDisplayArticles('found')
+            } else {
+                var articleArray = []
+                response.data.forEach((article) => {
+                    articleArray.push(
+                        { id: article.id, content: article.part_content }
+                    )
+                })
+
+                setDisplayArticles(articleArray)
+                setHasData(true)
+                setInputValue(term)
+                // console.log(articleArray)
             }
         } catch (error) {
             if (error.response) {
@@ -94,6 +124,12 @@ const Header = () => {
         }
     }
 
+    const onClickArticle = (id) => {
+        console.log(`Article ID: ${id}`)
+        inputRef.current.value = ''
+        onInput({ target: { value: '' } })
+    }
+
 
     return (
         // header html
@@ -108,12 +144,25 @@ const Header = () => {
                     type="text"
                     className="header__search"
                     placeholder="Type to search"
-                    onInput={(e) => onInput(e)}
-                    onKeyDown={(e) => onKeyDown(e)} 
-                    />
+                    onChange={(e) => onInput(e)}
+                    ref={inputRef}
+                />
+                {/* display articles */}
+
+                <ul className="header__display" ref={listRef}>
+                    {hasData ? (
+                        displayArticles.map(item => (
+                            <li
+                                key={item.id}
+                                className={classNames('header__display_item')}
+                                onClick={(e) => onClickArticle(item.id)}
+                            >
+                                <span>...&nbsp;{item.content}&nbsp;...</span></li>
+                        ))
+                    ) : <li key={-1}><span>{displayArticles}</span></li>}
+                </ul>
             </div>
-            {/* display articles */}
-            <div className="tesst">{displayArticles}</div>
+
             {/* header attributes - right side*/}
             <div className="header__attrs">
                 {/* view or edit button*/}

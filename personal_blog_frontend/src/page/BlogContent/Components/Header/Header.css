@@ -22,6 +22,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    /* flex-grow: 0; */
 }
 
 .header__search {
@@ -35,8 +37,32 @@
 .header__search::placeholder{
     font-size: 1rem;
     color: grey;
-    /* padding-left: 1.0rem; */
 }
+
+.header__display{
+    position: absolute;
+    width: 77%;
+    height: auto;
+    top: 2.2rem;
+    border-radius: 0.3rem;
+    
+}
+
+.header__display li > span{
+    display: inline-block;
+    position: relative;
+    left: 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.header__highlight{
+    color: rgb(17, 166, 116);
+}
+
+.header__display_item:hover{
+    background-color: #f0f0f0;
+}
+
 
 .header .header__attrs{
     display: flex;
@@ -106,3 +132,4 @@
     height: 2rem;
 
 }
+
