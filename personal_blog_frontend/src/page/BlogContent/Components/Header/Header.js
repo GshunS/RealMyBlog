@@ -25,6 +25,19 @@ const Header = () => {
     // hasData is a state that is used to control the display of the articles
     const [hasData, setHasData] = useState(false);
 
+    const [typingTimeout, setTypingTimeout] = useState(null);
+
+    const dispatch = useDispatch();
+
+    // buttonRef is a reference to the button element (view/edit)
+    const buttonRef = useRef(null);
+
+    // hideRef is a reference to the dropdown element
+    const hideRef = useRef(null);
+
+    const listRef = useRef(null);
+    const inputRef = useRef(null);
+
     useEffect(() => {
 
         if (hasData) {
@@ -33,7 +46,7 @@ const Header = () => {
             Array.from(listRef.current.children).forEach(child => {
                 allText.push(child.children[0].textContent)
             });
-
+            
             wordsToHighlight.forEach(word => {
                 for (let i = 0; i < allText.length; i++) {
                     const regex = new RegExp(`\\b${word.trim()}\\b`, 'gi');
@@ -48,16 +61,7 @@ const Header = () => {
 
     }, [hasData, inputValue])
 
-    const dispatch = useDispatch();
 
-    // buttonRef is a reference to the button element (view/edit)
-    const buttonRef = useRef(null);
-
-    // hideRef is a reference to the dropdown element
-    const hideRef = useRef(null);
-
-    const listRef = useRef(null);
-    const inputRef = useRef(null);
 
     const viewExp = () => {
         dispatch(editStatus())
@@ -79,18 +83,36 @@ const Header = () => {
             setDisplayArticles([])
             return
         }
-
+        setInputValue(term.trim())
         // if (inputValue === term.trim()) return
         // setInputValue(term)
-        await getArticles(term.trim())
     }
+
+    // detect when user stops typing
+    useEffect(() => {
+        if (typingTimeout) {
+            clearTimeout(typingTimeout);
+        }
+
+        const timer = setTimeout(async () => {
+            if (inputValue) {
+                // console.log('User has stopped typing:', inputValue);
+                await getArticles(inputValue);
+            }
+        }, 500);
+
+        setTypingTimeout(timer);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [inputValue]);
 
     // getArticles is a function that is used to get the articles by full text search from the backend
     const getArticles = async (term) => {
         if (displayArticles.length > 0) {
             setDisplayArticles([])
             setHasData(false)
-            setInputValue()
         }
         var url = `https://localhost:7219/api/articles/${term}`;
         try {
