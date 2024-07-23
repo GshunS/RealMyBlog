@@ -29,14 +29,18 @@ const Header = () => {
 
         if (hasData) {
             let allText = []
+            let wordsToHighlight = inputValue.split(' ');
             Array.from(listRef.current.children).forEach(child => {
                 allText.push(child.children[0].textContent)
             });
-            
-            for(let i = 0; i < allText.length; i++) {
-                const regex = new RegExp(`\\b${inputValue.trim()}\\b`, 'gi');
-                allText[i] = allText[i].replace(regex, match => `<span class="header__highlight">${match}</span>`);
-            }
+
+            wordsToHighlight.forEach(word => {
+                for (let i = 0; i < allText.length; i++) {
+                    const regex = new RegExp(`\\b${word.trim()}\\b`, 'gi');
+                    allText[i] = allText[i].replace(regex, match => `<span class="header__highlight">${match}</span>`);
+                }
+            })
+
             Array.from(listRef.current.children).forEach(child => {
                 child.children[0].innerHTML = allText.shift()
             });
@@ -78,7 +82,7 @@ const Header = () => {
 
         // if (inputValue === term.trim()) return
         // setInputValue(term)
-        await getArticles(term)
+        await getArticles(term.trim())
     }
 
     // getArticles is a function that is used to get the articles by full text search from the backend
