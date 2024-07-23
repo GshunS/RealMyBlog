@@ -30,8 +30,8 @@ public class ArticleService : BaseService<Article>, IArticleService
                 var art = _iMapper.Map<ArticleDisplayDTO>(article);
                 var content = art.content;
                 int index = content.IndexOf(searchStr, StringComparison.OrdinalIgnoreCase);
-                int beforePuncIndex = 0;
-                int afterPuncIndex = 0;
+                int beforePuncIndex = -1;
+                int afterPuncIndex = -1;
                 for (int i = index; i > 0 ; i--){
                     Char c = content[i];
                     if(Char.IsPunctuation(c)){
@@ -47,7 +47,16 @@ public class ArticleService : BaseService<Article>, IArticleService
                         break;
                     }
                 }
-                art.part_content = content.Substring(beforePuncIndex, afterPuncIndex - beforePuncIndex);
+                if(beforePuncIndex != -1){
+                    beforePuncIndex += 2;
+                }else{
+                    beforePuncIndex = 0;
+                }
+                if(afterPuncIndex == -1){
+                    afterPuncIndex = content.Length;
+                }
+
+                art.part_content = content[beforePuncIndex..afterPuncIndex];
                 res.Add(art);
             }
             return res;
