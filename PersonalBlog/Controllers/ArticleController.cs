@@ -101,7 +101,7 @@ public class ArticleController : ControllerBase
     }
 
     [HttpGet("articles/{word}")]
-    public async Task<ActionResult> SearchArticles(string word)
+    public async Task<ActionResult> SearchArticles([FromRoute] string word)
     {
         try
         {
