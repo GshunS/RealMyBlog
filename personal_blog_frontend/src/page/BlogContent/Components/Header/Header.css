@@ -1,4 +1,4 @@
-/*#region header */
+/* #region header */
 .header{
     margin: 0 auto;
     height: 2.5rem;
@@ -67,6 +67,21 @@
 
 .header__display_item:hover{
     background-color: #f0f0f0;
+}
+
+.header__display_item{
+    display: flex;
+    justify-content: space-between;
+}
+
+.header__categories{
+    font-size: 0.7rem;
+    margin-right: 1rem;
+    width: 15rem;
+}
+
+.cate_hide{
+    display: none;
 }
 /* #endregion */
 

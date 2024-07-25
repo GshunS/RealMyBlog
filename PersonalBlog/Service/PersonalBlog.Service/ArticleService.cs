@@ -11,10 +11,12 @@ namespace PersonalBlog.Service.PersonalBlog.Service;
 public class ArticleService : BaseService<Article>, IArticleService
 {
     private readonly IArticleRepository _iArticleRepository;
+    private readonly ICategoryRepository _iCategoryRepository;
     private IMapper _iMapper;
-    public ArticleService(IArticleRepository iArticleRepository, IMapper iMapper)
+    public ArticleService(IArticleRepository iArticleRepository, ICategoryRepository iCategoryRepository, IMapper iMapper)
     {
         base._iBaseRepository = iArticleRepository;
+        _iCategoryRepository = iCategoryRepository;
         _iArticleRepository = iArticleRepository;
         this._iMapper = iMapper;
     }
@@ -23,11 +25,17 @@ public class ArticleService : BaseService<Article>, IArticleService
     {
         try
         {
+            // get all articles that contain searchStr
             var articles = await _iArticleRepository.FullTextSearchAsync(searchStr);
             List<ArticleDisplayDTO> res = new();
             foreach (var article in articles)
             {
+                // get category of article
+                Category cate = await _iCategoryRepository.QueryOneByIdAsync(article.category_id);
+                article.category = cate;
                 var art = _iMapper.Map<ArticleDisplayDTO>(article);
+
+                // get the part of content that contains searchStr
                 var content = art.content;
                 int index = -1;
                 foreach(var term in searchStr.Split(" ")){
@@ -63,6 +71,7 @@ public class ArticleService : BaseService<Article>, IArticleService
                     afterPuncIndex = content.Length;
                 }
 
+                // get the part of content that contains searchStr
                 art.part_content = content[beforePuncIndex..afterPuncIndex];
                 res.Add(art);
             }

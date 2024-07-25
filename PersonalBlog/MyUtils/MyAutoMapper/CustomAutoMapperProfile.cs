@@ -17,6 +17,7 @@ public class CustomAutoMapperProfile : Profile
         base.CreateMap<CategoryUpdateDTO, Category>();
 
         base.CreateMap<Article, ArticleDisplayDTO>();
+        base.CreateMap<Category, CategoryDisplayDTO>();
     }
 }
 

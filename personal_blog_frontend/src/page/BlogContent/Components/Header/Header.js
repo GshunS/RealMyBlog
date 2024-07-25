@@ -46,7 +46,7 @@ const Header = () => {
             Array.from(listRef.current.children).forEach(child => {
                 allText.push(child.children[0].textContent)
             });
-            
+
             wordsToHighlight.forEach(word => {
                 for (let i = 0; i < allText.length; i++) {
                     const regex = new RegExp(`\\b${word.trim()}\\b`, 'gi');
@@ -80,6 +80,7 @@ const Header = () => {
     const onInput = async (e) => {
         var term = e.target.value
         if (term.trim() === '') {
+            setInputValue('')
             setDisplayArticles([])
             return
         }
@@ -99,7 +100,7 @@ const Header = () => {
                 // console.log('User has stopped typing:', inputValue);
                 await getArticles(inputValue);
             }
-        }, 500);
+        }, 700);
 
         setTypingTimeout(timer);
 
@@ -123,7 +124,7 @@ const Header = () => {
                 var articleArray = []
                 response.data.forEach((article) => {
                     articleArray.push(
-                        { id: article.id, content: article.part_content }
+                        { id: article.id, content: article.part_content, category: article.category }
                     )
                 })
 
@@ -142,10 +143,8 @@ const Header = () => {
                 } else {
                     setDisplayArticles([`Error: ${error.response.data}`])
                 }
-            } else if (error.request) {
-                setDisplayArticles([`No response received: ${error.request}`])
             } else {
-                setDisplayArticles([`No response received: ${error.message}`])
+                setDisplayArticles([`No response received`])
             }
         }
     }
@@ -155,7 +154,6 @@ const Header = () => {
         inputRef.current.value = ''
         onInput({ target: { value: '' } })
     }
-
 
     return (
         // header html
@@ -183,7 +181,24 @@ const Header = () => {
                                 className={classNames('header__display_item')}
                                 onClick={(e) => onClickArticle(item.id)}
                             >
-                                <span>...&nbsp;{item.content}&nbsp;...</span></li>
+                                <span>...&nbsp;{item.content}&nbsp;...</span>
+                                {/* show categories */}
+                                <div className="header__categories">
+                                    <span>
+                                        {item.category.first_category}
+                                    </span>
+                                    <span className={classNames({ cate_hide: item.category.second_category === null })}>
+                                        &nbsp;--&nbsp;{item.category.second_category}
+                                    </span>
+                                    <span className={classNames({ cate_hide: item.category.third_category === null })}>
+                                        &nbsp;--&nbsp;{item.category.third_category}
+                                    </span>
+                                    <span className={classNames({ cate_hide: item.category.fourth_category === null })}>
+                                        &nbsp;--&nbsp;{item.category.fourth_category}
+                                    </span>
+                                </div>
+
+                            </li>
                         ))
                     ) : <li key={-1}><span>{displayArticles}</span></li>}
                 </ul>

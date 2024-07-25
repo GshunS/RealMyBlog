@@ -1,3 +1,5 @@
+using PersonalBlog.Models.Entities;
+
 namespace PersonalBlog.DTO.Display;
 
 public class ArticleDisplayDTO
@@ -16,5 +18,6 @@ public class ArticleDisplayDTO
     public DateTime? update_time { get; set; }
 
     public int category_id { get; set; }
+    public CategoryDisplayDTO Category {get; set;}
 
 }
