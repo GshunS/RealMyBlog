@@ -12,9 +12,10 @@
 .header .header__avatar{
     width: 10rem;
     display: flex;
-    margin-right: 10rem;
+    margin-right: 8rem;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-left: 2rem;
 }
 
 .header__avatar img{

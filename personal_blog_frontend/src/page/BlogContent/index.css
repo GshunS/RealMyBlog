@@ -3,5 +3,16 @@
 }
 
 .blog-container{
+    
+    width: 1200px;
+    margin: 0 auto;
     margin-top: 0.5rem;
+}
+
+.body-container{
+    /* border: 1px solid black; */
+    margin-top: 1.7rem;
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
 }

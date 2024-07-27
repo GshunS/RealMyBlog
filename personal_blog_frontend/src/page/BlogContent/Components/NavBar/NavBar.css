@@ -1,0 +1,79 @@
+/* #region outer layers */
+.nav-bar {
+    width: 18%;
+    flex-grow: 0;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    /* justify-content: center; */
+    margin-top: 1rem;
+}
+
+.nav-bar__categories {
+    width: 90%;
+}
+.nav-bar__name{
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+/* #endregion */
+
+
+/* #region inner layers */
+.nav-bar__first-category>li:nth-child(1) {
+    margin-top: 1rem;
+}
+
+.nav-bar__first-category-items {
+    padding-left: 1.0rem;
+    margin-bottom: 0.5rem;
+
+}
+.nav-bar__second-category {
+    padding-left: 1rem;
+    margin-top: 0.3rem;
+}
+
+.nav-bar__third-category {
+    padding-left: 1rem;
+    margin-top: 0.3rem;
+}
+
+/* #endregion */
+
+li>div:hover {
+    background-color: #f0f0f0;
+}
+
+.nav-bar__first-category-items span {
+    /* font-size: 1.1rem; */
+    vertical-align: middle;
+    margin-left: 0.2rem;
+}
+
+/* #region Arrow Category AddFolder AddFile */
+.nav-bar__category_div {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 0.3rem;
+    border-radius: 0.7rem;
+}
+.nav-bar__category_name{
+    display: flex;
+    align-items: center;
+}
+
+.nav-bar__category_name img {
+    height: 1.2rem;
+    rotate: 90deg;
+}
+
+.nav-bar__category_img{
+    display: flex;
+    align-items: center;
+}
+
+.nav-bar__category_img :nth-child(1) {
+    margin-right: 0.5rem;
+}
+/* #endregion */
