@@ -92,13 +92,19 @@ public class CategoryService : BaseService<Category>, ICategoryService
             Dictionary<string, bool> categoryDict = new();
             foreach (var category in categories)
             {
-                if(categoryDict.ContainsKey(category.first_category))
+                if (categoryDict.ContainsKey(category.first_category))
                 {
-                    if(categoryDict[category.first_category] != false){
+                    if (categoryDict[category.first_category] != false)
+                    {
                         continue;
                     }
+                    categoryDict[category.first_category] = category.second_category != null;
                 }
-                categoryDict.Add(category.first_category, category.second_category != null);
+                else
+                {
+                    categoryDict.Add(category.first_category, category.second_category != null);
+                }
+                
             }
             return categoryDict;
 
@@ -117,18 +123,19 @@ public class CategoryService : BaseService<Category>, ICategoryService
             List<string> categoryNames = new();
             List<ArticleForCategoryDisplayDTO> articleList = new();
             var res = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
-            foreach(var item in res)
+            foreach (var item in res)
             {
-                if(item.Value == null)
+                if (item.Value == null)
                 {
-                    var articles = await _iArticleRepository.QueryMultipleByCondition(c=>c.category_id == item.Key);
-                    foreach(var article in articles)
+                    var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.Key);
+                    foreach (var article in articles)
                     {
                         var convert_article = _iMapper.Map<ArticleForCategoryDisplayDTO>(article);
                         articleList.Add(convert_article);
                     }
                 }
-                else{
+                else
+                {
                     categoryNames.Add(item.Value);
                 }
             }

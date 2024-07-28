@@ -18,6 +18,7 @@ const NavBar = () => {
             try {
                 const response = await axios.get(url)
                 setFirstCategoryList(response.data)
+                console.log(response.data)
             } catch (error) {
                 if (error.response) {
                     const status = error.response.status;
