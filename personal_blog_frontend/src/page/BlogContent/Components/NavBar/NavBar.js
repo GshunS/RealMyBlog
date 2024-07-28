@@ -45,7 +45,7 @@ const NavBar = () => {
             console.log(response.data)
             setSecondCategoryName((preName) => ({
                 ...preName,
-                [firstCategory]: response.data.categoryNames
+                [firstCategory]: response.data.categoryDict
             }))
 
             setSecondCategoryArticle((preArticle) => ({
@@ -121,12 +121,18 @@ const NavBar = () => {
                             <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.includes(firstKey) })}>
                                 {expandedCategories.includes(firstKey) && (
 
-                                    secondCategoryName[firstKey].map((secondCategoryName, secondIndex) => (
+                                    Object.entries(secondCategoryName[firstKey]).map(([secondCategoryName, secondHasChildren], secondIndex) => (
                                         <li className={classNames("nav-bar__second-category-items")}
                                             key={secondIndex}>
                                             <div className="nav-bar__category_div">
                                                 <div className="nav-bar__category_name">
-                                                    <img src={angleup} alt="arrow" />
+                                                    <img
+                                                        src={angleup}
+                                                        alt="arrow"
+                                                        className={classNames(
+                                                            { hideFileArrow: !secondHasChildren },
+                                                            { imgRotate: expandedCategories.includes(firstKey) }
+                                                        )} />
                                                     <span>{secondCategoryName}</span>
 
                                                 </div>
