@@ -32,11 +32,36 @@ const Header = () => {
     // buttonRef is a reference to the button element (view/edit)
     const buttonRef = useRef(null);
 
+    const searchContainerRef = useRef(null);
+
     // hideRef is a reference to the dropdown element
     const hideRef = useRef(null);
 
     const listRef = useRef(null);
     const inputRef = useRef(null);
+
+    useEffect(() => {
+        // Event handler to check for clicks outside the search container
+        function handleClickOutside(event) {
+            // Ensure the searchContainerRef is a DOM node
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+                // The click was outside the search container
+                setDisplayArticles([]);
+                setHasData(false);
+                inputRef.current.value = ''
+                onInput({ target: { value: '' } })
+            }
+        }
+
+        // Add the event listener
+        document.addEventListener('click', handleClickOutside);
+
+        // Remove the event listener on component unmount
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [searchContainerRef]);
+
 
     useEffect(() => {
 
@@ -117,15 +142,15 @@ const Header = () => {
         }
         var url = `https://localhost:7219/api/articles/${term}`;
         // console.log(url)
-        
+
         try {
             const response = await axios.get(url);
             if (response.data.length === 0) {
-                console.log('No articles found')
+                // console.log('No articles found')
                 setHasData(false)
                 setDisplayArticles([`No articles found for ${term}`])
             } else {
-                console.log('found')
+                // console.log('found')
                 var articleArray = []
                 response.data.forEach((article) => {
                     articleArray.push(
@@ -168,7 +193,7 @@ const Header = () => {
                 <img src={avatar} alt='avatar' />
             </div>
             {/* search bar */}
-            <div className="header__search_bar">
+            <div className="header__search_bar" ref={searchContainerRef}>
                 <input
                     type="text"
                     className="header__search"
