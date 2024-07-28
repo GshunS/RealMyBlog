@@ -116,11 +116,16 @@ const Header = () => {
             setHasData(false)
         }
         var url = `https://localhost:7219/api/articles/${term}`;
+        // console.log(url)
+        
         try {
             const response = await axios.get(url);
             if (response.data.length === 0) {
+                console.log('No articles found')
+                setHasData(false)
                 setDisplayArticles([`No articles found for ${term}`])
             } else {
+                console.log('found')
                 var articleArray = []
                 response.data.forEach((article) => {
                     articleArray.push(

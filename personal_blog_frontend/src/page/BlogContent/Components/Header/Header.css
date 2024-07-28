@@ -32,11 +32,12 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    /* flex-grow: 1; */
 }
 
 .header__search {
     border-radius: 0.3rem;
-    width: 77%;
+    width: 88%;
     height: 1.8rem;
     border-width: 0.5px;
     padding-left: 1.0rem;
@@ -48,7 +49,7 @@
 
 .header__display{
     position: absolute;
-    width: 77%;
+    width: 88%;
     height: auto;
     top: 2.2rem;
     border-radius: 0.3rem;
