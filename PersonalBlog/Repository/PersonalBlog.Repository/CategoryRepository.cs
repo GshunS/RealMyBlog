@@ -14,19 +14,24 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         this._dbContext = bloggingContext;
     }
 
-    public async Task<List<string>> GetFirstCategoryAsync()
+    public async Task<List<Category>> GetFirstCategoryAsync()
     {
         try
         {
-            return await _dbContext
+            var result = await _dbContext
                 .Set<Category>()
-                .Select(c => c.first_category)
-                .Distinct()
-                .OrderBy(c => c)
+                .Select(c => new Category 
+                { 
+                    first_category = c.first_category,
+                    second_category = c.second_category 
+                })
+                .OrderBy(c => c.first_category)
                 .ToListAsync();
+
+            return result;
         }
         catch (Exception e)
-        {  
+        {
             throw new RepositoryException(e.Message);
         }
     }
@@ -76,7 +81,7 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
             var result = await _dbContext
                 .Set<Category>()
                 .Where(c => c.first_category == category1 && c.second_category == category2 && c.third_category == category3)
-                .Select(c => new { c.id, c.fourth_category})
+                .Select(c => new { c.id, c.fourth_category })
                 .ToListAsync();
 
             return result.ToDictionary(x => x.id, x => x.fourth_category);

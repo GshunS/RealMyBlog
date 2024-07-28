@@ -84,11 +84,24 @@ public class CategoryService : BaseService<Category>, ICategoryService
 
     }
 
-    public async Task<List<string>> GetFirstCategory()
+    public async Task<Dictionary<string, bool>> GetFirstCategory()
     {
         try
         {
-            return await _iCategoryRepository.GetFirstCategoryAsync();
+            var categories = await _iCategoryRepository.GetFirstCategoryAsync();
+            Dictionary<string, bool> categoryDict = new();
+            foreach (var category in categories)
+            {
+                if(categoryDict.ContainsKey(category.first_category))
+                {
+                    if(categoryDict[category.first_category] != false){
+                        continue;
+                    }
+                }
+                categoryDict.Add(category.first_category, category.second_category != null);
+            }
+            return categoryDict;
+
         }
         catch (RepositoryException ex)
         {

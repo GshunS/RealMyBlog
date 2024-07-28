@@ -5,7 +5,7 @@ namespace PersonalBlog.Repository.PersonalBlog.IRepository;
 public interface ICategoryRepository: IBaseRepository<Category>
 {
     // get first category
-    Task<List<string>> GetFirstCategoryAsync();
+    Task<List<Category>> GetFirstCategoryAsync();
 
     // get second category and id
     Task<Dictionary<int, string?>> GetSecondCategoryAsync(string category1);
