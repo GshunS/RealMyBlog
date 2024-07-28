@@ -22,10 +22,10 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
                 .Set<Category>()
                 .Select(c => new Category 
                 { 
-                    first_category = c.first_category,
-                    second_category = c.second_category 
+                    second_category = c.first_category,
+                    third_category = c.second_category 
                 })
-                .OrderBy(c => c.first_category)
+                .OrderBy(c => c.second_category)
                 .ToListAsync();
 
             return result;
@@ -36,18 +36,23 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         }
     }
 
-    public async Task<Dictionary<int, string?>> GetSecondCategoryAsync(string category1)
+    public async Task<List<Category>> GetSecondCategoryAsync(string category1)
     {
         try
         {
             var result = await _dbContext
                 .Set<Category>()
                 .Where(c => c.first_category == category1)
-                .Select(c => new { c.id, c.second_category })
+                .Select(c => new Category 
+                { 
+                    id = c.id,
+                    second_category = c.second_category,
+                    third_category = c.third_category 
+                })
                 .OrderBy(c => c.second_category)
                 .ToListAsync();
 
-            return result.ToDictionary(x => x.id, x => x.second_category);
+            return result;
         }
         catch (Exception e)
         {

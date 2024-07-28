@@ -84,29 +84,56 @@ public class CategoryService : BaseService<Category>, ICategoryService
 
     }
 
+    public Dictionary<string, bool> HasChildren(List<Category> categories)
+    {
+        Dictionary<string, bool> categoryDict = new();
+        foreach (var category in categories)
+        {
+            if (category.second_category == null)
+            {
+                continue;
+            }
+            if (categoryDict.ContainsKey(category.second_category))
+            {
+                if (categoryDict[category.second_category] != false)
+                {
+                    continue;
+                }
+                categoryDict[category.second_category] = category.third_category != null;
+            }
+            else
+            {
+                categoryDict.Add(category.second_category, category.third_category != null);
+            }
+
+        }
+        return categoryDict;
+    }
+
+    public async Task<List<ArticleForCategoryDisplayDTO>> GetArticleInfo(List<Category> categories)
+    {
+        List<ArticleForCategoryDisplayDTO> articleList = new();
+        foreach (var item in categories)
+        {
+            if (item.second_category == null)
+            {
+                var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.id);
+                foreach (var article in articles)
+                {
+                    var convert_article = _iMapper.Map<ArticleForCategoryDisplayDTO>(article);
+                    articleList.Add(convert_article);
+                }
+            }
+        }
+        return articleList;
+    }
+
     public async Task<Dictionary<string, bool>> GetFirstCategory()
     {
         try
         {
             var categories = await _iCategoryRepository.GetFirstCategoryAsync();
-            Dictionary<string, bool> categoryDict = new();
-            foreach (var category in categories)
-            {
-                if (categoryDict.ContainsKey(category.first_category))
-                {
-                    if (categoryDict[category.first_category] != false)
-                    {
-                        continue;
-                    }
-                    categoryDict[category.first_category] = category.second_category != null;
-                }
-                else
-                {
-                    categoryDict.Add(category.first_category, category.second_category != null);
-                }
-                
-            }
-            return categoryDict;
+            return HasChildren(categories);
 
         }
         catch (RepositoryException ex)
@@ -120,28 +147,12 @@ public class CategoryService : BaseService<Category>, ICategoryService
     {
         try
         {
-            List<string> categoryNames = new();
-            List<ArticleForCategoryDisplayDTO> articleList = new();
             var res = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
-            foreach (var item in res)
-            {
-                if (item.Value == null)
-                {
-                    var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.Key);
-                    foreach (var article in articles)
-                    {
-                        var convert_article = _iMapper.Map<ArticleForCategoryDisplayDTO>(article);
-                        articleList.Add(convert_article);
-                    }
-                }
-                else
-                {
-                    categoryNames.Add(item.Value);
-                }
-            }
+            List<ArticleForCategoryDisplayDTO> articleList = await GetArticleInfo(res);
+            Dictionary<string, bool> categoryDict = HasChildren(res);
             return new CategoryChildrenDisplayDTO
             {
-                CategoryNames = categoryNames,
+                CategoryDict = categoryDict,
                 Articles = articleList
             };
         }
@@ -154,4 +165,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
             throw new ServiceException(ex.Message);
         }
     }
+
+
+
 }

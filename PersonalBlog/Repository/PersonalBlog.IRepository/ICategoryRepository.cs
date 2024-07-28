@@ -8,7 +8,7 @@ public interface ICategoryRepository: IBaseRepository<Category>
     Task<List<Category>> GetFirstCategoryAsync();
 
     // get second category and id
-    Task<Dictionary<int, string?>> GetSecondCategoryAsync(string category1);
+    Task<List<Category>> GetSecondCategoryAsync(string category1);
 
     // get third category and id
     Task<Dictionary<int, string?>> GetThirdCategoryAsync(string category1, string category2);
