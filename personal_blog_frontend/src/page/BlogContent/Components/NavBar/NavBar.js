@@ -93,23 +93,23 @@ const NavBar = () => {
 
             <div className="nav-bar__categories">
                 <ul className="nav-bar__first-category">
-                    {Object.entries(firstCategoryList).map(([key, value], index) => (
+                    {Object.entries(firstCategoryList).map(([firstKey, firstValue], index) => (
                         <li className="nav-bar__first-category-items"
                             key={index}>
                             <div className="nav-bar__category_div">
                                 <div className="nav-bar__category_name"
-                                    onClick={() => getSecondCategory(key)}>
+                                    onClick={() => getSecondCategory(firstKey)}>
                                     <img
                                         src={angleup}
                                         alt="arrow"
                                         className={
                                             classNames(
-                                                { hideFileArrow: !value },
-                                                { imgRotate: expandedCategories.includes(key)}
+                                                { hideFileArrow: !firstValue },
+                                                { imgRotate: expandedCategories.includes(firstKey) }
                                             )
                                         }
                                     />
-                                    <span>{key}</span>
+                                    <span>{firstKey}</span>
 
                                 </div>
                                 <div className="nav-bar__category_img">
@@ -118,46 +118,47 @@ const NavBar = () => {
                                 </div>
 
                             </div>
-                            {expandedCategories.includes(key) && (
-                                <ul className="nav-bar__second-category">
-                                    {
-                                        secondCategoryName[key].map((secondCategoryName, secondIndex) => (
-                                            <li className="nav-bar__second-category-items"
-                                                key={secondIndex}>
-                                                <div className="nav-bar__category_div">
-                                                    <div className="nav-bar__category_name">
-                                                        <img src={angleup} alt="arrow" />
-                                                        <span>{secondCategoryName}</span>
+                            <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.includes(firstKey) })}>
+                                {expandedCategories.includes(firstKey) && (
 
-                                                    </div>
-                                                    <div className="nav-bar__category_img">
-                                                        <img src={addfolder} alt="addfolder" />
-                                                        <img src={addfile} alt="addfile" />
-                                                    </div>
+                                    secondCategoryName[firstKey].map((secondCategoryName, secondIndex) => (
+                                        <li className={classNames("nav-bar__second-category-items")}
+                                            key={secondIndex}>
+                                            <div className="nav-bar__category_div">
+                                                <div className="nav-bar__category_name">
+                                                    <img src={angleup} alt="arrow" />
+                                                    <span>{secondCategoryName}</span>
 
                                                 </div>
+                                                <div className="nav-bar__category_img">
+                                                    <img src={addfolder} alt="addfolder" />
+                                                    <img src={addfile} alt="addfile" />
+                                                </div>
 
-                                                {/* <ul className="nav-bar__third-category">
-                                            <li className="nav-bar__third-category-items">
-                                                <div className="nav-bar__category_div">
-                                                    <div className="nav-bar__category_name">
-                                                        <img src={angleup} alt="arrow" />
-                                                        <span>{category.third_category}</span>
+                                            </div>
 
-                                                    </div>
-                                                    <div className="nav-bar__category_img">
-                                                        <img src={addfolder} alt="addfolder" />
-                                                        <img src={addfile} alt="addfile" />
-                                                    </div>
+                                            {/* <ul className="nav-bar__third-category">
+                                        <li className="nav-bar__third-category-items">
+                                            <div className="nav-bar__category_div">
+                                                <div className="nav-bar__category_name">
+                                                    <img src={angleup} alt="arrow" />
+                                                    <span>{category.third_category}</span>
 
                                                 </div>
-                                            </li>
-                                        </ul> */}
-                                            </li>
-                                        ))}
+                                                <div className="nav-bar__category_img">
+                                                    <img src={addfolder} alt="addfolder" />
+                                                    <img src={addfile} alt="addfile" />
+                                                </div>
 
-                                </ul>
-                            )}
+                                            </div>
+                                        </li>
+                                    </ul> */}
+                                        </li>
+                                    ))
+
+
+                                )}
+                            </ul>
                         </li>
                     ))}
 

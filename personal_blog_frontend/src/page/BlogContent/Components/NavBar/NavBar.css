@@ -41,6 +41,14 @@
 .nav-bar__second-category {
     padding-left: 1rem;
     margin-top: 0.3rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 1s linear;
+
+}
+
+.nav-bar__second-category.expanded {
+    max-height: 100vh;
 }
 
 .nav-bar__third-category {
