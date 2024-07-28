@@ -12,10 +12,12 @@
 .nav-bar__categories {
     width: 90%;
 }
-.nav-bar__name{
+
+.nav-bar__name {
     font-size: 1.2rem;
     font-weight: 900;
 }
+
 /* #endregion */
 
 
@@ -29,6 +31,13 @@
     margin-bottom: 0.5rem;
 
 }
+
+.nav-bar__first-category-items span {
+    /* font-size: 1.1rem; */
+    vertical-align: middle;
+    margin-left: 0.2rem;
+}
+
 .nav-bar__second-category {
     padding-left: 1rem;
     margin-top: 0.3rem;
@@ -41,26 +50,21 @@
 
 /* #endregion */
 
-li>div:hover {
-    background-color: #f0f0f0;
-}
-
-.nav-bar__first-category-items span {
-    /* font-size: 1.1rem; */
-    vertical-align: middle;
-    margin-left: 0.2rem;
-}
 
 /* #region Arrow Category AddFolder AddFile */
+
+
 .nav-bar__category_div {
     display: flex;
     justify-content: space-between;
     margin-left: 0.3rem;
     border-radius: 0.7rem;
 }
-.nav-bar__category_name{
+
+.nav-bar__category_name {
     display: flex;
     align-items: center;
+    flex-grow: 1;
 }
 
 .nav-bar__category_name img {
@@ -68,7 +72,7 @@ li>div:hover {
     rotate: 90deg;
 }
 
-.nav-bar__category_img{
+.nav-bar__category_img {
     display: flex;
     align-items: center;
 }
@@ -76,4 +80,25 @@ li>div:hover {
 .nav-bar__category_img :nth-child(1) {
     margin-right: 0.5rem;
 }
+
+/* #endregion */
+
+
+/* #region transition */
+li>div:hover {
+    background-color: #f0f0f0;
+}
+
+.hideFileArrow {
+    visibility: hidden;
+}
+
+.nav-bar__category_name>img {
+    transition: transform 0.2s linear;
+}
+
+.imgRotate {
+    transform: rotate(90deg);
+}
+
 /* #endregion */

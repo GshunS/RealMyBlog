@@ -3,10 +3,11 @@ import angleup from '../../../../assets/images/angle-up-solid.svg'
 import addfolder from '../../../../assets/images/folder-plus-solid.svg'
 import addfile from '../../../../assets/images/file-circle-plus-solid.svg'
 import { useEffect, useState } from 'react'
+import classNames from 'classnames';
 import axios from 'axios'
 
 const NavBar = () => {
-    const [firstCategoryList, setFirstCategoryList] = useState([])
+    const [firstCategoryList, setFirstCategoryList] = useState({})
     // const [secondCategoryObject, setSecondCategoryObject] = useState({})
     const [secondCategoryName, setSecondCategoryName] = useState({})
     const [secondCategoryArticle, setSecondCategoryArticle] = useState({})
@@ -60,7 +61,7 @@ const NavBar = () => {
                     return [...prevExpanded, firstCategory];
                 }
             });
-            
+
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
@@ -77,7 +78,7 @@ const NavBar = () => {
         }
 
     }
-    
+
     // useEffect(()=>{
     //     console.log(secondCategoryName)
     //     // console.log(secondCategoryArticle)
@@ -92,14 +93,23 @@ const NavBar = () => {
 
             <div className="nav-bar__categories">
                 <ul className="nav-bar__first-category">
-                    {firstCategoryList.map((firstCategory, index) => (
+                    {Object.entries(firstCategoryList).map(([key, value], index) => (
                         <li className="nav-bar__first-category-items"
                             key={index}>
                             <div className="nav-bar__category_div">
                                 <div className="nav-bar__category_name"
-                                    onClick={() => getSecondCategory(firstCategory)}>
-                                    <img src={angleup} alt="arrow" />
-                                    <span>{firstCategory}</span>
+                                    onClick={() => getSecondCategory(key)}>
+                                    <img
+                                        src={angleup}
+                                        alt="arrow"
+                                        className={
+                                            classNames(
+                                                { hideFileArrow: !value },
+                                                { imgRotate: expandedCategories.includes(key)}
+                                            )
+                                        }
+                                    />
+                                    <span>{key}</span>
 
                                 </div>
                                 <div className="nav-bar__category_img">
@@ -108,10 +118,10 @@ const NavBar = () => {
                                 </div>
 
                             </div>
-                            {expandedCategories.includes(firstCategory) && (
+                            {expandedCategories.includes(key) && (
                                 <ul className="nav-bar__second-category">
                                     {
-                                        secondCategoryName[firstCategory].map((secondCategoryName, secondIndex) => (
+                                        secondCategoryName[key].map((secondCategoryName, secondIndex) => (
                                             <li className="nav-bar__second-category-items"
                                                 key={secondIndex}>
                                                 <div className="nav-bar__category_div">
