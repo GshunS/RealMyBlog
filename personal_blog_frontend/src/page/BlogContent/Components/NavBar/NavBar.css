@@ -27,7 +27,7 @@
 }
 
 .nav-bar__first-category-items {
-    padding-left: 1.0rem;
+    /* padding-left: 1.0rem; */
     margin-bottom: 0.5rem;
 
 }
@@ -47,6 +47,10 @@
 
 }
 
+.nav-bar__second-category-items{
+    margin-bottom: 0.3rem;
+}
+
 .nav-bar__second-category.expanded {
     max-height: 100vh;
 }
@@ -59,7 +63,7 @@
 /* #endregion */
 
 
-/* #region Arrow Category AddFolder AddFile */
+/* #region Arrow icon Category AddFolder AddFile */
 
 
 .nav-bar__category_div {
@@ -89,6 +93,12 @@
     margin-right: 0.5rem;
 }
 
+svg{
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    height: 1.2rem;
+    color: #000;
+}
 /* #endregion */
 
 
