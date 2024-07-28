@@ -79,7 +79,44 @@ public class CategoryController : ControllerBase
         }
     }
 
-    [HttpGet("categories/{id}")]
+
+    [HttpGet("categories/first-category")]
+    public async Task<ActionResult> GetFirstCategories()
+    {
+        try
+        {
+            var data = await _iCategoryService.GetFirstCategory();
+            return Ok(data);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("categories/first_category/{first_category}")]
+    public async Task<ActionResult> GetSecondCategories([FromRoute] string first_category)
+    {
+        try
+        {
+            var data = await _iCategoryService.GetSecondCategory(first_category);
+            return Ok(data);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("categories/id/{id}")]
     public async Task<ActionResult> GetCategory(int id)
     {
         try

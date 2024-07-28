@@ -1,3 +1,4 @@
+using PersonalBlog.DTO.Display;
 using PersonalBlog.Models.Entities;
 
 namespace PersonalBlog.Service.PersonalBlog.IService;
@@ -8,4 +9,6 @@ public interface ICategoryService: IBaseService<Category>
     Task<bool> CheckExistCategory(Category category);
     Task<bool> UpdateCategory(Category category);
     Task<bool> AddCategory(Category category);
+    Task<List<string>> GetFirstCategory();
+    Task<CategoryChildrenDisplayDTO> GetSecondCategory(string first_category);
 }

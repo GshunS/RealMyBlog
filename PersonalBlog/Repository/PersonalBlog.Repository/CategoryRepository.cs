@@ -1,13 +1,93 @@
+using Microsoft.EntityFrameworkCore;
+using PersonalBlog.CustomException;
 using PersonalBlog.Models;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
 
 namespace PersonalBlog.Repository.PersonalBlog.Repository;
 
-public class CategoryRepository: BaseRepository<Category>, ICategoryRepository
+public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
 {
+    private readonly BloggingContext _dbContext;
     public CategoryRepository(BloggingContext bloggingContext) : base(bloggingContext)
     {
-        
+        this._dbContext = bloggingContext;
     }
+
+    public async Task<List<string>> GetFirstCategoryAsync()
+    {
+        try
+        {
+            return await _dbContext
+                .Set<Category>()
+                .Select(c => c.first_category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {  
+            throw new RepositoryException(e.Message);
+        }
+    }
+
+    public async Task<Dictionary<int, string?>> GetSecondCategoryAsync(string category1)
+    {
+        try
+        {
+            var result = await _dbContext
+                .Set<Category>()
+                .Where(c => c.first_category == category1)
+                .Select(c => new { c.id, c.second_category })
+                .OrderBy(c => c.second_category)
+                .ToListAsync();
+
+            return result.ToDictionary(x => x.id, x => x.second_category);
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException(e.Message);
+        }
+    }
+
+    public async Task<Dictionary<int, string?>> GetThirdCategoryAsync(string category1, string category2)
+    {
+        try
+        {
+            var result = await _dbContext
+                .Set<Category>()
+                .Where(c => c.first_category == category1 && c.second_category == category2)
+                .Select(c => new { c.id, c.third_category })
+                .ToListAsync();
+
+            return result.ToDictionary(x => x.id, x => x.third_category);
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException(e.Message);
+        }
+    }
+
+
+    public async Task<Dictionary<int, string?>> GetFourthCategoryAsync(string category1, string category2, string category3)
+    {
+        try
+        {
+            var result = await _dbContext
+                .Set<Category>()
+                .Where(c => c.first_category == category1 && c.second_category == category2 && c.third_category == category3)
+                .Select(c => new { c.id, c.fourth_category})
+                .ToListAsync();
+
+            return result.ToDictionary(x => x.id, x => x.fourth_category);
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException(e.Message);
+        }
+    }
+
+
+
+
 }
