@@ -11,7 +11,11 @@ const NavBar = () => {
     // const [secondCategoryObject, setSecondCategoryObject] = useState({})
     const [secondCategoryName, setSecondCategoryName] = useState({})
     const [secondCategoryArticle, setSecondCategoryArticle] = useState({})
+
+    const [thirdCategoryName, setThirdCategoryName] = useState({})
+    const [thirdCategoryArticle, setThirdCategoryArticle] = useState({})
     const [expandedCategories, setExpandedCategories] = useState([]);
+    
 
     useEffect(() => {
         async function fetchFirstCategory() {
@@ -79,6 +83,46 @@ const NavBar = () => {
 
     }
 
+    const getThirdCategory = async (firstCategory, secondCategory) => {
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`;
+        try {
+            const response = await axios.get(url)
+            console.log(response.data)
+            setThirdCategoryName((preName) => ({
+                ...preName,
+                [secondCategory]: response.data.categoryDict
+            }))
+
+            setThirdCategoryArticle((preArticle) => ({
+                ...preArticle,
+                [secondCategory]: response.data.articles
+            }))
+            // setExpandedCategories((prevExpanded) => {
+            //     if (prevExpanded.includes(firstCategory)) {
+            //         // If the category is already expanded, collapse it
+            //         return prevExpanded.filter((category) => category !== firstCategory);
+            //     } else {
+            //         // If the category is not expanded, expand it
+            //         return [...prevExpanded, firstCategory];
+            //     }
+            // });
+
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 400) {
+                    console.log([`Bad Request: ${error.response.data}`])
+                } else if (status === 500) {
+                    console.log([`Internal Server Error: ${error.response.data}`])
+                } else {
+                    console.log([`Error: ${error.response.data}`])
+                }
+            } else {
+                console.log([`No response received`])
+            }
+        }
+    }
+
     return (
         <div className="nav-bar">
             <div className="nav-bar__name">
@@ -125,7 +169,9 @@ const NavBar = () => {
                                         <li className={classNames("nav-bar__second-category-items")}
                                             key={secondIndex}>
                                             <div className="nav-bar__category_div">
-                                                <div className="nav-bar__category_name">
+                                                <div
+                                                    className="nav-bar__category_name"
+                                                    onClick={() => getThirdCategory(firstKey, secondCategoryName)}>
                                                     <img
                                                         src={angleup}
                                                         alt="arrow"
