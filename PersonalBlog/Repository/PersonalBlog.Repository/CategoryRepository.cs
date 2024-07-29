@@ -20,10 +20,10 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         {
             var result = await _dbContext
                 .Set<Category>()
-                .Select(c => new Category 
-                { 
+                .Select(c => new Category
+                {
                     second_category = c.first_category,
-                    third_category = c.second_category 
+                    third_category = c.second_category
                 })
                 .OrderBy(c => c.second_category)
                 .ToListAsync();
@@ -43,11 +43,11 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
             var result = await _dbContext
                 .Set<Category>()
                 .Where(c => c.first_category == category1)
-                .Select(c => new Category 
-                { 
+                .Select(c => new Category
+                {
                     id = c.id,
                     second_category = c.second_category,
-                    third_category = c.third_category 
+                    third_category = c.third_category
                 })
                 .OrderBy(c => c.second_category)
                 .ToListAsync();
@@ -60,17 +60,23 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         }
     }
 
-    public async Task<Dictionary<int, string?>> GetThirdCategoryAsync(string category1, string category2)
+    public async Task<List<Category>> GetThirdCategoryAsync(string category1, string category2)
     {
         try
         {
             var result = await _dbContext
                 .Set<Category>()
                 .Where(c => c.first_category == category1 && c.second_category == category2)
-                .Select(c => new { c.id, c.third_category })
+                .Select(c => new Category
+                {
+                    id = c.id,
+                    second_category = c.third_category,
+                    third_category = c.fourth_category
+                })
+                .OrderBy(c => c.second_category)
                 .ToListAsync();
 
-            return result.ToDictionary(x => x.id, x => x.third_category);
+            return result;
         }
         catch (Exception e)
         {
