@@ -16,7 +16,8 @@ const NavBar = () => {
     const [thirdCategoryArticle, setThirdCategoryArticle] = useState({})
     const [expandedCategories, setExpandedCategories] = useState([]);
     
-
+    const [allCategories, setAllCategories] = useState({})
+    
     useEffect(() => {
         async function fetchFirstCategory() {
             var url = `https://localhost:7219/api/categories/first-category`;
