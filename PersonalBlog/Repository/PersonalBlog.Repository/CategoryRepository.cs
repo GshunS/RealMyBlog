@@ -15,17 +15,17 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         this._dbContext = bloggingContext;
     }
 
-    public async Task<List<CategoryCountDTO>> GetFirstCategoryAsync()
+    public async Task<List<CategoryRepoDisplayDTO>> GetFirstCategoryAsync()
     {
         try
         {
             var result = await _dbContext
                 .Set<Category>()
-                .GroupBy(c => c.first_category)
-                .Select(g => new CategoryCountDTO
+                .Select(g => new CategoryRepoDisplayDTO
                 {
-                    CategoryName = g.Key,
-                    ChildrenCategoryCount = g.Count(c => c.second_category != null)
+                    Id = g.id,
+                    CategoryName = g.first_category,
+                    ChildrenCategoryName = g.second_category
                 })
                 .OrderBy(c => c.CategoryName)
                 .ToListAsync();

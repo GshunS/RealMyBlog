@@ -84,74 +84,98 @@ public class CategoryService : BaseService<Category>, ICategoryService
 
     }
 
-    public Dictionary<string, bool> HasChildren(List<Category> categories)
+    public Dictionary<string, bool> HasChildren(List<CategoryRepoDisplayDTO> categories)
     {
         Dictionary<string, bool> categoryDict = new();
         foreach (var category in categories)
         {
-            if (category.second_category == null)
+            if (category.CategoryName == null)
             {
                 continue;
             }
-            if (categoryDict.ContainsKey(category.second_category))
+            if (categoryDict.ContainsKey(category.CategoryName))
             {
-                if (categoryDict[category.second_category] != false)
+                if (categoryDict[category.CategoryName] != false)
                 {
                     continue;
                 }
-                categoryDict[category.second_category] = category.third_category != null;
+                categoryDict[category.CategoryName] = category.ChildrenCategoryName != null;
             }
             else
             {
-                categoryDict.Add(category.second_category, category.third_category != null);
+                categoryDict.Add(category.CategoryName, category.ChildrenCategoryName != null);
             }
 
         }
         return categoryDict;
     }
 
-    public async Task<List<ArticleForCategoryDisplayDTO>> GetArticleInfo(List<Category> categories)
+    public async Task<Dictionary<string, Dictionary<int, string>>> GetArticleInfo(List<CategoryRepoDisplayDTO> categories)
     {
-        List<ArticleForCategoryDisplayDTO> articleList = new();
+        Dictionary<string, Dictionary<int, string>> articleDict = new();
         foreach (var item in categories)
         {
-            if (item.second_category == null)
+            if (item.CategoryName == null)
             {
-                var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.id);
+                continue;
+            }
+            if (item.ChildrenCategoryName == null)
+            {
+                if (!articleDict.ContainsKey(item.CategoryName))
+                {
+                    articleDict.Add(item.CategoryName, new());
+                }
+
+                var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.Id);
                 foreach (var article in articles)
                 {
-                    var convert_article = _iMapper.Map<ArticleForCategoryDisplayDTO>(article);
-                    articleList.Add(convert_article);
+
+                    articleDict[item.CategoryName].Add(article.id, article.title);
                 }
             }
         }
-        return articleList;
+        return articleDict;
     }
 
+    public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetCategoryDataTemplate(List<CategoryRepoDisplayDTO> categories)
+    {
+        Dictionary<string, CategoryChildrenDisplayDTO> categoryDict = new();
 
+        // check if category has children
+        Dictionary<string, bool> hasChildrenDict = HasChildren(categories);
+
+        // cehck if category has articles
+        Dictionary<string, Dictionary<int, string>> articleDict = await GetArticleInfo(categories);
+
+        foreach (string categoryName in hasChildrenDict.Keys)
+        {
+
+            categoryDict.Add(categoryName, new CategoryChildrenDisplayDTO
+            {
+                HasChildren = hasChildrenDict[categoryName],
+                SubCategories = null,
+                Articles = articleDict.ContainsKey(categoryName) ? articleDict[categoryName] : null
+            });
+
+
+        }
+        return categoryDict;
+    }
 
     public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFirstCategory()
     {
         try
         {
             var categories = await _iCategoryRepository.GetFirstCategoryAsync();
-            Dictionary<string, CategoryChildrenDisplayDTO> categoryDict = new();
-            foreach (var category in categories)
-            {
-                categoryDict.Add(category.CategoryName, new CategoryChildrenDisplayDTO
-                {
-                    HasChildren = category.ChildrenCategoryCount > 0,
-                    SubCategories = null,
-                    Articles = null
-                });
-            }
-            return categoryDict;
-
-
+            return await GetCategoryDataTemplate(categories);
         }
         catch (RepositoryException ex)
         {
             throw new RepositoryException(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new ServiceException(ex.Message);
         }
 
     }
