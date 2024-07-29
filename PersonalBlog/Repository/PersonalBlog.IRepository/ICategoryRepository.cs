@@ -9,7 +9,7 @@ public interface ICategoryRepository: IBaseRepository<Category>
     Task<List<CategoryRepoDisplayDTO>> GetFirstCategoryAsync();
 
     // get second category and id
-    Task<List<Category>> GetSecondCategoryAsync(string category1);
+    Task<List<CategoryRepoDisplayDTO>> GetSecondCategoryAsync(string category1);
 
     // get third category and id
     Task<List<Category>> GetThirdCategoryAsync(string category1, string category2);

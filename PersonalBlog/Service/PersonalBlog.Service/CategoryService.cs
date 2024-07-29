@@ -180,28 +180,22 @@ public class CategoryService : BaseService<Category>, ICategoryService
 
     }
 
-    // public async Task<CategoryChildrenDisplayDTO> GetSecondCategory(string first_category)
-    // {
-    //     try
-    //     {
-    //         var res = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
-    //         List<ArticleForCategoryDisplayDTO> articleList = await GetArticleInfo(res);
-    //         Dictionary<string, bool> categoryDict = HasChildren(res);
-    //         return new CategoryChildrenDisplayDTO
-    //         {
-    //             CategoryDict = categoryDict,
-    //             Articles = articleList
-    //         };
-    //     }
-    //     catch (RepositoryException ex)
-    //     {
-    //         throw new RepositoryException(ex.Message);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         throw new ServiceException(ex.Message);
-    //     }
-    // }
+    public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetSecondCategory(string first_category)
+    {
+        try
+        {
+            var categories = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
+            return await GetCategoryDataTemplate(categories);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new ServiceException(ex.Message);
+        }
+    }
 
     // public async Task<CategoryChildrenDisplayDTO> GetThirdCategory(string first_category, string second_category)
     // {

@@ -38,20 +38,20 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         }
     }
 
-    public async Task<List<Category>> GetSecondCategoryAsync(string category1)
+    public async Task<List<CategoryRepoDisplayDTO>> GetSecondCategoryAsync(string first_category)
     {
         try
         {
             var result = await _dbContext
                 .Set<Category>()
-                .Where(c => c.first_category == category1)
-                .Select(c => new Category
+                .Where(c => c.first_category == first_category)
+                .Select(g => new CategoryRepoDisplayDTO
                 {
-                    id = c.id,
-                    second_category = c.second_category,
-                    third_category = c.third_category
+                    Id = g.id,
+                    CategoryName = g.second_category,
+                    ChildrenCategoryName = g.third_category
                 })
-                .OrderBy(c => c.second_category)
+                .OrderBy(c => c.CategoryName)
                 .ToListAsync();
 
             return result;
