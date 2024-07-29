@@ -121,17 +121,19 @@ public class CategoryService : BaseService<Category>, ICategoryService
             }
             if (item.ChildrenCategoryName == null)
             {
-                if (!articleDict.ContainsKey(item.CategoryName))
-                {
-                    articleDict.Add(item.CategoryName, new());
-                }
-
                 var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.Id);
-                foreach (var article in articles)
+                if (articles.Count != 0)
                 {
-
-                    articleDict[item.CategoryName].Add(article.id, article.title);
+                    if (!articleDict.ContainsKey(item.CategoryName))
+                    {
+                        articleDict.Add(item.CategoryName, new());
+                    }
+                    foreach (var article in articles)
+                    {
+                        articleDict[item.CategoryName].Add(article.id, article.title);
+                    }
                 }
+
             }
         }
         return articleDict;
@@ -152,7 +154,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
 
             categoryDict.Add(categoryName, new CategoryChildrenDisplayDTO
             {
-                HasChildren = hasChildrenDict[categoryName],
+                HasChildren = articleDict.ContainsKey(categoryName) ? true : hasChildrenDict[categoryName],
                 SubCategories = null,
                 Articles = articleDict.ContainsKey(categoryName) ? articleDict[categoryName] : null
             });
