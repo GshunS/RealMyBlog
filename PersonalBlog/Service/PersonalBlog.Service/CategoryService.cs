@@ -128,65 +128,78 @@ public class CategoryService : BaseService<Category>, ICategoryService
         return articleList;
     }
 
-    public async Task<Dictionary<string, bool>> GetFirstCategory()
+
+
+    public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFirstCategory()
     {
         try
         {
             var categories = await _iCategoryRepository.GetFirstCategoryAsync();
-            return HasChildren(categories);
-
-        }
-        catch (RepositoryException ex)
-        {
-            throw new RepositoryException(ex.Message);
-        }
-
-    }
-
-    public async Task<CategoryChildrenDisplayDTO> GetSecondCategory(string first_category)
-    {
-        try
-        {
-            var res = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
-            List<ArticleForCategoryDisplayDTO> articleList = await GetArticleInfo(res);
-            Dictionary<string, bool> categoryDict = HasChildren(res);
-            return new CategoryChildrenDisplayDTO
+            Dictionary<string, CategoryChildrenDisplayDTO> categoryDict = new();
+            foreach (var category in categories)
             {
-                CategoryDict = categoryDict,
-                Articles = articleList
-            };
+                categoryDict.Add(category.CategoryName, new CategoryChildrenDisplayDTO
+                {
+                    HasChildren = category.ChildrenCategoryCount > 0,
+                    SubCategories = null,
+                    Articles = null
+                });
+            }
+            return categoryDict;
+
+
         }
         catch (RepositoryException ex)
         {
             throw new RepositoryException(ex.Message);
         }
-        catch (Exception ex)
-        {
-            throw new ServiceException(ex.Message);
-        }
+
     }
 
-    public async Task<CategoryChildrenDisplayDTO> GetThirdCategory(string first_category, string second_category)
-    {
-        try
-        {
-            var res = await _iCategoryRepository.GetThirdCategoryAsync(first_category, second_category);
-            List<ArticleForCategoryDisplayDTO> articleList = await GetArticleInfo(res);
-            Dictionary<string, bool> categoryDict = HasChildren(res);
-            return new CategoryChildrenDisplayDTO
-            {
-                CategoryDict = categoryDict,
-                Articles = articleList
-            };
-        }
-        catch (RepositoryException ex)
-        {
-            throw new RepositoryException(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            throw new ServiceException(ex.Message);
-        }
-    }
+    // public async Task<CategoryChildrenDisplayDTO> GetSecondCategory(string first_category)
+    // {
+    //     try
+    //     {
+    //         var res = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
+    //         List<ArticleForCategoryDisplayDTO> articleList = await GetArticleInfo(res);
+    //         Dictionary<string, bool> categoryDict = HasChildren(res);
+    //         return new CategoryChildrenDisplayDTO
+    //         {
+    //             CategoryDict = categoryDict,
+    //             Articles = articleList
+    //         };
+    //     }
+    //     catch (RepositoryException ex)
+    //     {
+    //         throw new RepositoryException(ex.Message);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         throw new ServiceException(ex.Message);
+    //     }
+    // }
+
+    // public async Task<CategoryChildrenDisplayDTO> GetThirdCategory(string first_category, string second_category)
+    // {
+    //     try
+    //     {
+    //         var res = await _iCategoryRepository.GetThirdCategoryAsync(first_category, second_category);
+    //         List<ArticleForCategoryDisplayDTO> articleList = await GetArticleInfo(res);
+    //         Dictionary<string, bool> categoryDict = HasChildren(res);
+    //         return new CategoryChildrenDisplayDTO
+    //         {
+    //             CategoryDict = categoryDict,
+    //             Articles = articleList
+    //         };
+    //     }
+    //     catch (RepositoryException ex)
+    //     {
+    //         throw new RepositoryException(ex.Message);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         throw new ServiceException(ex.Message);
+    //     }
+    // }
 
 }

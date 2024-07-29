@@ -2,6 +2,7 @@ namespace PersonalBlog.DTO.Display;
 
 public class CategoryChildrenDisplayDTO
 {
-    public Dictionary<string, bool>? CategoryDict { get; set; }
-    public List<ArticleForCategoryDisplayDTO>? Articles {get; set;}   
+    public bool HasChildren { get; set; }
+    public Dictionary<string, dynamic>? SubCategories { get; set; }
+    public Dictionary<int, string>? Articles {get; set;}   
 }

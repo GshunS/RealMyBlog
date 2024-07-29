@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalBlog.CustomException;
+using PersonalBlog.DTO.Display;
 using PersonalBlog.Models;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
@@ -14,18 +15,19 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         this._dbContext = bloggingContext;
     }
 
-    public async Task<List<Category>> GetFirstCategoryAsync()
+    public async Task<List<CategoryCountDTO>> GetFirstCategoryAsync()
     {
         try
         {
             var result = await _dbContext
                 .Set<Category>()
-                .Select(c => new Category
+                .GroupBy(c => c.first_category)
+                .Select(g => new CategoryCountDTO
                 {
-                    second_category = c.first_category,
-                    third_category = c.second_category
+                    CategoryName = g.Key,
+                    ChildrenCategoryCount = g.Count(c => c.second_category != null)
                 })
-                .OrderBy(c => c.second_category)
+                .OrderBy(c => c.CategoryName)
                 .ToListAsync();
 
             return result;

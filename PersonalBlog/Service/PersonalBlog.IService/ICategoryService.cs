@@ -9,9 +9,9 @@ public interface ICategoryService: IBaseService<Category>
     Task<bool> CheckExistCategory(Category category);
     Task<bool> UpdateCategory(Category category);
     Task<bool> AddCategory(Category category);
-    Task<Dictionary<string, bool>> GetFirstCategory();
-    Task<CategoryChildrenDisplayDTO> GetSecondCategory(string first_category);
-    Task<CategoryChildrenDisplayDTO> GetThirdCategory(string first_category, string second_category);
+    Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFirstCategory();
+    // Task<CategoryChildrenDisplayDTO> GetSecondCategory(string first_category);
+    // Task<CategoryChildrenDisplayDTO> GetThirdCategory(string first_category, string second_category);
     Dictionary<string, bool> HasChildren(List<Category> categories);
     Task<List<ArticleForCategoryDisplayDTO>> GetArticleInfo(List<Category> categories);
 }

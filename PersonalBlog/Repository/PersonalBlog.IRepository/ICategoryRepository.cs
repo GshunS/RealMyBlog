@@ -1,3 +1,4 @@
+using PersonalBlog.DTO.Display;
 using PersonalBlog.Models.Entities;
 
 namespace PersonalBlog.Repository.PersonalBlog.IRepository;
@@ -5,7 +6,7 @@ namespace PersonalBlog.Repository.PersonalBlog.IRepository;
 public interface ICategoryRepository: IBaseRepository<Category>
 {
     // get first category
-    Task<List<Category>> GetFirstCategoryAsync();
+    Task<List<CategoryCountDTO>> GetFirstCategoryAsync();
 
     // get second category and id
     Task<List<Category>> GetSecondCategoryAsync(string category1);
