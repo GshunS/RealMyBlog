@@ -39,7 +39,7 @@ const NavBar = () => {
         var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`;
         try {
             const response = await axios.get(url)
-            console.log(response.data)
+            // console.log(response.data)
             setAllCategories((prevData) => {
                 return {
                     ...prevData,
@@ -58,10 +58,15 @@ const NavBar = () => {
                     return newExpanded;
                 } else {
                     // If the category is not expanded, expand it
-                    return {
-                        ...prevExpanded,
-                        [firstCategory]: {}
-                    };
+                    if (allCategories[firstCategory].hasChildren) {
+                        return {
+                            ...prevExpanded,
+                            [firstCategory]: {}
+                        };
+                    }else{
+                        return prevExpanded;
+                    }
+                    
                 }
             });
 
