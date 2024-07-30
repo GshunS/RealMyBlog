@@ -20,6 +20,15 @@
 .nav-bar__name {
     font-size: 1.2rem;
     font-weight: 900;
+
+    /* cursor: pointer;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #333;
+    color: #fff;
+    width: 90%;
+    text-align: center; */
 }
 .nav-bar span{
     cursor: default;
@@ -44,6 +53,7 @@
 .nav-bar__first-category-items {
     /* padding-left: 1.0rem; */
     margin-bottom: 0.5rem;
+    border-bottom: 1px solid #ccc;
 
 }
 
@@ -107,10 +117,19 @@
     /* margin-right: 2rem; */
 }
 
-.nav-bar__category_name>img {
+.nav-bar__category_name svg:nth-of-type(1) {
     height: 1.2rem;
     rotate: 90deg;
     transition: transform 0.2s linear;
+    fill: aquamarine;
+}
+
+.nav-bar__category_name svg:nth-of-type(2) {
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    height: 1.2rem;
+    /* color: #000; */
+    fill: #F8D775;
 }
 
 .nav-bar__category_article {
@@ -123,20 +142,20 @@
     align-items: center;
 }
 
-.nav-bar__category_img>img {
+.nav-bar__category_img>svg {
     height: 1rem;
+    width: 1rem;
+
+    fill: none; /* No fill color */
+    stroke: black; /* Optional: Adds a border around the path itself */
+    stroke-width: 20; /* Optional: Sets the border width around the path */
 }
 
 .nav-bar__category_img :nth-child(1) {
     margin-right: 0.5rem;
 }
 
-svg {
-    margin-left: 0.3rem;
-    margin-right: 0.3rem;
-    height: 1.2rem;
-    color: #000;
-}
+
 
 /* #endregion */
 
