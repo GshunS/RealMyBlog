@@ -1,6 +1,4 @@
 import './NavBar.css'
-// import './waste.css'
-// import angleup from '../../../../assets/images/angle-up-solid.svg'
 import { useEffect, useState } from 'react'
 import classNames from 'classnames';
 import axios from 'axios'
