@@ -63,10 +63,10 @@ const NavBar = () => {
                             ...prevExpanded,
                             [firstCategory]: {}
                         };
-                    }else{
+                    } else {
                         return prevExpanded;
                     }
-                    
+
                 }
             });
 
@@ -89,6 +89,50 @@ const NavBar = () => {
 
     const getThirdCategory = async (firstCategory, secondCategory) => {
         console.log(firstCategory, secondCategory)
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`;
+        try {
+            const response = await axios.get(url)
+            // console.log(response.data)
+            setAllCategories((prevData) => {
+                const newExpanded = { ...prevData };
+                newExpanded[firstCategory]['subCategories'][secondCategory]['subCategories'] = response.data;
+                return newExpanded;
+            })
+
+            setExpandedCategories((prevExpanded) => {
+                // console.log(prevExpanded)
+                if (prevExpanded.hasOwnProperty(firstCategory)) {
+                    if (prevExpanded[firstCategory].hasOwnProperty(secondCategory)) {
+                        const newExpanded = { ...prevExpanded };
+                        // If the category is already expanded, collapse it
+                        delete newExpanded[firstCategory][secondCategory];
+                        return newExpanded;
+                    } else {
+                        // If the category is not expanded, expand it
+                        if (allCategories[firstCategory]['subCategories'][secondCategory].hasChildren) {
+                            const newExpanded = { ...prevExpanded };
+                            newExpanded[firstCategory][secondCategory] = {}
+                            return newExpanded;
+                        }
+                    }
+                }
+                return prevExpanded;
+            });
+
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 400) {
+                    console.log([`Bad Request: ${error.response.data}`])
+                } else if (status === 500) {
+                    console.log([`Internal Server Error: ${error.response.data}`])
+                } else {
+                    console.log([`Error: ${error.response.data}`])
+                }
+            } else {
+                console.log([`No response received`])
+            }
+        }
     }
 
     return (
@@ -147,7 +191,6 @@ const NavBar = () => {
                                                             { hideFileArrow: !secondCategoryValue.hasChildren },
                                                             { imgRotate: false }
                                                         )} />
-                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#74C0FC" d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM112 256l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/></svg> */}
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                                         <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
                                                     </svg>
