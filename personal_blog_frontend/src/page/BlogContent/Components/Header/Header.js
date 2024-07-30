@@ -246,7 +246,7 @@ const Header = () => {
                             alt="dropdown"
                         />
                     </div>
-                    {/* dropdown meue*/}
+                    {/* dropdown menu*/}
                     <div
                         className={classNames("header__view_dropdown", { dropdown_expand: editable })}
                         onClick={() => selectDropdown()}
