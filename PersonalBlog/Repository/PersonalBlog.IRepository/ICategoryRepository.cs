@@ -12,7 +12,7 @@ public interface ICategoryRepository: IBaseRepository<Category>
     Task<List<CategoryRepoDisplayDTO>> GetSecondCategoryAsync(string category1);
 
     // get third category and id
-    Task<List<Category>> GetThirdCategoryAsync(string category1, string category2);
+    Task<List<CategoryRepoDisplayDTO>> GetThirdCategoryAsync(string category1, string category2);
 
     // get fourth category and id
     Task<Dictionary<int, string?>> GetFourthCategoryAsync(string category1, string category2, string category3);
