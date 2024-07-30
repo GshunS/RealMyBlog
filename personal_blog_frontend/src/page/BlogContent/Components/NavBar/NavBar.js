@@ -143,6 +143,10 @@ const NavBar = () => {
         }
     }
 
+    const getFourthCategory = async (firstCategory, secondCategory, thirdCategory) => {
+        console.log(firstCategory, secondCategory, thirdCategory)
+    }
+
     return (
         <div className="nav-bar">
             {/* navigation title */}
@@ -230,7 +234,7 @@ const NavBar = () => {
                                                             { hideFileArrow: !secondCategoryValue.hasChildren },
                                                             { imgRotate: false }
                                                         )} />
-                                                    
+
                                                     {/* the folder icon */}
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                                         <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
@@ -248,6 +252,97 @@ const NavBar = () => {
 
                                             </div>
 
+                                            {/* third category */}
+                                            <ul className={classNames("nav-bar__third-category", { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) })}>
+
+                                                {/* if the parent category has been clicked, show all children categories */}
+                                                {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) && (
+
+                                                    // thirdCategoryValue: {hasChildren:true, subCategories:null, articles:null}
+                                                    Object.entries(secondCategoryValue["subCategories"]).map(([thirdCategoryName, thirdCategoryValue], thirdIndex) => (
+                                                        <li className={classNames("nav-bar__third-category-items")}
+                                                            key={thirdIndex}>
+                                                            {/* level 3 category <li> content */}
+
+                                                            {/* left part of <li>: arrow -> folder icon -> category name OR file icon -> filename */}
+                                                            {/* when user clicks the level 3 category, requests server to get the respective level 4 categories*/}
+
+                                                            <div className="nav-bar__category_div">
+                                                                <div
+                                                                    className="nav-bar__category_name"
+                                                                    onClick={() => getFourthCategory(firstCategoryName, secondCategoryName, thirdCategoryName)}>
+
+                                                                    {/* show the arrow or not */}
+                                                                    <img
+                                                                        src={angleup}
+                                                                        alt="arrow"
+                                                                        className={classNames(
+                                                                            { hideFileArrow: !thirdCategoryValue.hasChildren },
+                                                                            { imgRotate: false }
+                                                                        )} />
+
+                                                                    {/* the folder icon */}
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                                                        <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
+                                                                    </svg>
+
+                                                                    {/* level 3 category name */}
+                                                                    <span>{thirdCategoryName}</span>
+
+                                                                </div>
+                                                                {/* add folder and add image icon */}
+                                                                <div className="nav-bar__category_img">
+                                                                    <img src={addfolder} alt="addfolder" title='create a folder' />
+                                                                    <img src={addfile} alt="addfile" title='create a file' />
+                                                                </div>
+
+                                                            </div>
+
+
+
+                                                        </li>
+                                                    ))
+
+                                                )}
+
+                                                {/* Articles under level 2 category */}
+                                                <div className={classNames({ 'nav-bar__category_article': expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) })}>
+
+                                                    {/* secondCategoryValue['articles']: {articleId: articleTitle} */}
+                                                    {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) &&
+                                                        secondCategoryValue['articles'] !== null &&
+                                                        (
+                                                            Object.entries(allCategories[firstCategoryName]['subCategories'][secondCategoryName]['articles']).map(([id, title]) => (
+
+                                                                <li className={classNames("nav-bar__third-category-items")}
+                                                                    key={id}>
+                                                                    <div className="nav-bar__category_div">
+                                                                        <div className="nav-bar__category_name">
+                                                                            {/* arrow icon - always hide for articles */}
+                                                                            <img
+                                                                                src={angleup}
+                                                                                alt="arrow"
+                                                                                className={classNames(
+                                                                                    { hideFileArrow: true },
+                                                                                    { imgRotate: false }
+                                                                                )} />
+
+                                                                            {/* article icon */}
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                                                                <path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM112 256l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
+                                                                            </svg>
+
+                                                                            {/* title of the article */}
+                                                                            <span>{title}</span>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            ))
+
+                                                        )}
+                                                </div>
+                                            </ul>
 
 
                                         </li>
@@ -257,7 +352,7 @@ const NavBar = () => {
 
                                 {/* Articles under level 1 category */}
                                 <div className={classNames({ 'nav-bar__category_article': expandedCategories.hasOwnProperty(firstCategoryName) })}>
-                                    
+
                                     {/* firstCategoryValue['articles']: {articleId: articleTitle} */}
                                     {expandedCategories.hasOwnProperty(firstCategoryName) &&
                                         firstCategoryValue['articles'] !== null &&

@@ -55,11 +55,21 @@
     margin-bottom: 0.3rem;
 }
 
-
-
 .nav-bar__third-category {
     padding-left: 1rem;
     margin-top: 0.3rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: 1s;
+}
+
+.nav-bar__third-category.expanded {
+    max-height: 100vh;
+    /* transition: max-height 1s linear; */
+}
+
+.nav-bar__third-category-items {
+    margin-bottom: 0.3rem;
 }
 
 /* #endregion */
