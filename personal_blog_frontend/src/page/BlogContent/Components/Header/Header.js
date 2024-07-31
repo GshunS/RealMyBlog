@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
 import classNames from 'classnames';
-import downarrow from '../../../../assets/images/caret-down-solid.svg'
 import avatar from '../../../../assets/images/gz.jpg'
 import './Header.css';
 import { editStatus } from '../../../../store/modules/mainHeaderStore';
@@ -240,11 +239,14 @@ const Header = () => {
                 <div className="header__view">
                     <div className="header__view_button" onClick={() => viewExp()} ref={buttonRef}>
                         <span>{dropDownValue}</span>
-                        <img
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
                             className={classNames('header__view_arrow', { arrow_expand: editable })}
-                            src={downarrow}
-                            alt="dropdown"
-                        />
+                        >
+                            <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" /></svg>
+
+
                     </div>
                     {/* dropdown menu*/}
                     <div
@@ -252,12 +254,15 @@ const Header = () => {
                         onClick={() => selectDropdown()}
                         ref={hideRef}>
                         <span>{'Edit' === dropDownValue ? 'View' : 'Edit'}</span>
-                        <img
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
                             className={classNames('header__view_arrow')}
-                            src={downarrow}
-                            alt="dropdown"
                             style={{ opacity: 0 }}
-                        />
+                        >
+                            <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" /></svg>
+
+
                     </div>
 
                 </div>
