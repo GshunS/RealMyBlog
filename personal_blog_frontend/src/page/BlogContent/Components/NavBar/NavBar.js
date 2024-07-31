@@ -13,10 +13,24 @@ const NavBar = () => {
     // allCategories state is used to store all the categories and subcategories
     const [allCategories, setAllCategories] = useState({})
 
-    // scroll to the bottom of the page when a category is expanded
+    const [expandedElements, setExpandedElements] = useState(new Set())
+
+    // scroll to the expanded category
     useEffect(() => {
         const timer = setTimeout(() => {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+            const nodelist = document.querySelectorAll('.expanded')
+            if (nodelist.length > expandedElements.size) {
+                const newExpandedElement = Array.from(nodelist).find(element => !expandedElements.has(element));
+
+                if (newExpandedElement) {
+                    newExpandedElement.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    setExpandedElements(new Set(nodelist));
+                }
+                console.dir(newExpandedElement)
+            }
+            setExpandedElements(new Set(nodelist))
+
         }, 200);
 
         return () => clearTimeout(timer);
