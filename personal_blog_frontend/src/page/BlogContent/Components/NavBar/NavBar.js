@@ -94,7 +94,7 @@ const NavBar = () => {
 
     // fetch the third category
     const getThirdCategory = async (firstCategory, secondCategory) => {
-        console.log(firstCategory, secondCategory)
+        // console.log(firstCategory, secondCategory)
         var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`;
         try {
             const response = await axios.get(url)
@@ -143,6 +143,54 @@ const NavBar = () => {
 
     const getFourthCategory = async (firstCategory, secondCategory, thirdCategory) => {
         console.log(firstCategory, secondCategory, thirdCategory)
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}/third_category/${thirdCategory}`;
+        try {
+            const response = await axios.get(url)
+            setAllCategories((prevData) => {
+                const newExpanded = { ...prevData };
+                newExpanded
+                [firstCategory]
+                ['subCategories']
+                [secondCategory]
+                ['subCategories']
+                [thirdCategory]
+                ['subCategories'] = response.data;
+                return newExpanded;
+            })
+
+            setExpandedCategories((prevExpanded) => {
+                // console.log(prevExpanded)
+                if (prevExpanded[firstCategory][secondCategory].hasOwnProperty(thirdCategory)) {
+                    const newExpanded = { ...prevExpanded };
+                    // If the category is already expanded, collapse it
+                    delete newExpanded[firstCategory][secondCategory][thirdCategory];
+                    return newExpanded;
+                } else {
+                    // If the category is not expanded, expand it
+                    if (allCategories[firstCategory]['subCategories'][secondCategory]['subCategories'][thirdCategory].hasChildren) {
+                        const newExpanded = { ...prevExpanded };
+                        newExpanded[firstCategory][secondCategory][thirdCategory] = {}
+                        return newExpanded;
+                    }
+                }
+
+                return prevExpanded;
+            });
+
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 400) {
+                    console.log([`Bad Request: ${error.response.data}`])
+                } else if (status === 500) {
+                    console.log([`Internal Server Error: ${error.response.data}`])
+                } else {
+                    console.log([`Error: ${error.response.data}`])
+                }
+            } else {
+                console.log([`No response received`])
+            }
+        }
     }
 
     const collapseAll = () => {
