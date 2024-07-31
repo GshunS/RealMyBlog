@@ -12,6 +12,14 @@ const NavBar = () => {
     // allCategories state is used to store all the categories and subcategories
     const [allCategories, setAllCategories] = useState({})
 
+    // scroll to the bottom of the page when a category is expanded
+    useEffect(() => {
+        const timer = setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 300); 
+    
+        return () => clearTimeout(timer); 
+      }, [expandedCategories]);
 
     // fetch the first category
     useEffect(() => {
