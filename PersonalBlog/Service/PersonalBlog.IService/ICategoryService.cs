@@ -12,6 +12,7 @@ public interface ICategoryService: IBaseService<Category>
     Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFirstCategory();
     Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetSecondCategory(string first_category);
     Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetThirdCategory(string first_category, string second_category);
+    Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFourthCategory(string first_category, string second_category, string third_category);
     Dictionary<string, bool> HasChildren(List<CategoryRepoDisplayDTO> categories);
     Task<Dictionary<string, Dictionary<int, string>>> GetArticleInfo(List<CategoryRepoDisplayDTO> categories);
 }

@@ -216,4 +216,21 @@ public class CategoryService : BaseService<Category>, ICategoryService
         }
     }
 
+    public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFourthCategory(string first_category, string second_category, string third_category)
+    {
+        try
+        {
+            var categories = await _iCategoryRepository.GetFourthCategoryAsync(first_category, second_category, third_category);
+            return await GetCategoryDataTemplate(categories);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new ServiceException(ex.Message);
+        }
+    }
+
 }

@@ -87,17 +87,23 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
     }
 
 
-    public async Task<Dictionary<int, string?>> GetFourthCategoryAsync(string category1, string category2, string category3)
+    public async Task<List<CategoryRepoDisplayDTO>> GetFourthCategoryAsync(string first_category, string second_category, string third_category)
     {
         try
         {
             var result = await _dbContext
                 .Set<Category>()
-                .Where(c => c.first_category == category1 && c.second_category == category2 && c.third_category == category3)
-                .Select(c => new { c.id, c.fourth_category })
+                .Where(c => c.first_category == first_category && c.second_category == second_category)
+                .Select(g => new CategoryRepoDisplayDTO
+                {
+                    Id = g.id,
+                    CategoryName = g.fourth_category,
+                    ChildrenCategoryName = null
+                })
+                .OrderBy(c => c.CategoryName)
                 .ToListAsync();
 
-            return result.ToDictionary(x => x.id, x => x.fourth_category);
+            return result;
         }
         catch (Exception e)
         {

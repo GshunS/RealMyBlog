@@ -134,6 +134,25 @@ public class CategoryController : ControllerBase
         }
     }
 
+
+    [HttpGet("categories/first_category/{first_category}/second_category/{second_category}/third_category/{third_category}")]
+    public async Task<ActionResult> GetSecondCategories([FromRoute] string first_category, string second_category, string third_category)
+    {
+        try
+        {
+            var data = await _iCategoryService.GetFourthCategory(first_category, second_category, third_category);
+            return Ok(data);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     [HttpGet("categories/id/{id}")]
     public async Task<ActionResult> GetCategory(int id)
     {
