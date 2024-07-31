@@ -449,7 +449,7 @@ const NavBar = () => {
                                                                     {expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) &&
                                                                         thirdCategoryValue['articles'] !== null &&
                                                                         (
-                                                                            Object.entries(allCategories[firstCategoryName]['subCategories'][secondCategoryName]['subCategories'][thirdCategoryName]['articles']).map(([id, title]) => (
+                                                                            Object.entries(thirdCategoryValue['articles']).map(([id, title]) => (
 
                                                                                 <li className={classNames("nav-bar__fourth-category-items")}
                                                                                     key={id}>
@@ -497,7 +497,7 @@ const NavBar = () => {
                                                     {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) &&
                                                         secondCategoryValue['articles'] !== null &&
                                                         (
-                                                            Object.entries(allCategories[firstCategoryName]['subCategories'][secondCategoryName]['articles']).map(([id, title]) => (
+                                                            Object.entries(secondCategoryValue['articles']).map(([id, title]) => (
 
                                                                 <li className={classNames("nav-bar__third-category-items")}
                                                                     key={id}>
@@ -546,7 +546,7 @@ const NavBar = () => {
                                     {expandedCategories.hasOwnProperty(firstCategoryName) &&
                                         firstCategoryValue['articles'] !== null &&
                                         (
-                                            Object.entries(allCategories[firstCategoryName]['articles']).map(([id, title]) => (
+                                            Object.entries(firstCategoryValue['articles']).map(([id, title]) => (
 
                                                 <li className={classNames("nav-bar__second-category-items")}
                                                     key={id}>
