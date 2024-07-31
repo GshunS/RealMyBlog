@@ -93,7 +93,7 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         {
             var result = await _dbContext
                 .Set<Category>()
-                .Where(c => c.first_category == first_category && c.second_category == second_category)
+                .Where(c => c.first_category == first_category && c.second_category == second_category && c.third_category == third_category)
                 .Select(g => new CategoryRepoDisplayDTO
                 {
                     Id = g.id,
