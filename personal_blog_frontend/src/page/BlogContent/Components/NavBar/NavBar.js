@@ -81,11 +81,12 @@ const NavBar = () => {
     // fetch the second category
     const getSecondCategory = async (firstCategory) => {
         var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`
-
+        
         try {
             const response = await axios.get(url)
             // console.log(response.data)
             setAllCategories((prevData) => {
+                
                 return {
                     ...prevData,
                     [firstCategory]: {
