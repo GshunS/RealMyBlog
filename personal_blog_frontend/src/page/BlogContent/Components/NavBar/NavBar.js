@@ -1,52 +1,68 @@
 import './NavBar.css'
 // import './waste.css'
-import { useEffect, useState } from 'react'
-import classNames from 'classnames';
+import { useEffect, useState, useRef } from 'react'
+import classNames from 'classnames'
 import axios from 'axios'
 
 // category navigation bar
 const NavBar = () => {
 
     // the expandedCategories state is used to keep track of which categories are expanded
-    const [expandedCategories, setExpandedCategories] = useState({});
+    const [expandedCategories, setExpandedCategories] = useState({})
 
     // allCategories state is used to store all the categories and subcategories
     const [allCategories, setAllCategories] = useState({})
 
     const [expandedElements, setExpandedElements] = useState(new Set())
 
+    const getExpandedElement = () => {
+        const nodelist = document.querySelectorAll('.expanded')
+
+        const newExpandedElement = Array.from(nodelist).find(element => !expandedElements.has(element))
+        const newCollapseElement = Array.from(expandedElements).find(element => !Array.from(nodelist).includes(element))
+
+        return { newExpandedElement, newCollapseElement, nodelist }
+
+    }
+
+
     // scroll to the expanded category
     useEffect(() => {
         const timer = setTimeout(() => {
 
-            const nodelist = document.querySelectorAll('.expanded')
-            if (nodelist.length > expandedElements.size) {
-                const newExpandedElement = Array.from(nodelist).find(element => !expandedElements.has(element));
+            const { newExpandedElement, nodelist } = getExpandedElement()
+            if (newExpandedElement) {
 
-                if (newExpandedElement) {
-                    newExpandedElement.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    setExpandedElements(new Set(nodelist));
+                let parentElement = newExpandedElement.parentElement;
+
+                while (parentElement && !parentElement.classList.contains('nav-bar__first-category-items')) {
+                    parentElement = parentElement.parentElement;
                 }
-                console.dir(newExpandedElement)
+                // console.log(parentElement)
+                const marginTop = 16;
+
+                window.scrollTo({
+                    top: parentElement.offsetTop - marginTop,
+                    behavior: 'smooth'
+                });
             }
             setExpandedElements(new Set(nodelist))
+        }, 200)
 
-        }, 200);
-
-        return () => clearTimeout(timer);
-    }, [expandedCategories]);
+        return () => clearTimeout(timer)
+    }, [expandedCategories])
 
     // fetch the first category
     useEffect(() => {
         async function fetchFirstCategory() {
-            var url = `https://localhost:7219/api/categories/first-category`;
+            var url = `https://localhost:7219/api/categories/first-category`
             try {
                 const response = await axios.get(url)
                 setAllCategories(response.data)
                 // console.log(response.data)
             } catch (error) {
                 if (error.response) {
-                    const status = error.response.status;
+                    const status = error.response.status
                     if (status === 400) {
                         console.log([`Bad Request: ${error.response.data}`])
                     } else if (status === 500) {
@@ -64,7 +80,8 @@ const NavBar = () => {
 
     // fetch the second category
     const getSecondCategory = async (firstCategory) => {
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`;
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`
+
         try {
             const response = await axios.get(url)
             // console.log(response.data)
@@ -75,32 +92,34 @@ const NavBar = () => {
                         ...prevData[firstCategory],
                         subCategories: response.data
                     }
-                };
+                }
             })
 
             setExpandedCategories((prevExpanded) => {
                 if (prevExpanded.hasOwnProperty(firstCategory)) {
-                    const newExpanded = { ...prevExpanded };
+                    const newExpanded = { ...prevExpanded }
                     // If the category is already expanded, collapse it
                     delete newExpanded[firstCategory];
                     return newExpanded;
+
                 } else {
                     // If the category is not expanded, expand it
                     if (allCategories[firstCategory].hasChildren) {
                         return {
                             ...prevExpanded,
                             [firstCategory]: {}
-                        };
+                        }
                     } else {
-                        return prevExpanded;
+                        return prevExpanded
                     }
 
                 }
-            });
+
+            })
 
         } catch (error) {
             if (error.response) {
-                const status = error.response.status;
+                const status = error.response.status
                 if (status === 400) {
                     console.log([`Bad Request: ${error.response.data}`])
                 } else if (status === 500) {
@@ -118,39 +137,39 @@ const NavBar = () => {
     // fetch the third category
     const getThirdCategory = async (firstCategory, secondCategory) => {
         // console.log(firstCategory, secondCategory)
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`;
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`
         try {
             const response = await axios.get(url)
             // console.log(response.data)
             setAllCategories((prevData) => {
-                const newExpanded = { ...prevData };
-                newExpanded[firstCategory]['subCategories'][secondCategory]['subCategories'] = response.data;
-                return newExpanded;
+                const newExpanded = { ...prevData }
+                newExpanded[firstCategory]['subCategories'][secondCategory]['subCategories'] = response.data
+                return newExpanded
             })
 
             setExpandedCategories((prevExpanded) => {
                 // console.log(prevExpanded)
                 if (prevExpanded.hasOwnProperty(firstCategory)) {
                     if (prevExpanded[firstCategory].hasOwnProperty(secondCategory)) {
-                        const newExpanded = { ...prevExpanded };
+                        const newExpanded = { ...prevExpanded }
                         // If the category is already expanded, collapse it
-                        delete newExpanded[firstCategory][secondCategory];
-                        return newExpanded;
+                        delete newExpanded[firstCategory][secondCategory]
+                        return newExpanded
                     } else {
                         // If the category is not expanded, expand it
                         if (allCategories[firstCategory]['subCategories'][secondCategory].hasChildren) {
-                            const newExpanded = { ...prevExpanded };
+                            const newExpanded = { ...prevExpanded }
                             newExpanded[firstCategory][secondCategory] = {}
-                            return newExpanded;
+                            return newExpanded
                         }
                     }
                 }
-                return prevExpanded;
-            });
+                return prevExpanded
+            })
 
         } catch (error) {
             if (error.response) {
-                const status = error.response.status;
+                const status = error.response.status
                 if (status === 400) {
                     console.log([`Bad Request: ${error.response.data}`])
                 } else if (status === 500) {
@@ -164,46 +183,47 @@ const NavBar = () => {
         }
     }
 
+    // fetch the fourth category
     const getFourthCategory = async (firstCategory, secondCategory, thirdCategory) => {
-        console.log(firstCategory, secondCategory, thirdCategory)
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}/third_category/${thirdCategory}`;
+        // console.log(firstCategory, secondCategory, thirdCategory)
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}/third_category/${thirdCategory}`
         try {
             const response = await axios.get(url)
-            console.log(response.data)
+            // console.log(response.data)
             setAllCategories((prevData) => {
-                const newExpanded = { ...prevData };
+                const newExpanded = { ...prevData }
                 newExpanded
                 [firstCategory]
                 ['subCategories']
                 [secondCategory]
                 ['subCategories']
                 [thirdCategory]
-                ['subCategories'] = response.data;
-                return newExpanded;
+                ['subCategories'] = response.data
+                return newExpanded
             })
 
             setExpandedCategories((prevExpanded) => {
                 // console.log(prevExpanded)
                 if (prevExpanded[firstCategory][secondCategory].hasOwnProperty(thirdCategory)) {
-                    const newExpanded = { ...prevExpanded };
+                    const newExpanded = { ...prevExpanded }
                     // If the category is already expanded, collapse it
-                    delete newExpanded[firstCategory][secondCategory][thirdCategory];
-                    return newExpanded;
+                    delete newExpanded[firstCategory][secondCategory][thirdCategory]
+                    return newExpanded
                 } else {
                     // If the category is not expanded, expand it
                     if (allCategories[firstCategory]['subCategories'][secondCategory]['subCategories'][thirdCategory].hasChildren) {
-                        const newExpanded = { ...prevExpanded };
+                        const newExpanded = { ...prevExpanded }
                         newExpanded[firstCategory][secondCategory][thirdCategory] = {}
-                        return newExpanded;
+                        return newExpanded
                     }
                 }
 
-                return prevExpanded;
-            });
+                return prevExpanded
+            })
 
         } catch (error) {
             if (error.response) {
-                const status = error.response.status;
+                const status = error.response.status
                 if (status === 400) {
                     console.log([`Bad Request: ${error.response.data}`])
                 } else if (status === 500) {
@@ -215,6 +235,28 @@ const NavBar = () => {
                 console.log([`No response received`])
             }
         }
+    }
+
+    // fetch the last articles under the fourth category
+    const getLastArticles = (firstCategory, secondCategory, thirdCategory, fourthCategory, fourthCategoryValue) => {
+        setExpandedCategories((prevExpanded) => {
+            // console.log(prevExpanded)
+            if (prevExpanded[firstCategory][secondCategory][thirdCategory].hasOwnProperty(fourthCategory)) {
+                const newExpanded = { ...prevExpanded }
+                // If the category is already expanded, collapse it
+                delete newExpanded[firstCategory][secondCategory][thirdCategory][fourthCategory]
+                return newExpanded
+            } else {
+                // If the category is not expanded, expand it
+                if (fourthCategoryValue.hasChildren) {
+                    const newExpanded = { ...prevExpanded }
+                    newExpanded[firstCategory][secondCategory][thirdCategory][fourthCategory] = {}
+                    return newExpanded
+                }
+            }
+
+            return prevExpanded
+        })
     }
 
     const collapseAll = () => {
@@ -236,7 +278,8 @@ const NavBar = () => {
                     {/* firstCategoryValue: {hasChildren:true, subCategories:null, articles:null} */}
                     {Object.entries(allCategories).map(([firstCategoryName, firstCategoryValue], index) => (
                         <li className="nav-bar__first-category-items"
-                            key={index}>
+                            key={index}
+                        >
 
                             {/* level 1 category <li> content */}
                             <div className="nav-bar__category_div">
@@ -286,7 +329,8 @@ const NavBar = () => {
                             </div>
 
                             {/* second category */}
-                            <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) })}>
+                            <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) })}
+                            >
 
                                 {/* if the parent category has been clicked, show all children categories */}
                                 {expandedCategories.hasOwnProperty(firstCategoryName) && (
@@ -425,7 +469,7 @@ const NavBar = () => {
                                                                             <div className="nav-bar__category_div">
                                                                                 <div
                                                                                     className="nav-bar__category_name"
-                                                                                // onClick={() => getFourthCategory(firstCategoryName, secondCategoryName, thirdCategoryName)}
+                                                                                    onClick={() => getLastArticles(firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName, fourthCategoryValue)}
                                                                                 >
 
                                                                                     {/* show the arrow or not */}
@@ -466,7 +510,60 @@ const NavBar = () => {
 
                                                                             </div>
 
+                                                                            {/* Articles under level 4 category */}
+                                                                            <ul
+                                                                                className={
+                                                                                    classNames(
+                                                                                        "nav-bar__fourth-category",
+                                                                                        { "expanded": expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) }
+                                                                                    )
+                                                                                }>
 
+                                                                                <div className={
+                                                                                    classNames(
+                                                                                        { 'nav-bar__category_article': expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) }
+                                                                                    )
+                                                                                }>
+
+                                                                                    {/* fourthCategoryValue['articles']: {articleId: articleTitle} */}
+                                                                                    {expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) &&
+                                                                                        fourthCategoryValue['articles'] !== null &&
+                                                                                        (
+                                                                                            Object.entries(fourthCategoryValue['articles']).map(([id, title]) => (
+
+                                                                                                <li className={classNames("nav-bar__fourth-category-items")}
+                                                                                                    key={id}>
+                                                                                                    <div className="nav-bar__category_div">
+                                                                                                        <div className="nav-bar__category_name">
+                                                                                                            {/* arrow icon - always hide for articles */}
+                                                                                                            <svg
+                                                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                                                viewBox="0 0 448 512"
+                                                                                                                className={
+                                                                                                                    classNames(
+                                                                                                                        { hideFileArrow: true },
+                                                                                                                        { imgRotate: false }
+                                                                                                                    )
+                                                                                                                }>
+                                                                                                                <path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z" /></svg>
+
+
+                                                                                                            {/* article icon */}
+                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className='Nav-bar__article-icon'>
+                                                                                                                <path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM112 256l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
+                                                                                                            </svg>
+
+                                                                                                            {/* title of the article */}
+                                                                                                            <span>{title}</span>
+
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </li>
+                                                                                            ))
+
+                                                                                        )}
+                                                                                </div>
+                                                                            </ul>
 
                                                                         </li>
                                                                     ))

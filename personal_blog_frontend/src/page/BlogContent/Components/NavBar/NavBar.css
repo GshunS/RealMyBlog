@@ -66,11 +66,11 @@
     max-height: 0;
     overflow: hidden;
     transition: 1s;
+
 }
 
 .nav-bar__second-category.expanded {
     max-height: 100vh;
-    /* transition: max-height 1s linear; */
 }
 
 .nav-bar__second-category-items {
@@ -105,7 +105,7 @@
 
 .nav-bar__fourth-category.expanded {
     max-height: 100vh;
-    /* transition: max-height 1s linear; */
+    /* transform: scaleY(1); */
 }
 
 .nav-bar__fourth-category-items {
