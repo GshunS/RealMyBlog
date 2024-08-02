@@ -47,7 +47,7 @@ const NavBar = () => {
                 });
             }
             setExpandedElements(new Set(nodelist))
-        }, 200)
+        }, 100)
 
         return () => clearTimeout(timer)
     }, [expandedCategories])

@@ -1,15 +1,19 @@
-*{
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.blog-container{
-    
+body {
+    overflow-y: scroll;
+}
+
+.blog-container {
+
     width: 1180px;
     margin: 0 auto;
     margin-top: 0.5rem;
 }
 
-.body-container{
+.body-container {
     /* border: 1px solid black; */
     margin-top: 1.7rem;
     display: flex;
