@@ -146,7 +146,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         // check if category has children
         Dictionary<string, bool> hasChildrenDict = HasChildren(categories);
 
-        // cehck if category has articles
+        // check if category has articles
         Dictionary<string, Dictionary<int, string>> articleDict = await GetArticleInfo(categories);
 
         foreach (string categoryName in hasChildrenDict.Keys)
