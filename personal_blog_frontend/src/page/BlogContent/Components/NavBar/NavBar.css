@@ -124,8 +124,8 @@
     margin-left: 0.3rem;
     border-radius: 0.7rem;
     padding: 0.5rem; /* Added padding for better spacing */
-    background-color: #e9ecef; /* Light background color for better contrast */
-
+    background-color: #e9edf2; /* Light background color for better contrast */
+    height: 2rem;
 }
 
 .nav-bar__category_name {
@@ -187,13 +187,13 @@
 }
 
 .nav-bar__add-folder:hover {
-    background-color: #e0e0e0; /* Light grey background color on hover */
+    /* background-color: #e0e0e0; Light grey background color on hover */
     border-radius: 4px; /* Optional: Rounded corners for a smoother look */
     padding: 0.1rem; /* Optional: Padding for better spacing */
 }
 
 .nav-bar__add-file:hover {
-    background-color: #e0e0e0; /* Light grey background color on hover */
+    /* background-color: #e0e0e0; Light grey background color on hover */
     border-radius: 4px; /* Optional: Rounded corners for a smoother look */
     padding: 0.1rem; /* Optional: Padding for better spacing */
 }

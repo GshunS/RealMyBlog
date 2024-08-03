@@ -15,6 +15,7 @@ const NavBar = () => {
 
     const [expandedElements, setExpandedElements] = useState(new Set())
 
+    // get the new expanded element and the new collapse element
     const getExpandedElement = () => {
         const nodelist = document.querySelectorAll('.expanded')
 
@@ -50,6 +51,7 @@ const NavBar = () => {
         }, 100)
 
         return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [expandedCategories])
 
     // fetch the first category
@@ -59,7 +61,6 @@ const NavBar = () => {
             try {
                 const response = await axios.get(url)
                 setAllCategories(response.data)
-                // console.log(response.data)
             } catch (error) {
                 if (error.response) {
                     const status = error.response.status
@@ -78,45 +79,76 @@ const NavBar = () => {
         fetchFirstCategory()
     }, [])
 
-    // fetch the second category
-    const getSecondCategory = async (firstCategory) => {
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`
-        
+    // set the expanded categories
+    const setExpandedCategoriesHelper = (firstCategory, secondCategory = null, thirdCategory = null, fourthCategory = null) => {
+        let prevExpanded = { ...expandedCategories }
+        let currentLevel = null
+        let currentExpanded = null
+        let currentCategory = { ...allCategories}
+        if (firstCategory) {
+            currentLevel = firstCategory
+            currentExpanded = prevExpanded
+        }
+        if (secondCategory) {
+            currentExpanded = currentExpanded[firstCategory]
+            currentLevel = secondCategory
+            currentCategory = currentCategory[firstCategory]['subCategories']
+        }
+        if (thirdCategory) {
+            currentExpanded = currentExpanded[secondCategory]
+            currentLevel = thirdCategory
+            currentCategory = currentCategory[secondCategory]['subCategories']
+        }
+        if (fourthCategory) {
+            currentExpanded = currentExpanded[thirdCategory]
+            currentLevel = fourthCategory
+            currentCategory = currentCategory[thirdCategory]['subCategories']
+        }
+
+        if (currentExpanded.hasOwnProperty(currentLevel)) {
+            // If the category is already expanded, collapse it
+            delete currentExpanded[currentLevel];
+        } else {
+            // If the category is not expanded, expand it
+            if (currentCategory[currentLevel].hasChildren) {
+                currentExpanded[currentLevel] = {}
+            }
+        }
+        setExpandedCategories(prevExpanded)
+
+    }
+
+
+    // fetch the next category
+    const getNextCategrory = async (firstCategory, secondCategory = null, thirdCategory = null, fourthCategory = null) => {
         try {
+            let url = `https://localhost:7219/api/categories`
+            let currentAllCategory = { ...allCategories }
+            let currentCategory = null
+            
+            if (firstCategory) {
+                url += `/first_category/${firstCategory}`
+                currentCategory = currentAllCategory[firstCategory]
+            }
+            if (secondCategory) {
+                url += `/second_category/${secondCategory}`
+                currentCategory = currentCategory['subCategories'][secondCategory]
+            }
+            if (thirdCategory) {
+                url += `/third_category/${thirdCategory}`
+                currentCategory = currentCategory['subCategories'][thirdCategory]
+            }
+            if (fourthCategory){
+                setExpandedCategoriesHelper(firstCategory, secondCategory, thirdCategory, fourthCategory)
+                return
+            }
+
+            // retrieve the categories info from server
             const response = await axios.get(url)
-            // console.log(response.data)
-            setAllCategories((prevData) => {
-                
-                return {
-                    ...prevData,
-                    [firstCategory]: {
-                        ...prevData[firstCategory],
-                        subCategories: response.data
-                    }
-                }
-            })
-
-            setExpandedCategories((prevExpanded) => {
-                if (prevExpanded.hasOwnProperty(firstCategory)) {
-                    const newExpanded = { ...prevExpanded }
-                    // If the category is already expanded, collapse it
-                    delete newExpanded[firstCategory];
-                    return newExpanded;
-
-                } else {
-                    // If the category is not expanded, expand it
-                    if (allCategories[firstCategory].hasChildren) {
-                        return {
-                            ...prevExpanded,
-                            [firstCategory]: {}
-                        }
-                    } else {
-                        return prevExpanded
-                    }
-
-                }
-
-            })
+            // eslint-disable-next-line no-unused-vars
+            currentCategory['subCategories'] = response.data
+            setAllCategories(currentAllCategory)
+            setExpandedCategoriesHelper(firstCategory, secondCategory, thirdCategory, fourthCategory)
 
         } catch (error) {
             if (error.response) {
@@ -133,131 +165,6 @@ const NavBar = () => {
             }
         }
 
-    }
-
-    // fetch the third category
-    const getThirdCategory = async (firstCategory, secondCategory) => {
-        // console.log(firstCategory, secondCategory)
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`
-        try {
-            const response = await axios.get(url)
-            // console.log(response.data)
-            setAllCategories((prevData) => {
-                const newExpanded = { ...prevData }
-                newExpanded[firstCategory]['subCategories'][secondCategory]['subCategories'] = response.data
-                return newExpanded
-            })
-
-            setExpandedCategories((prevExpanded) => {
-                // console.log(prevExpanded)
-                if (prevExpanded.hasOwnProperty(firstCategory)) {
-                    if (prevExpanded[firstCategory].hasOwnProperty(secondCategory)) {
-                        const newExpanded = { ...prevExpanded }
-                        // If the category is already expanded, collapse it
-                        delete newExpanded[firstCategory][secondCategory]
-                        return newExpanded
-                    } else {
-                        // If the category is not expanded, expand it
-                        if (allCategories[firstCategory]['subCategories'][secondCategory].hasChildren) {
-                            const newExpanded = { ...prevExpanded }
-                            newExpanded[firstCategory][secondCategory] = {}
-                            return newExpanded
-                        }
-                    }
-                }
-                return prevExpanded
-            })
-
-        } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 400) {
-                    console.log([`Bad Request: ${error.response.data}`])
-                } else if (status === 500) {
-                    console.log([`Internal Server Error: ${error.response.data}`])
-                } else {
-                    console.log([`Error: ${error.response.data}`])
-                }
-            } else {
-                console.log([`No response received`])
-            }
-        }
-    }
-
-    // fetch the fourth category
-    const getFourthCategory = async (firstCategory, secondCategory, thirdCategory) => {
-        // console.log(firstCategory, secondCategory, thirdCategory)
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}/third_category/${thirdCategory}`
-        try {
-            const response = await axios.get(url)
-            // console.log(response.data)
-            setAllCategories((prevData) => {
-                const newExpanded = { ...prevData }
-                newExpanded
-                [firstCategory]
-                ['subCategories']
-                [secondCategory]
-                ['subCategories']
-                [thirdCategory]
-                ['subCategories'] = response.data
-                return newExpanded
-            })
-
-            setExpandedCategories((prevExpanded) => {
-                // console.log(prevExpanded)
-                if (prevExpanded[firstCategory][secondCategory].hasOwnProperty(thirdCategory)) {
-                    const newExpanded = { ...prevExpanded }
-                    // If the category is already expanded, collapse it
-                    delete newExpanded[firstCategory][secondCategory][thirdCategory]
-                    return newExpanded
-                } else {
-                    // If the category is not expanded, expand it
-                    if (allCategories[firstCategory]['subCategories'][secondCategory]['subCategories'][thirdCategory].hasChildren) {
-                        const newExpanded = { ...prevExpanded }
-                        newExpanded[firstCategory][secondCategory][thirdCategory] = {}
-                        return newExpanded
-                    }
-                }
-
-                return prevExpanded
-            })
-
-        } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 400) {
-                    console.log([`Bad Request: ${error.response.data}`])
-                } else if (status === 500) {
-                    console.log([`Internal Server Error: ${error.response.data}`])
-                } else {
-                    console.log([`Error: ${error.response.data}`])
-                }
-            } else {
-                console.log([`No response received`])
-            }
-        }
-    }
-
-    // fetch the last articles under the fourth category
-    const getLastArticles = (firstCategory, secondCategory, thirdCategory, fourthCategory, fourthCategoryValue) => {
-        setExpandedCategories((prevExpanded) => {
-            // console.log(prevExpanded)
-            if (prevExpanded[firstCategory][secondCategory][thirdCategory].hasOwnProperty(fourthCategory)) {
-                const newExpanded = { ...prevExpanded }
-                // If the category is already expanded, collapse it
-                delete newExpanded[firstCategory][secondCategory][thirdCategory][fourthCategory]
-                return newExpanded
-            } else {
-                // If the category is not expanded, expand it
-                if (fourthCategoryValue.hasChildren) {
-                    const newExpanded = { ...prevExpanded }
-                    newExpanded[firstCategory][secondCategory][thirdCategory][fourthCategory] = {}
-                    return newExpanded
-                }
-            }
-
-            return prevExpanded
-        })
     }
 
     const collapseAll = () => {
@@ -288,7 +195,7 @@ const NavBar = () => {
 
                                 {/* when user clicks the level 1 category, requests server to get the respective level 2 categories*/}
                                 <div className="nav-bar__category_name"
-                                    onClick={() => getSecondCategory(firstCategoryName)}>
+                                    onClick={() => getNextCategrory(firstCategoryName)}>
 
                                     {/* the arrow icon */}
                                     {/* if the level 1 category doesn't have children, hide the arrow */}
@@ -348,7 +255,7 @@ const NavBar = () => {
                                             <div className="nav-bar__category_div">
                                                 <div
                                                     className="nav-bar__category_name"
-                                                    onClick={() => getThirdCategory(firstCategoryName, secondCategoryName)}>
+                                                    onClick={() => getNextCategrory(firstCategoryName, secondCategoryName)}>
 
                                                     {/* show the arrow or not */}
                                                     <svg
@@ -406,7 +313,7 @@ const NavBar = () => {
                                                             <div className="nav-bar__category_div">
                                                                 <div
                                                                     className="nav-bar__category_name"
-                                                                    onClick={() => getFourthCategory(firstCategoryName, secondCategoryName, thirdCategoryName)}>
+                                                                    onClick={() => getNextCategrory(firstCategoryName, secondCategoryName, thirdCategoryName)}>
 
                                                                     {/* show the arrow or not */}
                                                                     <svg
@@ -470,7 +377,7 @@ const NavBar = () => {
                                                                             <div className="nav-bar__category_div">
                                                                                 <div
                                                                                     className="nav-bar__category_name"
-                                                                                    onClick={() => getLastArticles(firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName, fourthCategoryValue)}
+                                                                                    onClick={() => getNextCategrory(firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName, fourthCategoryValue)}
                                                                                 >
 
                                                                                     {/* show the arrow or not */}
