@@ -161,47 +161,9 @@
 }
 
 
-.nav-bar__category_img {
-    visibility: hidden;
-    display: flex;
-    align-items: center;
-}
-
 .nav-bar__category_div:hover .nav-bar__category_img{
     visibility: visible;
 }
-
-
-.nav-bar__add-folder {
-    height: 1rem;
-    width: 1rem;
-    fill: #2196F3; /* Blue color for folder icon */
-    transition: all 0.1s linear;
-}
-
-.nav-bar__add-file {
-    height: 1rem;
-    width: 1rem;
-    fill: #FFC107; /* Yellow color for file icon */
-    transition: all 0.1s linear;
-}
-
-.nav-bar__add-folder:hover {
-    /* background-color: #e0e0e0; Light grey background color on hover */
-    border-radius: 4px; /* Optional: Rounded corners for a smoother look */
-    padding: 0.1rem; /* Optional: Padding for better spacing */
-}
-
-.nav-bar__add-file:hover {
-    /* background-color: #e0e0e0; Light grey background color on hover */
-    border-radius: 4px; /* Optional: Rounded corners for a smoother look */
-    padding: 0.1rem; /* Optional: Padding for better spacing */
-}
-
-.nav-bar__category_img :nth-child(1) {
-    margin-right: 0.5rem;
-}
-
 
 
 /* #endregion */
