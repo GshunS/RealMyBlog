@@ -4,33 +4,26 @@ import { useEffect, useState, useRef } from 'react'
 import { produce } from 'immer'
 import classNames from 'classnames'
 import axios from 'axios'
-import { editExpandedCategories, editAllCategories } from '../../../../store/modules/blogContentNavBarStore'
+import { editExpandedCategories, editAllCategories, editExpandedCategoriesCount } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 
 // category navigation bar
 const NavBar = () => {
 
     const dispatch = useDispatch()
-    // // the expandedCategories state is used to keep track of which categories are expanded
-    // const [expandedCategories, setExpandedCategories] = useState({})
-    const { expandedCategories } = useSelector(state => state.blogContentNavbar)
-
-    // // allCategories state is used to store all the categories and subcategories
-    // const [allCategories, setAllCategories] = useState({})
-    const { allCategories } = useSelector(state => state.blogContentNavbar)
+    // the expandedCategories state is used to keep track of which categories are expanded
+    // allCategories state is used to store all the categories and subcategories
+    const { expandedCategories, allCategories, expandedCategoriesCount } = useSelector(state => state.blogContentNavbar)
 
     const [expandedElements, setExpandedElements] = useState(new Set())
 
     const getExpandedElement = () => {
         const nodelist = document.querySelectorAll('.expanded')
-
         const newExpandedElement = Array.from(nodelist).find(element => !expandedElements.has(element))
         const newCollapseElement = Array.from(expandedElements).find(element => !Array.from(nodelist).includes(element))
-
         return { newExpandedElement, newCollapseElement, nodelist }
 
     }
-
 
     // scroll to the expanded category
     useEffect(() => {
@@ -44,7 +37,6 @@ const NavBar = () => {
                 while (parentElement && !parentElement.classList.contains('nav-bar__first-category-items')) {
                     parentElement = parentElement.parentElement;
                 }
-                // console.log(parentElement)
                 const marginTop = 16;
 
                 window.scrollTo({
@@ -64,9 +56,7 @@ const NavBar = () => {
             var url = `https://localhost:7219/api/categories/first-category`
             try {
                 const response = await axios.get(url)
-                // setAllCategories(response.data)
                 dispatch(editAllCategories(response.data))
-                // console.log(response.data)
             } catch (error) {
                 if (error.response) {
                     const status = error.response.status
@@ -85,151 +75,79 @@ const NavBar = () => {
         fetchFirstCategory()
     }, [dispatch])
 
-    // fetch the second category
-    const getSecondCategory = async (firstCategory) => {
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`
+
+    // fetch the next category
+    const fetchNextCategory = async (categoryValue, ...categories) => {
+
+        let url = 'https://localhost:7219/api/categories';
+        const categoryLevels = ['first_category', 'second_category', 'third_category', 'fourth_category'];
+        categories.forEach((category, index) => {
+            if (category) {
+                url += `/${categoryLevels[index]}/${category}`;
+            }
+        });
 
         try {
-            const response = await axios.get(url)
-            // console.log(response.data)
-            const updatedAllCategories = produce(allCategories, draft => {
-                draft[firstCategory].subCategories = response.data
-            })
-            dispatch(editAllCategories(updatedAllCategories))
-
-            let updatedExpandedCategories = null
-            if (expandedCategories.hasOwnProperty(firstCategory)) {
-                updatedExpandedCategories = produce(expandedCategories, draft => {
-                    delete draft[firstCategory]
-                })
-            } else {
-                if (allCategories[firstCategory].hasChildren) {
-                    updatedExpandedCategories = produce(expandedCategories, draft => {
-                        draft[firstCategory] = {}
-                    })
+            let expanded = true
+            let currentExpandedLevel = { ...expandedCategories };
+            categories.forEach((category, index) => {
+                if (index === categories.length - 1) {
+                    if (currentExpandedLevel.hasOwnProperty(category)) {
+                        expanded = false;
+                    }
+                } else {
+                    currentExpandedLevel = currentExpandedLevel[category];
                 }
+            });
+
+            if (categories.length !== 4 && expanded) {
+                const response = await axios.get(url);
+                const updatedAllCategories = produce(allCategories, draft => {
+                    let currentLevel = draft;
+                    categories.forEach((category, index) => {
+                        if (index === categories.length - 1) {
+                            currentLevel[category].subCategories = response.data;
+                        } else {
+                            currentLevel = currentLevel[category].subCategories;
+                        }
+                    });
+                });
+                dispatch(editAllCategories(updatedAllCategories));
             }
-            dispatch(editExpandedCategories(updatedExpandedCategories))
+
+            let updatedExpandedCategories = produce(expandedCategories, draft => {
+                let currentExpandedLevel = draft;
+                categories.forEach((category, index) => {
+                    if (index === categories.length - 1) {
+                        if (currentExpandedLevel.hasOwnProperty(category)) {
+                            delete currentExpandedLevel[category];
+                        } else {
+                            if (categoryValue.hasChildren) {
+                                currentExpandedLevel[category] = {};
+                            }
+                        }
+                    } else {
+                        currentExpandedLevel = currentExpandedLevel[category];
+                    }
+                });
+            });
+
+            dispatch(editExpandedCategories(updatedExpandedCategories));
         } catch (error) {
             if (error.response) {
-                const status = error.response.status
+                const status = error.response.status;
                 if (status === 400) {
-                    console.log([`Bad Request: ${error.response.data}`])
+                    console.log(`[Bad Request: ${error.response.data}]`);
                 } else if (status === 500) {
-                    console.log([`Internal Server Error: ${error.response.data}`])
+                    console.log(`[Internal Server Error: ${error.response.data}]`);
                 } else {
-                    console.log([`Error: ${error.response.data}`])
+                    console.log(`[Error: ${error.response.data}]`);
                 }
             } else {
-                console.log([`No response received`])
+                console.log('[No response received]', error);
             }
         }
-
-    }
-
-    // fetch the third category
-    const getThirdCategory = async (firstCategory, secondCategory) => {
-        // console.log(firstCategory, secondCategory)
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`
-        try {
-            const response = await axios.get(url)
-            // console.log(response.data)
-            const updatedAllCategories = produce(allCategories, draft => {
-                draft[firstCategory].subCategories[secondCategory].subCategories = response.data
-            })
-            dispatch(editAllCategories(updatedAllCategories))
-
-            let updatedExpandedCategories = null
-            if (expandedCategories[firstCategory].hasOwnProperty(secondCategory)) {
-                updatedExpandedCategories = produce(expandedCategories, draft => {
-                    delete draft[firstCategory][secondCategory]
-                })
-            } else {
-                if (allCategories[firstCategory].subCategories[secondCategory].hasChildren) {
-                    updatedExpandedCategories = produce(expandedCategories, draft => {
-                        draft[firstCategory][secondCategory] = {}
-                    })
-                }
-            }
-            dispatch(editExpandedCategories(updatedExpandedCategories))
-
-        } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 400) {
-                    console.log([`Bad Request: ${error.response.data}`])
-                } else if (status === 500) {
-                    console.log([`Internal Server Error: ${error.response.data}`])
-                } else {
-                    console.log([`Error: ${error.response.data}`])
-                }
-            } else {
-                console.log([`No response received`])
-            }
-        }
-    }
-
-    // fetch the fourth category
-    const getFourthCategory = async (firstCategory, secondCategory, thirdCategory) => {
-        // console.log(firstCategory, secondCategory, thirdCategory)
-        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}/third_category/${thirdCategory}`
-        try {
-            const response = await axios.get(url)
-
-            const updatedAllCategories = produce(allCategories, draft => {
-                draft[firstCategory].subCategories[secondCategory].subCategories[thirdCategory].subCategories = response.data
-            })
-            dispatch(editAllCategories(updatedAllCategories))
-
-            let updatedExpandedCategories = null
-            if (expandedCategories[firstCategory][secondCategory].hasOwnProperty(thirdCategory)) {
-                updatedExpandedCategories = produce(expandedCategories, draft => {
-                    delete draft[firstCategory][secondCategory][thirdCategory]
-                })
-            } else {
-                if (allCategories[firstCategory].subCategories[secondCategory].subCategories[thirdCategory].hasChildren) {
-                    updatedExpandedCategories = produce(expandedCategories, draft => {
-                        draft[firstCategory][secondCategory][thirdCategory] = {}
-                    })
-                }
-            }
-            dispatch(editExpandedCategories(updatedExpandedCategories))
-
-
-        } catch (error) {
-            if (error.response) {
-                const status = error.response.status
-                if (status === 400) {
-                    console.log([`Bad Request: ${error.response.data}`])
-                } else if (status === 500) {
-                    console.log([`Internal Server Error: ${error.response.data}`])
-                } else {
-                    console.log([`Error: ${error.response.data}`])
-                }
-            } else {
-                console.log([`No response received`])
-            }
-        }
-    }
-
-    // fetch the last articles under the fourth category
-    const getLastArticles = (firstCategory, secondCategory, thirdCategory, fourthCategory, fourthCategoryValue) => {
-
-        let updatedExpandedCategories = null
-        if (expandedCategories[firstCategory][secondCategory][thirdCategory].hasOwnProperty(fourthCategory)) {
-            updatedExpandedCategories = produce(expandedCategories, draft => {
-                delete draft[firstCategory][secondCategory][thirdCategory][fourthCategory]
-            })
-        } else {
-            if (fourthCategoryValue.hasChildren) {
-                updatedExpandedCategories = produce(expandedCategories, draft => {
-                    draft[firstCategory][secondCategory][thirdCategory][fourthCategory] = {}
-                })
-            }
-        }
-        dispatch(editExpandedCategories(updatedExpandedCategories))
-
-    }
+    };
 
     // const collapseAll = () => {
     //     setExpandedCategories({})
@@ -259,7 +177,7 @@ const NavBar = () => {
 
                                 {/* when user clicks the level 1 category, requests server to get the respective level 2 categories*/}
                                 <div className="nav-bar__category_name"
-                                    onClick={() => getSecondCategory(firstCategoryName)}>
+                                    onClick={() => fetchNextCategory(firstCategoryValue, firstCategoryName)}>
 
                                     {/* the arrow icon */}
                                     {/* if the level 1 category doesn't have children, hide the arrow */}
@@ -319,7 +237,7 @@ const NavBar = () => {
                                             <div className="nav-bar__category_div">
                                                 <div
                                                     className="nav-bar__category_name"
-                                                    onClick={() => getThirdCategory(firstCategoryName, secondCategoryName)}
+                                                    onClick={() => fetchNextCategory(secondCategoryValue, firstCategoryName, secondCategoryName)}
                                                 >
 
                                                     {/* show the arrow or not */}
@@ -378,7 +296,7 @@ const NavBar = () => {
                                                             <div className="nav-bar__category_div">
                                                                 <div
                                                                     className="nav-bar__category_name"
-                                                                    onClick={() => getFourthCategory(firstCategoryName, secondCategoryName, thirdCategoryName)}
+                                                                    onClick={() => fetchNextCategory(thirdCategoryValue, firstCategoryName, secondCategoryName, thirdCategoryName)}
                                                                 >
 
                                                                     {/* show the arrow or not */}
@@ -443,7 +361,7 @@ const NavBar = () => {
                                                                             <div className="nav-bar__category_div">
                                                                                 <div
                                                                                     className="nav-bar__category_name"
-                                                                                    onClick={() => getLastArticles(firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName, fourthCategoryValue)}
+                                                                                    onClick={() => fetchNextCategory(fourthCategoryValue, firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName)}
                                                                                 >
 
                                                                                     {/* show the arrow or not */}

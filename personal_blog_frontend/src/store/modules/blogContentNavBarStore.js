@@ -5,6 +5,7 @@ const blogContentNavbarStore = createSlice({
     initialState: {
         expandedCategories: {},
         allCategories: {},
+        expandedCategoriesCount: 0,
         currentExpandedCategory: {},
         currentCategoryInfo: {
             categoryName: "",
@@ -17,6 +18,9 @@ const blogContentNavbarStore = createSlice({
         },
         editAllCategories(state, action) {
             state.allCategories = action.payload
+        },
+        editExpandedCategoriesCount(state, action) {
+            state.expandedCategoriesCount = action.payload
         },
         editCurrentExpandedCategory(state, action) {
             state.currentExpandedCategory = action.payload
@@ -32,10 +36,14 @@ const blogContentNavbarStore = createSlice({
     }
 })
 
-const { editExpandedCategories, editAllCategories, editCurrentExpandedCategory, editCurrentCategoryInfo } = blogContentNavbarStore.actions
+export const {
+    editExpandedCategories,
+    editAllCategories,
+    editCurrentExpandedCategory,
+    editCurrentCategoryInfo,
+    editExpandedCategoriesCount
+} = blogContentNavbarStore.actions
 
 const reducer = blogContentNavbarStore.reducer
-
-export { editExpandedCategories, editAllCategories, editCurrentExpandedCategory, editCurrentCategoryInfo }
 
 export default reducer
