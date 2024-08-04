@@ -1,22 +1,21 @@
 import './NavBarArticles.css'
-import { useSelector} from 'react-redux'
 import classNames from 'classnames'
+import React from 'react';
 
-const NavBarArticles = () => {
-    const { currentExpandedCategory } = useSelector(state => state.blogContentNavbar.currentExpandedCategory)
-    const { categoryName, categoryValue } = useSelector(state => state.blogContentNavbar.currentCategoryInfo)
+const NavBarArticles = (props) => {
+    const expandedCategories = props.expandedCategories;
+    const {categoryName, categoryValue} = props.expandedCategoriesInfo;
+   
     return (
+        <div className={classNames({ 'nav-bar__category_article': expandedCategories.hasOwnProperty(categoryName) })}>
 
-        < div className={classNames({ 'nav-bar__category_article': currentExpandedCategory.hasOwnProperty(categoryName) })
-        }>
-            {
-                currentExpandedCategory.hasOwnProperty(categoryName) &&
+            {/* firstCategoryValue['articles']: {articleId: articleTitle} */}
+            {expandedCategories.hasOwnProperty(categoryName) &&
                 categoryValue['articles'] !== null &&
                 (
                     Object.entries(categoryValue['articles']).map(([id, title]) => (
-
                         <li className={classNames("nav-bar__second-category-items")}
-                            key={id}>
+                            key={`article-${id}`}>
                             <div className="nav-bar__category_div">
                                 <div className="nav-bar__category_name">
                                     {/* arrow icon - always hide for articles */}
@@ -45,9 +44,9 @@ const NavBarArticles = () => {
                         </li>
                     ))
 
-                )
-            }
-        </div >
+                )}
+        </div>
+
     )
 }
 
