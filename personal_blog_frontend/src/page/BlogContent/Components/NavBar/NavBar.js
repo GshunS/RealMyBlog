@@ -109,7 +109,6 @@ const NavBar = () => {
                             {/* second category */}
                             <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) })}
                             >
-
                                 {/* if the parent category has been clicked, show all children categories */}
                                 {expandedCategories.hasOwnProperty(firstCategoryName) && (
 
@@ -118,10 +117,6 @@ const NavBar = () => {
                                         <li className={classNames("nav-bar__second-category-items")}
                                             key={secondIndex}>
                                             {/* level 2 category <li> content */}
-
-                                            {/* left part of <li>: arrow -> folder icon -> category name OR file icon -> filename */}
-                                            {/* when user clicks the level 2 category, requests server to get the respective level 3 categories*/}
-
                                             <NavBarCategories
                                                 expandedCategories={expandedCategories[firstCategoryName]}
                                                 expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }}
@@ -138,11 +133,8 @@ const NavBar = () => {
                                                     Object.entries(secondCategoryValue["subCategories"]).map(([thirdCategoryName, thirdCategoryValue], thirdIndex) => (
                                                         <li className={classNames("nav-bar__third-category-items")}
                                                             key={thirdIndex}>
+
                                                             {/* level 3 category <li> content */}
-
-                                                            {/* left part of <li>: arrow -> folder icon -> category name OR file icon -> filename */}
-                                                            {/* when user clicks the level 3 category, requests server to get the respective level 4 categories*/}
-
                                                             <NavBarCategories
                                                                 expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
                                                                 expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }}
@@ -166,16 +158,11 @@ const NavBar = () => {
                                                                         <li className={classNames("nav-bar__fourth-category-items")}
                                                                             key={fourthIndex}>
                                                                             {/* level 4 category <li> content */}
-
-                                                                            {/* left part of <li>: arrow -> folder icon -> category name OR file icon -> filename */}
-                                                                            {/* when user clicks the level 4 category, requests server to get the respective articles under level 4*/}
-
                                                                             <NavBarCategories
                                                                                 expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
                                                                                 expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }}
                                                                                 categories={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
                                                                             />
-
 
                                                                             {/* Articles under level 4 category */}
                                                                             <ul
@@ -212,7 +199,6 @@ const NavBar = () => {
                                                     expandedCategories={expandedCategories[firstCategoryName]}
                                                     expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }} />
                                             </ul>
-
 
                                         </li>
                                     ))
