@@ -153,7 +153,7 @@ const Header = () => {
                 var articleArray = []
                 response.data.forEach((article) => {
                     articleArray.push(
-                        { id: article.id, content: article.part_content, category: article.category }
+                        { id: article.id, content: article.part_content, category: article.category, category_id: article.category_id }
                     )
                 })
 
@@ -178,8 +178,8 @@ const Header = () => {
         }
     }
 
-    const onClickArticle = (id) => {
-        console.log(`Article ID: ${id}`)
+    const onClickArticle = (article_id, category_id) => {
+        console.log(`Article ID: ${article_id}, Category ID: ${category_id}`)
         inputRef.current.value = ''
         onInput({ target: { value: '' } })
     }
@@ -208,7 +208,7 @@ const Header = () => {
                             <li
                                 key={item.id}
                                 className={classNames('header__display_item')}
-                                onClick={(e) => onClickArticle(item.id)}
+                                onClick={() => onClickArticle(item.id, item.category_id)}
                             >
                                 <span>...&nbsp;{item.content}&nbsp;...</span>
                                 {/* show categories */}
