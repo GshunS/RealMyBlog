@@ -1,22 +1,26 @@
 import './NavBar.css'
 // import './waste.css'
 import { useEffect, useState, useRef } from 'react'
+import { produce } from 'immer'
 import classNames from 'classnames'
 import axios from 'axios'
-import NavBarElementOperation from './NavBarElementOperations'
+import { editExpandedCategories, editAllCategories } from '../../../../store/modules/blogContentNavBarStore'
+import { useDispatch, useSelector } from 'react-redux'
 
 // category navigation bar
 const NavBar = () => {
 
-    // the expandedCategories state is used to keep track of which categories are expanded
-    const [expandedCategories, setExpandedCategories] = useState({})
+    const dispatch = useDispatch()
+    // // the expandedCategories state is used to keep track of which categories are expanded
+    // const [expandedCategories, setExpandedCategories] = useState({})
+    const { expandedCategories } = useSelector(state => state.blogContentNavbar)
 
-    // allCategories state is used to store all the categories and subcategories
-    const [allCategories, setAllCategories] = useState({})
+    // // allCategories state is used to store all the categories and subcategories
+    // const [allCategories, setAllCategories] = useState({})
+    const { allCategories } = useSelector(state => state.blogContentNavbar)
 
     const [expandedElements, setExpandedElements] = useState(new Set())
 
-    // get the new expanded element and the new collapse element
     const getExpandedElement = () => {
         const nodelist = document.querySelectorAll('.expanded')
 
@@ -52,7 +56,6 @@ const NavBar = () => {
         }, 100)
 
         return () => clearTimeout(timer)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [expandedCategories])
 
     // fetch the first category
@@ -61,7 +64,9 @@ const NavBar = () => {
             var url = `https://localhost:7219/api/categories/first-category`
             try {
                 const response = await axios.get(url)
-                setAllCategories(response.data)
+                // setAllCategories(response.data)
+                dispatch(editAllCategories(response.data))
+                // console.log(response.data)
             } catch (error) {
                 if (error.response) {
                     const status = error.response.status
@@ -78,79 +83,33 @@ const NavBar = () => {
             }
         }
         fetchFirstCategory()
-    }, [])
+    }, [dispatch])
 
-    // set the expanded categories
-    const setExpandedCategoriesHelper = (firstCategory, secondCategory = null, thirdCategory = null, fourthCategory = null) => {
-        let prevExpanded = { ...expandedCategories }
-        let currentLevel = null
-        let currentExpanded = null
-        let currentCategory = { ...allCategories }
-        if (firstCategory) {
-            currentLevel = firstCategory
-            currentExpanded = prevExpanded
-        }
-        if (secondCategory) {
-            currentExpanded = currentExpanded[firstCategory]
-            currentLevel = secondCategory
-            currentCategory = currentCategory[firstCategory]['subCategories']
-        }
-        if (thirdCategory) {
-            currentExpanded = currentExpanded[secondCategory]
-            currentLevel = thirdCategory
-            currentCategory = currentCategory[secondCategory]['subCategories']
-        }
-        if (fourthCategory) {
-            currentExpanded = currentExpanded[thirdCategory]
-            currentLevel = fourthCategory
-            currentCategory = currentCategory[thirdCategory]['subCategories']
-        }
+    // fetch the second category
+    const getSecondCategory = async (firstCategory) => {
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}`
 
-        if (currentExpanded.hasOwnProperty(currentLevel)) {
-            // If the category is already expanded, collapse it
-            delete currentExpanded[currentLevel];
-        } else {
-            // If the category is not expanded, expand it
-            if (currentCategory[currentLevel].hasChildren) {
-                currentExpanded[currentLevel] = {}
-            }
-        }
-        setExpandedCategories(prevExpanded)
-
-    }
-
-
-    // fetch the next category
-    const getNextCategrory = async (firstCategory, secondCategory = null, thirdCategory = null, fourthCategory = null) => {
         try {
-            let url = `https://localhost:7219/api/categories`
-            let currentAllCategory = { ...allCategories }
-            let currentCategory = null
-
-            if (firstCategory) {
-                url += `/first_category/${firstCategory}`
-                currentCategory = currentAllCategory[firstCategory]
-            }
-            if (secondCategory) {
-                url += `/second_category/${secondCategory}`
-                currentCategory = currentCategory['subCategories'][secondCategory]
-            }
-            if (thirdCategory) {
-                url += `/third_category/${thirdCategory}`
-                currentCategory = currentCategory['subCategories'][thirdCategory]
-            }
-            if (fourthCategory) {
-                setExpandedCategoriesHelper(firstCategory, secondCategory, thirdCategory, fourthCategory)
-                return
-            }
-
-            // retrieve the categories info from server
             const response = await axios.get(url)
-            // eslint-disable-next-line no-unused-vars
-            currentCategory['subCategories'] = response.data
-            setAllCategories(currentAllCategory)
-            setExpandedCategoriesHelper(firstCategory, secondCategory, thirdCategory, fourthCategory)
+            // console.log(response.data)
+            const updatedAllCategories = produce(allCategories, draft => {
+                draft[firstCategory].subCategories = response.data
+            })
+            dispatch(editAllCategories(updatedAllCategories))
 
+            let updatedExpandedCategories = null
+            if (expandedCategories.hasOwnProperty(firstCategory)) {
+                updatedExpandedCategories = produce(expandedCategories, draft => {
+                    delete draft[firstCategory]
+                })
+            } else {
+                if (allCategories[firstCategory].hasChildren) {
+                    updatedExpandedCategories = produce(expandedCategories, draft => {
+                        draft[firstCategory] = {}
+                    })
+                }
+            }
+            dispatch(editExpandedCategories(updatedExpandedCategories))
         } catch (error) {
             if (error.response) {
                 const status = error.response.status
@@ -168,14 +127,118 @@ const NavBar = () => {
 
     }
 
-    const collapseAll = () => {
-        setExpandedCategories({})
+    // fetch the third category
+    const getThirdCategory = async (firstCategory, secondCategory) => {
+        // console.log(firstCategory, secondCategory)
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}`
+        try {
+            const response = await axios.get(url)
+            // console.log(response.data)
+            const updatedAllCategories = produce(allCategories, draft => {
+                draft[firstCategory].subCategories[secondCategory].subCategories = response.data
+            })
+            dispatch(editAllCategories(updatedAllCategories))
+
+            let updatedExpandedCategories = null
+            if (expandedCategories[firstCategory].hasOwnProperty(secondCategory)) {
+                updatedExpandedCategories = produce(expandedCategories, draft => {
+                    delete draft[firstCategory][secondCategory]
+                })
+            } else {
+                if (allCategories[firstCategory].subCategories[secondCategory].hasChildren) {
+                    updatedExpandedCategories = produce(expandedCategories, draft => {
+                        draft[firstCategory][secondCategory] = {}
+                    })
+                }
+            }
+            dispatch(editExpandedCategories(updatedExpandedCategories))
+
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status
+                if (status === 400) {
+                    console.log([`Bad Request: ${error.response.data}`])
+                } else if (status === 500) {
+                    console.log([`Internal Server Error: ${error.response.data}`])
+                } else {
+                    console.log([`Error: ${error.response.data}`])
+                }
+            } else {
+                console.log([`No response received`])
+            }
+        }
     }
+
+    // fetch the fourth category
+    const getFourthCategory = async (firstCategory, secondCategory, thirdCategory) => {
+        // console.log(firstCategory, secondCategory, thirdCategory)
+        var url = `https://localhost:7219/api/categories/first_category/${firstCategory}/second_category/${secondCategory}/third_category/${thirdCategory}`
+        try {
+            const response = await axios.get(url)
+
+            const updatedAllCategories = produce(allCategories, draft => {
+                draft[firstCategory].subCategories[secondCategory].subCategories[thirdCategory].subCategories = response.data
+            })
+            dispatch(editAllCategories(updatedAllCategories))
+
+            let updatedExpandedCategories = null
+            if (expandedCategories[firstCategory][secondCategory].hasOwnProperty(thirdCategory)) {
+                updatedExpandedCategories = produce(expandedCategories, draft => {
+                    delete draft[firstCategory][secondCategory][thirdCategory]
+                })
+            } else {
+                if (allCategories[firstCategory].subCategories[secondCategory].subCategories[thirdCategory].hasChildren) {
+                    updatedExpandedCategories = produce(expandedCategories, draft => {
+                        draft[firstCategory][secondCategory][thirdCategory] = {}
+                    })
+                }
+            }
+            dispatch(editExpandedCategories(updatedExpandedCategories))
+
+
+        } catch (error) {
+            if (error.response) {
+                const status = error.response.status
+                if (status === 400) {
+                    console.log([`Bad Request: ${error.response.data}`])
+                } else if (status === 500) {
+                    console.log([`Internal Server Error: ${error.response.data}`])
+                } else {
+                    console.log([`Error: ${error.response.data}`])
+                }
+            } else {
+                console.log([`No response received`])
+            }
+        }
+    }
+
+    // fetch the last articles under the fourth category
+    const getLastArticles = (firstCategory, secondCategory, thirdCategory, fourthCategory, fourthCategoryValue) => {
+
+        let updatedExpandedCategories = null
+        if (expandedCategories[firstCategory][secondCategory][thirdCategory].hasOwnProperty(fourthCategory)) {
+            updatedExpandedCategories = produce(expandedCategories, draft => {
+                delete draft[firstCategory][secondCategory][thirdCategory][fourthCategory]
+            })
+        } else {
+            if (fourthCategoryValue.hasChildren) {
+                updatedExpandedCategories = produce(expandedCategories, draft => {
+                    draft[firstCategory][secondCategory][thirdCategory][fourthCategory] = {}
+                })
+            }
+        }
+        dispatch(editExpandedCategories(updatedExpandedCategories))
+
+    }
+
+    // const collapseAll = () => {
+    //     setExpandedCategories({})
+    // }
 
     return (
         <div className="nav-bar">
             {/* navigation title */}
-            <div className="nav-bar__name" onClick={() => collapseAll()}>
+            <div className="nav-bar__name">
                 <span>Blog Navigation</span>
             </div>
 
@@ -196,7 +259,7 @@ const NavBar = () => {
 
                                 {/* when user clicks the level 1 category, requests server to get the respective level 2 categories*/}
                                 <div className="nav-bar__category_name"
-                                    onClick={() => getNextCategrory(firstCategoryName)}>
+                                    onClick={() => getSecondCategory(firstCategoryName)}>
 
                                     {/* the arrow icon */}
                                     {/* if the level 1 category doesn't have children, hide the arrow */}
@@ -225,8 +288,15 @@ const NavBar = () => {
 
                                 </div>
 
-                                {/* svg for 'create a subfolder' and 'create a sub file'*/}
-                                <NavBarElementOperation />
+                                {/* add folder and add file image */}
+                                <div className={classNames("nav-bar__category_img")}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className='nav-bar__add-folder'>
+                                        <title>create a folder</title>
+                                        <path d="M512 416c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l160 0c35.3 0 64 28.7 64 64l0 256zM232 376c0 13.3 10.7 24 24 24s24-10.7 24-24l0-64 64 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-64 0 0-64c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 64-64 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l64 0 0 64z" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className='nav-bar__add-file'>
+                                        <title>create a file</title>
+                                        <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 38.6C310.1 219.5 256 287.4 256 368c0 59.1 29.1 111.3 73.7 143.3c-3.2 .5-6.4 .7-9.7 .7L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zm48 96a144 144 0 1 1 0 288 144 144 0 1 1 0-288zm16 80c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 48-48 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l48 0 0 48c0 8.8 7.2 16 16 16s16-7.2 16-16l0-48 48 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-48 0 0-48z" /></svg>
+                                </div>
 
                             </div>
 
@@ -249,7 +319,8 @@ const NavBar = () => {
                                             <div className="nav-bar__category_div">
                                                 <div
                                                     className="nav-bar__category_name"
-                                                    onClick={() => getNextCategrory(firstCategoryName, secondCategoryName)}>
+                                                    onClick={() => getThirdCategory(firstCategoryName, secondCategoryName)}
+                                                >
 
                                                     {/* show the arrow or not */}
                                                     <svg
@@ -277,8 +348,15 @@ const NavBar = () => {
                                                     <span>{secondCategoryName}</span>
 
                                                 </div>
-                                                {/* svg for 'create a subfolder' and 'create a sub file'*/}
-                                                <NavBarElementOperation />
+                                                {/* add folder and add image icon */}
+                                                <div className={classNames("nav-bar__category_img")}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className='nav-bar__add-folder'>
+                                                        <title>create a folder</title>
+                                                        <path d="M512 416c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l160 0c35.3 0 64 28.7 64 64l0 256zM232 376c0 13.3 10.7 24 24 24s24-10.7 24-24l0-64 64 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-64 0 0-64c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 64-64 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l64 0 0 64z" /></svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className='nav-bar__add-file'>
+                                                        <title>create a file</title>
+                                                        <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 38.6C310.1 219.5 256 287.4 256 368c0 59.1 29.1 111.3 73.7 143.3c-3.2 .5-6.4 .7-9.7 .7L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zm48 96a144 144 0 1 1 0 288 144 144 0 1 1 0-288zm16 80c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 48-48 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l48 0 0 48c0 8.8 7.2 16 16 16s16-7.2 16-16l0-48 48 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-48 0 0-48z" /></svg>
+                                                </div>
 
                                             </div>
 
@@ -300,7 +378,8 @@ const NavBar = () => {
                                                             <div className="nav-bar__category_div">
                                                                 <div
                                                                     className="nav-bar__category_name"
-                                                                    onClick={() => getNextCategrory(firstCategoryName, secondCategoryName, thirdCategoryName)}>
+                                                                    onClick={() => getFourthCategory(firstCategoryName, secondCategoryName, thirdCategoryName)}
+                                                                >
 
                                                                     {/* show the arrow or not */}
                                                                     <svg
@@ -328,8 +407,15 @@ const NavBar = () => {
                                                                     <span>{thirdCategoryName}</span>
 
                                                                 </div>
-                                                                {/* svg for 'create a subfolder' and 'create a sub file'*/}
-                                                                <NavBarElementOperation />
+                                                                {/* add folder and add image icon */}
+                                                                <div className={classNames("nav-bar__category_img")}>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className='nav-bar__add-folder'>
+                                                                        <title>create a folder</title>
+                                                                        <path d="M512 416c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l160 0c35.3 0 64 28.7 64 64l0 256zM232 376c0 13.3 10.7 24 24 24s24-10.7 24-24l0-64 64 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-64 0 0-64c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 64-64 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l64 0 0 64z" /></svg>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className='nav-bar__add-file'>
+                                                                        <title>create a file</title>
+                                                                        <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 38.6C310.1 219.5 256 287.4 256 368c0 59.1 29.1 111.3 73.7 143.3c-3.2 .5-6.4 .7-9.7 .7L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zm48 96a144 144 0 1 1 0 288 144 144 0 1 1 0-288zm16 80c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 48-48 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l48 0 0 48c0 8.8 7.2 16 16 16s16-7.2 16-16l0-48 48 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-48 0 0-48z" /></svg>
+                                                                </div>
 
                                                             </div>
 
@@ -357,7 +443,7 @@ const NavBar = () => {
                                                                             <div className="nav-bar__category_div">
                                                                                 <div
                                                                                     className="nav-bar__category_name"
-                                                                                    onClick={() => getNextCategrory(firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName, fourthCategoryValue)}
+                                                                                    onClick={() => getLastArticles(firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName, fourthCategoryValue)}
                                                                                 >
 
                                                                                     {/* show the arrow or not */}
@@ -386,8 +472,15 @@ const NavBar = () => {
                                                                                     <span>{fourthCategoryName}</span>
 
                                                                                 </div>
-                                                                                {/* svg for 'create a subfolder' and 'create a sub file'*/}
-                                                                                <NavBarElementOperation />
+                                                                                {/* add folder and add image icon */}
+                                                                                <div className={classNames("nav-bar__category_img")}>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className='nav-bar__add-folder'>
+                                                                                        <title>create a folder</title>
+                                                                                        <path d="M512 416c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l160 0c35.3 0 64 28.7 64 64l0 256zM232 376c0 13.3 10.7 24 24 24s24-10.7 24-24l0-64 64 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-64 0 0-64c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 64-64 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l64 0 0 64z" /></svg>
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className='nav-bar__add-file'>
+                                                                                        <title>create a file</title>
+                                                                                        <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 38.6C310.1 219.5 256 287.4 256 368c0 59.1 29.1 111.3 73.7 143.3c-3.2 .5-6.4 .7-9.7 .7L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zm48 96a144 144 0 1 1 0 288 144 144 0 1 1 0-288zm16 80c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 48-48 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l48 0 0 48c0 8.8 7.2 16 16 16s16-7.2 16-16l0-48 48 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-48 0 0-48z" /></svg>
+                                                                                </div>
 
                                                                             </div>
 
