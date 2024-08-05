@@ -1,8 +1,8 @@
 import './NavBarElementOperations.css'
 // import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
-import { useSelector, useDispatch } from 'react-redux'
-import { fetchNextCategory , editCurrentAncestorNames, editTempFolderCreated, editTempFolderDisplay} from '../../../../store/modules/blogContentNavBarStore';
+import { useDispatch } from 'react-redux'
+import { fetchNextCategory , editCurrentAncestorNames, editTempFolderCreated} from '../../../../store/modules/blogContentNavBarStore';
 // import axios from 'axios'
 
 const NavBarElementOperation = (props) => {
@@ -13,6 +13,14 @@ const NavBarElementOperation = (props) => {
     const ancestorCategoryNames = props.ancestorCategoryNames
 
     const createFolder = () => {
+        document.querySelectorAll('.nav-bar__category_div_temp').forEach((element) => {
+            let text = element.parentElement.parentElement.parentElement.querySelector('span').innerText
+            if (text === ancestorCategoryNames[0]) {
+                console.log(element)
+                element.style.display = 'flex'
+                element.classList.add('showFolder')
+            }
+        })
         dispatch(editTempFolderCreated(true))
         dispatch(editCurrentAncestorNames(ancestorCategoryNames))
         if (!expandedCategories.hasOwnProperty(categoryName)) {

@@ -1,25 +1,11 @@
 import classNames from 'classnames'
 import './NavBarTempFolder.css'
-import React, { useRef, useEffect } from 'react'
-import { useSelector ,useDispatch} from 'react-redux'
+import React, { useRef } from 'react'
 const NavBarTempFolder = (props) => {
 
-    const currentAncestorNames = useSelector(state => state.blogContentNavbar.currentAncestorNames)
-    const ancestorCategoryNames = props.ancestorCategoryNames
     const inputRef = useRef(null)
 
-    function checkShowFolder() {
-        // console.log(ancestorCategoryNames)
-        // console.log(currentAncestorNames)
-        // console.log('checking')
-        if (ancestorCategoryNames.length !== currentAncestorNames.length) {
-            return false
-        }
-        else {
-            console.log('equal')
-            return ancestorCategoryNames.every((value, index) => value === currentAncestorNames[index])
-        }
-    }
+ 
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -34,7 +20,7 @@ const NavBarTempFolder = (props) => {
     };
     return (
         <div
-            className={classNames("nav-bar__category_div_temp", { 'showFolder': checkShowFolder() })}
+            className={classNames("nav-bar__category_div_temp", { 'showFolder': false })}
             >
             <div
                 className="nav-bar__category_name"

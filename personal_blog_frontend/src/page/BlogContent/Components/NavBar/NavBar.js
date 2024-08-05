@@ -1,5 +1,4 @@
 import './NavBar.css'
-// import './waste.css'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import axios from 'axios'
@@ -35,7 +34,6 @@ const NavBar = () => {
         const handleClickOutside = (event) => {
             console.log(tempFolderCreated)
             if (tempFolderCreated) {
-                // console.log('tempFolderCreated change to false')
                 dispatch(editTempFolderCreated(false))
                 return;
             }
@@ -52,12 +50,10 @@ const NavBar = () => {
                     if (ref) {
                         const children = ref.querySelectorAll('.showFolder');
                         children.forEach(child => {
-                            // console.log(child)
-                            child.classList.remove('showFolder');
+                            child.style.display = "none"
                         });
                     }
                 });
-                window.location.reload()
             }
         };
 
