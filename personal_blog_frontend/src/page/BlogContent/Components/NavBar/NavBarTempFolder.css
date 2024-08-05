@@ -1,0 +1,16 @@
+.nav-bar__category_div_temp {
+    display: none;
+}
+
+.showFolder{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 0.3rem;
+    border-radius: 0.7rem;
+    padding: 0.5rem;
+    /* Added padding for better spacing */
+    background-color: #e9edf2;
+    /* Light background color for better contrast */
+    height: 2rem;
+    margin-bottom: 0.3rem;
+}

@@ -7,6 +7,7 @@ import { editAllCategories } from '../../../../store/modules/blogContentNavBarSt
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
+import NavBarTempFolder from './NavBarTempFolder'
 // category navigation bar
 const NavBar = () => {
 
@@ -48,6 +49,7 @@ const NavBar = () => {
             setExpandedElements(new Set(nodelist))
         }, 100)
 
+
         return () => clearTimeout(timer)
     }, [expandedCategories])
 
@@ -81,6 +83,8 @@ const NavBar = () => {
     //     setExpandedCategories({})
     // }
 
+
+
     return (
         <div className="nav-bar">
             {/* navigation title */}
@@ -101,6 +105,7 @@ const NavBar = () => {
 
                             {/* level 1 category <li> content */}
                             <NavBarCategories
+                                parentCategoryName={firstCategoryName}
                                 expandedCategories={expandedCategories}
                                 expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }}
                                 categories={[firstCategoryName]}
@@ -109,15 +114,19 @@ const NavBar = () => {
                             {/* second category */}
                             <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) })}
                             >
+                                <NavBarTempFolder parentCategoryName={firstCategoryName} />
                                 {/* if the parent category has been clicked, show all children categories */}
                                 {expandedCategories.hasOwnProperty(firstCategoryName) && (
-
                                     // secondCategoryValue: {hasChildren:true, subCategories:null, articles:null}
+
                                     Object.entries(firstCategoryValue["subCategories"]).map(([secondCategoryName, secondCategoryValue], secondIndex) => (
+
                                         <li className={classNames("nav-bar__second-category-items")}
                                             key={secondIndex}>
                                             {/* level 2 category <li> content */}
+
                                             <NavBarCategories
+                                                parentCategoryName={secondCategoryName}
                                                 expandedCategories={expandedCategories[firstCategoryName]}
                                                 expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }}
                                                 categories={[firstCategoryName, secondCategoryName]}

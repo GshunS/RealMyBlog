@@ -9,11 +9,12 @@ const blogContentNavbarStore = createSlice({
         expandedCategories: {},
         allCategories: {},
         // expandedCategoriesCount: 0,
-        currentExpandedCategory: {},
-        currentCategoryInfo: {
-            categoryName: "",
-            categoryValue: {}
-        }
+        // currentExpandedCategory: {},
+        // currentCategoryInfo: {
+        //     categoryName: "",
+        //     categoryValue: {}
+        // },
+        currentParentName: ''
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -25,25 +26,24 @@ const blogContentNavbarStore = createSlice({
         // editExpandedCategoriesCount(state, action) {
         //     state.expandedCategoriesCount = action.payload
         // },
-        editCurrentExpandedCategory(state, action) {
-            state.currentExpandedCategory = action.payload
+        // editCurrentExpandedCategory(state, action) {
+        //     state.currentExpandedCategory = action.payload
+        // },
+        editCurrentParentName(state, action) {
+            state.currentParentName = action.payload
         },
-        editCurrentCategoryInfo(state, action) {
-            const { categoryName, categoryValue } = action.payload
-            state.currentCategoryInfo = {
-                ...state.currentCategoryInfo,
-                'categoryName': categoryName,
-                'categoryValue': categoryValue
-            }
-        }
+        // editAllLevels(state, action) {
+        //     state.allLevels = action.payload
+        // }
     }
 })
 
 const {
     editExpandedCategories,
     editAllCategories,
-    editCurrentExpandedCategory,
-    editCurrentCategoryInfo
+    // editCurrentExpandedCategory,
+    editCurrentParentName,
+    // editAllLevels
 } = blogContentNavbarStore.actions
 
 // fetch the next category
@@ -127,9 +127,10 @@ const fetchNextCategory = (categoryValue, ...categories) => {
 }
 
 export {
-    editCurrentExpandedCategory,
-    editCurrentCategoryInfo,
-    editAllCategories
+    // editCurrentExpandedCategory,
+    editCurrentParentName,
+    editAllCategories,
+    // editAllLevels
 }
 
 export { fetchNextCategory }

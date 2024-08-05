@@ -1,20 +1,26 @@
 import classNames from 'classnames'
 import './NavBarCategories.css'
-import React from 'react';
+import React, { useEffect } from 'react';
 import { fetchNextCategory } from '../../../../store/modules/blogContentNavBarStore';
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import NavBarElementOperation from './NavBarElementOperations'
 
 const NavBarCategories = (props) => {
     const expandedCategories = props.expandedCategories;
-    const {categoryName, categoryValue} = props.expandedCategoriesInfo;
+    const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const categories = props.categories;
+    const parentCategoryName = props.parentCategoryName
+
     const dispatch = useDispatch()
+    const handleExpandClick = () => {
+        dispatch(fetchNextCategory(categoryValue, ...categories))
+    }
+
     return (
         <div className="nav-bar__category_div">
             <div
                 className="nav-bar__category_name"
-                onClick={() => dispatch(fetchNextCategory(categoryValue, ...categories))}
+                onClick={() => handleExpandClick()}
             >
 
                 {/* show the arrow or not */}
@@ -44,7 +50,11 @@ const NavBarCategories = (props) => {
 
             </div>
             {/* add folder and add image icon */}
-            <NavBarElementOperation />
+            <NavBarElementOperation
+                parentCategoryName={parentCategoryName}
+                expandedCategories={expandedCategories}
+                expandedCategoriesInfo={{ categoryName, categoryValue }}
+                categories={categories} />
 
         </div>
     )
