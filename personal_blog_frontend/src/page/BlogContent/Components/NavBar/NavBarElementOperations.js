@@ -2,7 +2,7 @@ import './NavBarElementOperations.css'
 // import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchNextCategory , editCurrentParentName} from '../../../../store/modules/blogContentNavBarStore';
+import { fetchNextCategory , editCurrentAncestorNames, editTempFolderCreated, editTempFolderDisplay} from '../../../../store/modules/blogContentNavBarStore';
 // import axios from 'axios'
 
 const NavBarElementOperation = (props) => {
@@ -10,15 +10,14 @@ const NavBarElementOperation = (props) => {
     const expandedCategories = props.expandedCategories;
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const categories = props.categories;
-    const parentCategoryName = props.parentCategoryName
+    const ancestorCategoryNames = props.ancestorCategoryNames
 
-    const createFolder = async () => {
-        // console.log(parentCategoryName)
-        dispatch(editCurrentParentName(parentCategoryName))
+    const createFolder = () => {
+        dispatch(editTempFolderCreated(true))
+        dispatch(editCurrentAncestorNames(ancestorCategoryNames))
         if (!expandedCategories.hasOwnProperty(categoryName)) {
             dispatch(fetchNextCategory(categoryValue, ...categories))
         }
-
 
     }
     return (
@@ -28,7 +27,7 @@ const NavBarElementOperation = (props) => {
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
-                className='nav-bar__add-folder'
+                className={classNames('nav-bar__add-folder', {'nav-bar__hide-createFolder': categories.length === 4})}
                 onClick={() => createFolder()}>
                 <title>create a folder</title>
 

@@ -1,8 +1,9 @@
 /* #region outer layers */
 .nav-bar {
-    /* width: 18%; */
-    flex-grow: 0.05;
+    /* width: 23%; */
+    
     display: flex;
+    flex-grow: 0.06;
     flex-direction: column;
     align-items: center;
     margin-top: 1rem;
@@ -84,6 +85,7 @@
 .nav-bar__third-category-items,
 .nav-bar__fourth-category-items {
     margin-bottom: 0.3rem;
+    
 }
 
 .expanded {
@@ -91,6 +93,9 @@
     /* transition: max-height 1s linear; */
 }
 
+.nav-bar__has-child{
+    max-height: auto;
+}
 
 /* #endregion */
 
@@ -114,6 +119,7 @@
     display: flex;
     align-items: center;
     flex-grow: 1;
+    /* width: auto; */
     /* margin-right: 2rem; */
 }
 

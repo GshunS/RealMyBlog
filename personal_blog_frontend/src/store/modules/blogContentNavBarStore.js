@@ -1,20 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { produce } from 'immer'
 import axios from 'axios'
-import { useSelector } from "react-redux"
 
 const blogContentNavbarStore = createSlice({
     name: "navbar",
     initialState: {
         expandedCategories: {},
         allCategories: {},
-        // expandedCategoriesCount: 0,
-        // currentExpandedCategory: {},
-        // currentCategoryInfo: {
-        //     categoryName: "",
-        //     categoryValue: {}
-        // },
-        currentParentName: ''
+        tempFolderCreated: false,
+        tempFolderDisplay: false,
+        currentAncestorNames: [],
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -23,27 +18,26 @@ const blogContentNavbarStore = createSlice({
         editAllCategories(state, action) {
             state.allCategories = action.payload
         },
-        // editExpandedCategoriesCount(state, action) {
-        //     state.expandedCategoriesCount = action.payload
-        // },
-        // editCurrentExpandedCategory(state, action) {
-        //     state.currentExpandedCategory = action.payload
-        // },
-        editCurrentParentName(state, action) {
-            state.currentParentName = action.payload
+        editTempFolderCreated(state, action) {
+            state.tempFolderCreated = action.payload
         },
-        // editAllLevels(state, action) {
-        //     state.allLevels = action.payload
-        // }
+        editTempFolderDisplay(state, action) {
+            state.tempFolderDisplay = action.payload
+        },
+        editCurrentAncestorNames(state, action) {
+            state.currentAncestorNames = action.payload
+        },
+     
+        
     }
 })
 
 const {
     editExpandedCategories,
     editAllCategories,
-    // editCurrentExpandedCategory,
-    editCurrentParentName,
-    // editAllLevels
+    editCurrentAncestorNames,
+    editTempFolderCreated,
+    editTempFolderDisplay
 } = blogContentNavbarStore.actions
 
 // fetch the next category
@@ -96,9 +90,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                         if (currentExpandedLevel.hasOwnProperty(category)) {
                             delete currentExpandedLevel[category];
                         } else {
-                            if (categoryValue.hasChildren) {
-                                currentExpandedLevel[category] = {};
-                            }
+                            currentExpandedLevel[category] = {};
                         }
                     } else {
                         currentExpandedLevel = currentExpandedLevel[category];
@@ -127,10 +119,10 @@ const fetchNextCategory = (categoryValue, ...categories) => {
 }
 
 export {
-    // editCurrentExpandedCategory,
-    editCurrentParentName,
+    editCurrentAncestorNames,
     editAllCategories,
-    // editAllLevels
+    editTempFolderCreated,
+    editTempFolderDisplay
 }
 
 export { fetchNextCategory }

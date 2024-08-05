@@ -9,7 +9,7 @@ const NavBarCategories = (props) => {
     const expandedCategories = props.expandedCategories;
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const categories = props.categories;
-    const parentCategoryName = props.parentCategoryName
+    const ancestorCategoryNames = props.ancestorCategoryNames
 
     const dispatch = useDispatch()
     const handleExpandClick = () => {
@@ -51,7 +51,7 @@ const NavBarCategories = (props) => {
             </div>
             {/* add folder and add image icon */}
             <NavBarElementOperation
-                parentCategoryName={parentCategoryName}
+                ancestorCategoryNames={ancestorCategoryNames}
                 expandedCategories={expandedCategories}
                 expandedCategoriesInfo={{ categoryName, categoryValue }}
                 categories={categories} />

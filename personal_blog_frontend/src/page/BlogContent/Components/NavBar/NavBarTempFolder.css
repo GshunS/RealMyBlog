@@ -14,3 +14,6 @@
     height: 2rem;
     margin-bottom: 0.3rem;
 }
+.nav-bar__create-folder-input{
+    width: 60%;
+}

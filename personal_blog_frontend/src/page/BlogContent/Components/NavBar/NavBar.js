@@ -1,9 +1,9 @@
 import './NavBar.css'
 // import './waste.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import axios from 'axios'
-import { editAllCategories } from '../../../../store/modules/blogContentNavBarStore'
+import { editAllCategories, editTempFolderCreated } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
@@ -15,8 +15,13 @@ const NavBar = () => {
     // the expandedCategories state is used to keep track of which categories are expanded
     // allCategories state is used to store all the categories and subcategories
     const { expandedCategories, allCategories } = useSelector(state => state.blogContentNavbar)
-
+    const tempFolderCreated = useSelector(state => state.blogContentNavbar.tempFolderCreated)
     const [expandedElements, setExpandedElements] = useState(new Set())
+    const refMap = useRef({});
+
+    const setRef = useCallback((index) => (element) => {
+        refMap.current[index] = element;
+    }, []);
 
 
     const getExpandedElement = () => {
@@ -26,6 +31,42 @@ const NavBar = () => {
         return { newExpandedElement, newCollapseElement, nodelist }
 
     }
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            console.log(tempFolderCreated)
+            if (tempFolderCreated) {
+                // console.log('tempFolderCreated change to false')
+                dispatch(editTempFolderCreated(false))
+                return;
+            }
+            let isOutside = true;
+            Object.values(refMap.current).forEach((ref) => {
+                if (ref && ref.contains(event.target)) {
+                    isOutside = false;
+                }
+            });
+            const folderElement = document.querySelector(".showFolder")
+
+            if (isOutside && folderElement) {
+                Object.values(refMap.current).forEach((ref) => {
+                    if (ref) {
+                        const children = ref.querySelectorAll('.showFolder');
+                        children.forEach(child => {
+                            // console.log(child)
+                            child.classList.remove('showFolder');
+                        });
+                    }
+                });
+                window.location.reload()
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [tempFolderCreated, dispatch]);
 
     // scroll to the expanded category
     useEffect(() => {
@@ -90,8 +131,8 @@ const NavBar = () => {
             {/* navigation title */}
             <div className="nav-bar__name">
                 <span>Blog Navigation</span>
-            </div>
-
+            </div>  
+            
             <div className="nav-bar__categories">
                 {/* first category */}
                 <ul className="nav-bar__first-category">
@@ -105,16 +146,25 @@ const NavBar = () => {
 
                             {/* level 1 category <li> content */}
                             <NavBarCategories
-                                parentCategoryName={firstCategoryName}
+                                ancestorCategoryNames={[firstCategoryName]}
                                 expandedCategories={expandedCategories}
                                 expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }}
                                 categories={[firstCategoryName]}
                             />
 
                             {/* second category */}
-                            <ul className={classNames("nav-bar__second-category", { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) })}
+                            <ul className={
+                                classNames(
+                                    "nav-bar__second-category",
+                                    { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) },
+                                    { "nav-bar__has-child": !firstCategoryValue.hasChildren }
+                                )}
                             >
-                                <NavBarTempFolder parentCategoryName={firstCategoryName} />
+                                <div
+                                    ref={setRef(index)}>
+                                    <NavBarTempFolder ancestorCategoryNames={[firstCategoryName]} />
+                                </div>
+
                                 {/* if the parent category has been clicked, show all children categories */}
                                 {expandedCategories.hasOwnProperty(firstCategoryName) && (
                                     // secondCategoryValue: {hasChildren:true, subCategories:null, articles:null}
@@ -126,15 +176,20 @@ const NavBar = () => {
                                             {/* level 2 category <li> content */}
 
                                             <NavBarCategories
-                                                parentCategoryName={secondCategoryName}
+                                                ancestorCategoryNames={[firstCategoryName, secondCategoryName]}
                                                 expandedCategories={expandedCategories[firstCategoryName]}
                                                 expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }}
                                                 categories={[firstCategoryName, secondCategoryName]}
                                             />
 
                                             {/* third category */}
-                                            <ul className={classNames("nav-bar__third-category", { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) })}>
-
+                                            <ul className={
+                                                classNames(
+                                                    "nav-bar__third-category",
+                                                    { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) },
+                                                    { "nav-bar__has-child": !secondCategoryValue.hasChildren }
+                                                )}>
+                                                <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName]} />
                                                 {/* if the parent category has been clicked, show all children categories */}
                                                 {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) && (
 
@@ -145,6 +200,7 @@ const NavBar = () => {
 
                                                             {/* level 3 category <li> content */}
                                                             <NavBarCategories
+                                                                ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]}
                                                                 expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
                                                                 expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }}
                                                                 categories={[firstCategoryName, secondCategoryName, thirdCategoryName]}
@@ -155,10 +211,11 @@ const NavBar = () => {
                                                                 className={
                                                                     classNames(
                                                                         "nav-bar__fourth-category",
-                                                                        { "expanded": expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) }
+                                                                        { "expanded": expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) },
+                                                                        { "nav-bar__has-child": !thirdCategoryValue.hasChildren }
                                                                     )
                                                                 }>
-
+                                                                <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]} />
                                                                 {/* if the parent category has been clicked, show all children categories */}
                                                                 {expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) && (
 
@@ -168,6 +225,7 @@ const NavBar = () => {
                                                                             key={fourthIndex}>
                                                                             {/* level 4 category <li> content */}
                                                                             <NavBarCategories
+                                                                                ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
                                                                                 expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
                                                                                 expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }}
                                                                                 categories={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
@@ -178,7 +236,8 @@ const NavBar = () => {
                                                                                 className={
                                                                                     classNames(
                                                                                         "nav-bar__fourth-category",
-                                                                                        { "expanded": expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) }
+                                                                                        { "expanded": expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) },
+                                                                                        { "nav-bar__has-child": !fourthCategoryValue.hasChildren }
                                                                                     )
                                                                                 }>
 

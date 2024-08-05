@@ -20,6 +20,10 @@
     border-radius: 4px; /* Optional: Rounded corners for a smoother look */
     padding: 0.1rem; /* Optional: Padding for better spacing */
 }
+
+.nav-bar__hide-createFolder{
+    display: none;
+}
 /* #endregion */
 
 /* #region create a sub-file*/
