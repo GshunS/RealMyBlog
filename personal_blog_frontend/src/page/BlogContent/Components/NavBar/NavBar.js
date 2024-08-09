@@ -2,12 +2,12 @@ import './NavBar.css'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import { fetchData } from '../../../../utils/apiService'
-import { fetchNextCategory, editAllCategories, editTempFolderCreated, editExpandedCategories } from '../../../../store/modules/blogContentNavBarStore'
+import { clearTempElements } from '../../../../utils/folderArticleHelper'
+import { fetchNextCategory, editAllCategories, editTempFolderCreated, editExpandedCategories, editDataRefreshed } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
 import NavBarTempFolder from './NavBarTempFolder'
-import { set } from 'lodash'
 // category navigation bar
 const NavBar = () => {
 
@@ -35,13 +35,14 @@ const NavBar = () => {
     }, []);
 
 
-    const getExpandedElement = () => {
+    const getExpandedElement = useCallback(() => {
         const nodelist = document.querySelectorAll('.expanded')
         const newExpandedElement = Array.from(nodelist).find(element => !expandedElements.has(element))
         const newCollapseElement = Array.from(expandedElements).find(element => !Array.from(nodelist).includes(element))
         return { newExpandedElement, newCollapseElement, nodelist }
 
-    }
+    }, [expandedElements])
+
     // click outside the temp folder, cancel the creation of the temp folder
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -59,14 +60,7 @@ const NavBar = () => {
             const folderElement = document.querySelector(".showFolder")
 
             if (isOutside && folderElement) {
-                Object.values(refMap.current).forEach((ref) => {
-                    if (ref) {
-                        const children = ref.querySelectorAll('.showFolder')
-                        children.forEach(child => {
-                            child.style.display = "none"
-                        })
-                    }
-                })
+                clearTempElements('.showFolder')
             }
         }
 
@@ -75,7 +69,7 @@ const NavBar = () => {
         return () => {
             document.removeEventListener('click', handleClickOutside)
         }
-    }, [tempFolderCreated])
+    }, [dispatch, tempFolderCreated])
 
     // scroll to the expanded category
     useEffect(() => {
@@ -101,11 +95,13 @@ const NavBar = () => {
 
 
         return () => clearTimeout(timer)
-    }, [expandedCategories])
+    }, [expandedCategories, getExpandedElement])
+
+
 
     // fetch the first category
     useEffect(() => {
-        async function fetchInitialData() {
+        function fetchInitialData() {
             var url = `https://localhost:7219/api/categories/first-category`
             // fetch the first category
             fetchData(
@@ -115,8 +111,15 @@ const NavBar = () => {
                 (data) => dispatch(editAllCategories(data)),
                 (error) => console.log('An error occurred:', error)
             );
-            // keep the category expanded
-            if (currentAncestorNames.length > 0) {
+
+        }
+        fetchInitialData()
+    }, [dispatch])
+
+    // if a new sub category(not level 1 category) has been created, refresh the data
+    useEffect(() => {
+        async function updateData() {
+            if (currentAncestorNames.length > 0 && dataRefreshed) {
                 // clear the expanded categories
                 dispatch(editExpandedCategories({}))
                 let tempArray = []
@@ -126,17 +129,14 @@ const NavBar = () => {
                     tempArray.push(categoryName);
                     await dispatch(fetchNextCategory(null, ...tempArray));
                 }
+                dispatch(editDataRefreshed(false))
             }
 
         }
-        fetchInitialData()
-    }, [dataRefreshed])
+        updateData()
+    }, [dataRefreshed, dispatch, currentAncestorNames])
 
-    // const collapseAll = () => {
-    //     setExpandedCategories({})
-    // }
-
-
+    
     return (
         <div className="nav-bar">
             {/* navigation title */}

@@ -2,7 +2,7 @@ import './NavBarArticles.css'
 import classNames from 'classnames'
 import React from 'react';
 
-const NavBarArticles = (props) => {
+const NavBarArticles = React.memo((props) => {
     const expandedCategories = props.expandedCategories;
     const {categoryName, categoryValue} = props.expandedCategoriesInfo;
    
@@ -48,6 +48,6 @@ const NavBarArticles = (props) => {
         </div>
 
     )
-}
+})
 
 export default NavBarArticles

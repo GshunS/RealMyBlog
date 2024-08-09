@@ -28,8 +28,8 @@ const blogContentNavbarStore = createSlice({
         editCurrentAncestorNames(state, action) {
             state.currentAncestorNames = action.payload
         },
-        editDataRefreshed(state) {
-            state.dataRefreshed = !state.dataRefreshed
+        editDataRefreshed(state, action) {
+            state.dataRefreshed = action.payload
         }
 
     }
@@ -48,7 +48,6 @@ const {
 const fetchNextCategory = (categoryValue, ...categories) => {
     return async (dispatch, getState) => {
         const expandedCategories = getState().blogContentNavbar.expandedCategories;
-        console.log(expandedCategories);
         const allCategories = getState().blogContentNavbar.allCategories;
         let url = 'https://localhost:7219/api/categories';
         // let categoryName = null

@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { fetchData } from '../../../../utils/apiService'
 import classNames from 'classnames';
 import avatar from '../../../../assets/images/gz.jpg'
 import './Header.css';
 import { editStatus } from '../../../../store/modules/mainHeaderStore';
 import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash'
 
 // header js
 const Header = () => {
@@ -22,8 +23,6 @@ const Header = () => {
 
     // hasData is a state that is used to control the display of the articles
     const [hasData, setHasData] = useState(false);
-
-    const [typingTimeout, setTypingTimeout] = useState(null);
 
     const dispatch = useDispatch();
 
@@ -112,43 +111,12 @@ const Header = () => {
         // setInputValue(term)
     }
 
-    // detect when user stops typing
-    useEffect(() => {
-        // Clear the previous typing timeout if it exists
-        if (typingTimeout) {
-            clearTimeout(typingTimeout);
-        }
-
-        // Set a new timeout to fetch articles after the user stops typing
-        const timer = setTimeout(async () => {
-            if (inputValue) {
-                // Fetch articles based on the current input value
-                await getArticles(inputValue);
-            }
-        }, 700); // Wait for 700 milliseconds before fetching articles
-
-        // Update the typing timeout state with the new timer
-        setTypingTimeout(timer);
-
-        // Cleanup function to clear the timeout when the component unmounts or inputValue changes
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [inputValue]); // Dependency array to re-run the effect when inputValue changes
-
-    // getArticles is a function that is used to get the articles by full text search from the backend
-    /**
-     * Asynchronous function to fetch articles based on a search term.
-     * @param {string} term - The search term to fetch articles for.
-     */
-    const getArticles = async (term) => {
+    const getArticles = useCallback(async (term) => {
         // Check if there are any articles currently displayed
-        if (displayArticles.length > 0) {
-            // Clear the displayed articles
-            setDisplayArticles([]);
-            // Set the hasData state to false
-            setHasData(false);
-        }
+        // Clear the displayed articles
+        setDisplayArticles([]);
+        // Set the hasData state to false
+        setHasData(false);
 
         // Construct the URL for the API request
         var url = `https://localhost:7219/api/articles/${term}`;
@@ -191,7 +159,28 @@ const Header = () => {
                 setDisplayArticles([error]);
             }
         );
-    }
+    }, [])
+
+    // detect when user stops typing
+    // Define a debounced function using lodash's debounce
+    useEffect(() => {
+        const debouncedFetchArticles = _.debounce(async () => {
+            if (inputValue) {
+                await getArticles(inputValue);
+            }
+        }, 700); // Wait for 700 milliseconds
+        debouncedFetchArticles()
+        return () => {
+            debouncedFetchArticles.cancel();
+        };
+    }, [getArticles, inputValue]);
+
+    // getArticles is a function that is used to get the articles by full text search from the backend
+    /**
+     * Asynchronous function to fetch articles based on a search term.
+     * @param {string} term - The search term to fetch articles for.
+     */
+ 
 
     const onClickArticle = (article_id, category_id) => {
         console.log(`Article ID: ${article_id}, Category ID: ${category_id}`)

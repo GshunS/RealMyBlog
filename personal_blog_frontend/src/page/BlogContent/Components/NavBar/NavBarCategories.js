@@ -1,11 +1,11 @@
 import classNames from 'classnames'
 import './NavBarCategories.css'
-import React, { useEffect } from 'react';
+import React from 'react';
 import { fetchNextCategory } from '../../../../store/modules/blogContentNavBarStore';
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import NavBarElementOperation from './NavBarElementOperations'
 
-const NavBarCategories = (props) => {
+const NavBarCategories = React.memo((props) => {
     const expandedCategories = props.expandedCategories;
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const categories = props.categories;
@@ -58,6 +58,6 @@ const NavBarCategories = (props) => {
 
         </div>
     )
-}
+})
 
 export default NavBarCategories

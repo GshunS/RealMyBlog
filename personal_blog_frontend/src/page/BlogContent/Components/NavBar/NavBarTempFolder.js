@@ -3,6 +3,7 @@ import './NavBarTempFolder.css'
 import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchData } from '../../../../utils/apiService'
+import { clearTempElements } from '../../../../utils/folderArticleHelper'
 import { editDataRefreshed } from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
 const NavBarTempFolder = () => {
@@ -33,15 +34,14 @@ const NavBarTempFolder = () => {
             await fetchData(
                 url, 'POST', Data,
                 (data) => {
-                    // clear all the temp folders
-                    const children = document.querySelectorAll('.showFolder')
-                    children.forEach(child => {
-                        child.style.display = "none"
-                    })
+                    clearTempElements('.showFolder')
                     // refresh the data
-                    dispatch(editDataRefreshed())
+                    dispatch(editDataRefreshed(true))
                 },
-                (error) => { console.log(error) })
+                (error) => {
+                    clearTempElements('.showFolder')
+                    console.log(error)
+                })
         }
     }, 300);
     /**
@@ -79,7 +79,7 @@ const NavBarTempFolder = () => {
 
                 <form onSubmit={CategoryCreation}>
                     <div className="nav-bar__formdiv">
-                        <input ref={inputRef} type="text" placeholder="" className='nav-bar__create-folder-input' />
+                        <input ref={inputRef} type="text" placeholder="here !!!" className='nav-bar__create-folder-input' />
                     </div>
                 </form>
 
