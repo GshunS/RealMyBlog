@@ -2,8 +2,9 @@ import './NavBarElementOperations.css'
 // import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
 import { useDispatch } from 'react-redux'
-import { fetchNextCategory , editCurrentAncestorNames, editTempFolderCreated} from '../../../../store/modules/blogContentNavBarStore';
+import { fetchNextCategory, editCurrentAncestorNames, editTempFolderCreated } from '../../../../store/modules/blogContentNavBarStore';
 // import axios from 'axios'
+
 
 const NavBarElementOperation = (props) => {
     const dispatch = useDispatch()
@@ -12,22 +13,83 @@ const NavBarElementOperation = (props) => {
     const categories = props.categories;
     const ancestorCategoryNames = props.ancestorCategoryNames
 
+    /**
+     * Function to find matched ancestor categories in the DOM tree.
+     * @param {HTMLElement} element - The starting element to begin the search.
+     * @param {string} targetClassName - The class name to match ancestor categories.
+     * @returns {boolean} - Returns true if all ancestor categories match, otherwise false.
+     */
+    function findMatchedAncestorCategories(element, targetClassName) {
+        let currentElement = element; // Initialize current element to the starting element
+        let ancestorIndex = ancestorCategoryNames.length - 1 // Initialize the index to the last ancestor category name
+    
+        // Traverse up the DOM tree until an <li> element is found
+        while (currentElement && currentElement.tagName !== 'LI') {
+            currentElement = currentElement.parentElement;
+        }
+    
+        // Continue traversing as long as the element is an <li>
+        while (currentElement && currentElement.tagName === 'LI') {
+            // Get the text content of the current <li> element, split by newline, and take the first part
+            let text = currentElement.innerText.split('\n')[0]
+    
+            // Check if the text matches the current ancestor category name
+            if (text === ancestorCategoryNames[ancestorIndex]) {
+                ancestorIndex-- // Move to the previous ancestor category name
+            } else {
+                return false // If the text does not match, return false
+            }
+    
+            // If all ancestor categories have been matched, return true
+            if (ancestorIndex < 0) {
+                return true
+            }
+    
+            // Move to the parent <li> element
+            currentElement = currentElement.parentElement;
+    
+            // Continue moving up until the next parent <li> is found
+            while (currentElement && currentElement.tagName !== 'LI') {
+                currentElement = currentElement.parentElement;
+            }
+        }
+    
+        // If the loop completes without matching all ancestor categories, return false
+        return false
+    }
+
+    // when user click the create folder icon
     const createFolder = () => {
+        // hide all existing temp folders
+        const children = document.querySelectorAll('.showFolder')
+        children.forEach(child => {
+            child.style.display = "none"
+        })
+    
         document.querySelectorAll('.nav-bar__category_div_temp').forEach((element) => {
-            let text = element.parentElement.parentElement.parentElement.querySelector('span').innerText
-            if (text === ancestorCategoryNames[0]) {
-                console.log(element)
+    
+            if(findMatchedAncestorCategories(element, "nav-bar__first-category-items")){
+                let emptyFolder = element.parentElement.parentElement
+    
+                if (emptyFolder.classList.contains('nav-bar__has-child')) {
+                    setTimeout(() => {
+                        emptyFolder.classList.remove("nav-bar__has-child")
+    
+                    }, 100);
+                }
                 element.style.display = 'flex'
                 element.classList.add('showFolder')
             }
+    
         })
         dispatch(editTempFolderCreated(true))
         dispatch(editCurrentAncestorNames(ancestorCategoryNames))
         if (!expandedCategories.hasOwnProperty(categoryName)) {
             dispatch(fetchNextCategory(categoryValue, ...categories))
         }
-
+    
     }
+    
     return (
         // operation for a folder
         <div className={classNames("nav-bar__category_img")}>
@@ -35,7 +97,7 @@ const NavBarElementOperation = (props) => {
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
-                className={classNames('nav-bar__add-folder', {'nav-bar__hide-createFolder': categories.length === 4})}
+                className={classNames('nav-bar__add-folder', { 'nav-bar__hide-createFolder': categories.length === 4 })}
                 onClick={() => createFolder()}>
                 <title>create a folder</title>
 

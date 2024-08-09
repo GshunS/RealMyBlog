@@ -16,10 +16,16 @@ const NavBar = () => {
     const { expandedCategories, allCategories } = useSelector(state => state.blogContentNavbar)
     const tempFolderCreated = useSelector(state => state.blogContentNavbar.tempFolderCreated)
     const [expandedElements, setExpandedElements] = useState(new Set())
-    const refMap = useRef({});
+    const refMap = useRef([])
 
-    const setRef = useCallback((index) => (element) => {
-        refMap.current[index] = element;
+    // set ref for each temporary folder
+    const setRef = useCallback((element) => {
+        if (element) {
+            refMap.current.push(element);
+        } else {
+            // Handle cleanup when the component is unmounted or the element is removed
+            refMap.current = refMap.current.filter(ref => ref !== element);
+        }
     }, []);
 
 
@@ -30,39 +36,40 @@ const NavBar = () => {
         return { newExpandedElement, newCollapseElement, nodelist }
 
     }
+    // click outside the temp folder, cancel the creation of the temp folder
     useEffect(() => {
         const handleClickOutside = (event) => {
-            console.log(tempFolderCreated)
+            // console.log(tempFolderCreated)
             if (tempFolderCreated) {
                 dispatch(editTempFolderCreated(false))
-                return;
+                return
             }
-            let isOutside = true;
+            let isOutside = true
             Object.values(refMap.current).forEach((ref) => {
                 if (ref && ref.contains(event.target)) {
-                    isOutside = false;
+                    isOutside = false
                 }
-            });
+            })
             const folderElement = document.querySelector(".showFolder")
 
             if (isOutside && folderElement) {
                 Object.values(refMap.current).forEach((ref) => {
                     if (ref) {
-                        const children = ref.querySelectorAll('.showFolder');
+                        const children = ref.querySelectorAll('.showFolder')
                         children.forEach(child => {
                             child.style.display = "none"
-                        });
+                        })
                     }
-                });
+                })
             }
-        };
+        }
 
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('click', handleClickOutside)
 
         return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, [tempFolderCreated, dispatch]);
+            document.removeEventListener('click', handleClickOutside)
+        }
+    }, [tempFolderCreated])
 
     // scroll to the expanded category
     useEffect(() => {
@@ -71,17 +78,17 @@ const NavBar = () => {
             const { newExpandedElement, nodelist } = getExpandedElement()
             if (newExpandedElement) {
 
-                let parentElement = newExpandedElement.parentElement;
+                let parentElement = newExpandedElement.parentElement
 
                 while (parentElement && !parentElement.classList.contains('nav-bar__first-category-items')) {
-                    parentElement = parentElement.parentElement;
+                    parentElement = parentElement.parentElement
                 }
-                const marginTop = 16;
+                const marginTop = 16
 
                 window.scrollTo({
                     top: parentElement.offsetTop - marginTop,
                     behavior: 'smooth'
-                });
+                })
             }
             setExpandedElements(new Set(nodelist))
         }, 100)
@@ -127,8 +134,8 @@ const NavBar = () => {
             {/* navigation title */}
             <div className="nav-bar__name">
                 <span>Blog Navigation</span>
-            </div>  
-            
+            </div>
+
             <div className="nav-bar__categories">
                 {/* first category */}
                 <ul className="nav-bar__first-category">
@@ -157,7 +164,7 @@ const NavBar = () => {
                                 )}
                             >
                                 <div
-                                    ref={setRef(index)}>
+                                    ref={setRef}>
                                     <NavBarTempFolder ancestorCategoryNames={[firstCategoryName]} />
                                 </div>
 
@@ -185,7 +192,11 @@ const NavBar = () => {
                                                     { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) },
                                                     { "nav-bar__has-child": !secondCategoryValue.hasChildren }
                                                 )}>
-                                                <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName]} />
+                                                <div
+                                                    ref={setRef}>
+                                                    <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName]} />
+                                                </div>
+
                                                 {/* if the parent category has been clicked, show all children categories */}
                                                 {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) && (
 
@@ -211,7 +222,10 @@ const NavBar = () => {
                                                                         { "nav-bar__has-child": !thirdCategoryValue.hasChildren }
                                                                     )
                                                                 }>
-                                                                <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]} />
+                                                                <div
+                                                                    ref={setRef}>
+                                                                    <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]} />
+                                                                </div>
                                                                 {/* if the parent category has been clicked, show all children categories */}
                                                                 {expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) && (
 
