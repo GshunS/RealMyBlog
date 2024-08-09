@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
         {
             var category = _iMapper.Map<Category>(categoryCreateDTO);
             await _iCategoryService.AddCategory(category);
-            return Ok(category);
+            return Ok();
         }
         catch (ServiceException e)
         {
