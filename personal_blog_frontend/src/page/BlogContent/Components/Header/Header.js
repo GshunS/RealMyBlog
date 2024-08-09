@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-
+import { fetchData } from '../../../../utils/apiService'
 import classNames from 'classnames';
 import avatar from '../../../../assets/images/gz.jpg'
 import './Header.css';
 import { editStatus } from '../../../../store/modules/mainHeaderStore';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 
 // header js
 const Header = () => {
@@ -115,67 +114,83 @@ const Header = () => {
 
     // detect when user stops typing
     useEffect(() => {
+        // Clear the previous typing timeout if it exists
         if (typingTimeout) {
             clearTimeout(typingTimeout);
         }
 
+        // Set a new timeout to fetch articles after the user stops typing
         const timer = setTimeout(async () => {
             if (inputValue) {
-                // console.log('User has stopped typing:', inputValue);
+                // Fetch articles based on the current input value
                 await getArticles(inputValue);
             }
-        }, 700);
+        }, 700); // Wait for 700 milliseconds before fetching articles
 
+        // Update the typing timeout state with the new timer
         setTypingTimeout(timer);
 
+        // Cleanup function to clear the timeout when the component unmounts or inputValue changes
         return () => {
             clearTimeout(timer);
         };
-    }, [inputValue]);
+    }, [inputValue]); // Dependency array to re-run the effect when inputValue changes
 
     // getArticles is a function that is used to get the articles by full text search from the backend
+    /**
+     * Asynchronous function to fetch articles based on a search term.
+     * @param {string} term - The search term to fetch articles for.
+     */
     const getArticles = async (term) => {
+        // Check if there are any articles currently displayed
         if (displayArticles.length > 0) {
-            setDisplayArticles([])
-            setHasData(false)
+            // Clear the displayed articles
+            setDisplayArticles([]);
+            // Set the hasData state to false
+            setHasData(false);
         }
+
+        // Construct the URL for the API request
         var url = `https://localhost:7219/api/articles/${term}`;
-        // console.log(url)
 
-        try {
-            const response = await axios.get(url);
-            if (response.data.length === 0) {
-                // console.log('No articles found')
-                setHasData(false)
-                setDisplayArticles([`No articles found for ${term}`])
-            } else {
-                // console.log('found')
-                var articleArray = []
-                response.data.forEach((article) => {
-                    articleArray.push(
-                        { id: article.id, content: article.part_content, category: article.category, category_id: article.category_id }
-                    )
-                })
-
-                setDisplayArticles(articleArray)
-                setHasData(true)
-                setInputValue(term)
-                // console.log(articleArray)
-            }
-        } catch (error) {
-            if (error.response) {
-                const status = error.response.status;
-                if (status === 400) {
-                    setDisplayArticles([`Bad Request: ${error.response.data}`])
-                } else if (status === 500) {
-                    setDisplayArticles([`Internal Server Error: ${error.response.data}`])
+        // Fetch data from the API
+        fetchData(
+            url, // The URL to fetch data from
+            'get', // The HTTP method to use
+            null, // No body data for GET request
+            (data) => { // Success callback function
+                // Check if the returned data is empty
+                if (data.length === 0) {
+                    // Set the hasData state to false
+                    setHasData(false);
+                    // Display a message indicating no articles were found
+                    setDisplayArticles([`No articles found for ${term}`]);
                 } else {
-                    setDisplayArticles([`Error: ${error.response.data}`])
+                    // Initialize an array to hold the articles
+                    var articleArray = [];
+                    // Iterate over the returned data and populate the articleArray
+                    data.forEach((article) => {
+                        articleArray.push({
+                            id: article.id, // Article ID
+                            content: article.part_content, // Article content
+                            category: article.category, // Article category
+                            category_id: article.category_id // Article category ID
+                        });
+                    });
+
+                    // Update the displayed articles with the fetched data
+                    setDisplayArticles(articleArray);
+                    // Set the hasData state to true
+                    setHasData(true);
+                    // Update the input value with the search term
+                    setInputValue(term);
                 }
-            } else {
-                setDisplayArticles([`No response received`])
+            },
+            (error) => { // Error callback function
+                // Display the error message
+                setDisplayArticles([error]);
             }
-        }
+        );
     }
 
     const onClickArticle = (article_id, category_id) => {

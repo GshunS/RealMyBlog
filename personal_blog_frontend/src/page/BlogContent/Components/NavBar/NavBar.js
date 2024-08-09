@@ -1,7 +1,7 @@
 import './NavBar.css'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
-import axios from 'axios'
+import { fetchData } from '../../../../utils/apiService'
 import { editAllCategories, editTempFolderCreated } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
@@ -99,34 +99,19 @@ const NavBar = () => {
 
     // fetch the first category
     useEffect(() => {
-        async function fetchFirstCategory() {
-            var url = `https://localhost:7219/api/categories/first-category`
-            try {
-                const response = await axios.get(url)
-                dispatch(editAllCategories(response.data))
-
-            } catch (error) {
-                if (error.response) {
-                    const status = error.response.status
-                    if (status === 400) {
-                        console.log([`Bad Request: ${error.response.data}`])
-                    } else if (status === 500) {
-                        console.log([`Internal Server Error: ${error.response.data}`])
-                    } else {
-                        console.log([`Error: ${error.response.data}`])
-                    }
-                } else {
-                    console.log([`No response received`])
-                }
-            }
-        }
-        fetchFirstCategory()
+        var url = `https://localhost:7219/api/categories/first-category`
+        fetchData(
+            url,
+            'get',
+            null,
+            (data) => dispatch(editAllCategories(data)),
+            (error) => console.log('An error occurred:', error)
+        );
     }, [dispatch])
 
     // const collapseAll = () => {
     //     setExpandedCategories({})
     // }
-
 
 
     return (
