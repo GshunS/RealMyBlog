@@ -2,19 +2,25 @@ import './NavBar.css'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import { fetchData } from '../../../../utils/apiService'
-import { editAllCategories, editTempFolderCreated } from '../../../../store/modules/blogContentNavBarStore'
+import { fetchNextCategory, editAllCategories, editTempFolderCreated, editExpandedCategories } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
 import NavBarTempFolder from './NavBarTempFolder'
+import { set } from 'lodash'
 // category navigation bar
 const NavBar = () => {
 
     const dispatch = useDispatch()
     // the expandedCategories state is used to keep track of which categories are expanded
     // allCategories state is used to store all the categories and subcategories
-    const { expandedCategories, allCategories } = useSelector(state => state.blogContentNavbar)
-    const tempFolderCreated = useSelector(state => state.blogContentNavbar.tempFolderCreated)
+    const {
+        expandedCategories,
+        allCategories,
+        tempFolderCreated,
+        dataRefreshed,
+        currentAncestorNames } = useSelector(state => state.blogContentNavbar)
+
     const [expandedElements, setExpandedElements] = useState(new Set())
     const refMap = useRef([])
 
@@ -99,15 +105,32 @@ const NavBar = () => {
 
     // fetch the first category
     useEffect(() => {
-        var url = `https://localhost:7219/api/categories/first-category`
-        fetchData(
-            url,
-            'get',
-            null,
-            (data) => dispatch(editAllCategories(data)),
-            (error) => console.log('An error occurred:', error)
-        );
-    }, [dispatch])
+        async function fetchInitialData() {
+            var url = `https://localhost:7219/api/categories/first-category`
+            // fetch the first category
+            fetchData(
+                url,
+                'get',
+                null,
+                (data) => dispatch(editAllCategories(data)),
+                (error) => console.log('An error occurred:', error)
+            );
+            // keep the category expanded
+            if (currentAncestorNames.length > 0) {
+                // clear the expanded categories
+                dispatch(editExpandedCategories({}))
+                let tempArray = []
+                // important!!! 
+                // Do NOT USE forEach here, because it will not wait for the async function to finish
+                for (const categoryName of currentAncestorNames) {
+                    tempArray.push(categoryName);
+                    await dispatch(fetchNextCategory(null, ...tempArray));
+                }
+            }
+
+        }
+        fetchInitialData()
+    }, [dataRefreshed])
 
     // const collapseAll = () => {
     //     setExpandedCategories({})

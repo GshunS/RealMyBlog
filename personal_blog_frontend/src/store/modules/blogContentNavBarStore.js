@@ -10,6 +10,7 @@ const blogContentNavbarStore = createSlice({
         tempFolderCreated: false,
         tempFolderDisplay: false,
         currentAncestorNames: [],
+        dataRefreshed: false
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -27,7 +28,9 @@ const blogContentNavbarStore = createSlice({
         editCurrentAncestorNames(state, action) {
             state.currentAncestorNames = action.payload
         },
-
+        editDataRefreshed(state) {
+            state.dataRefreshed = !state.dataRefreshed
+        }
 
     }
 })
@@ -37,14 +40,16 @@ const {
     editAllCategories,
     editCurrentAncestorNames,
     editTempFolderCreated,
-    editTempFolderDisplay
+    editTempFolderDisplay,
+    editDataRefreshed
 } = blogContentNavbarStore.actions
 
 // fetch the next category
 const fetchNextCategory = (categoryValue, ...categories) => {
-    return async (dispatch, state) => {
-        const expandedCategories = state().blogContentNavbar.expandedCategories;
-        const allCategories = state().blogContentNavbar.allCategories;
+    return async (dispatch, getState) => {
+        const expandedCategories = getState().blogContentNavbar.expandedCategories;
+        console.log(expandedCategories);
+        const allCategories = getState().blogContentNavbar.allCategories;
         let url = 'https://localhost:7219/api/categories';
         // let categoryName = null
         const categoryLevels = ['first_category', 'second_category', 'third_category', 'fourth_category'];
@@ -105,17 +110,19 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                 }
             });
         });
-
-        dispatch(editExpandedCategories(updatedExpandedCategories));
+        
+        await dispatch(editExpandedCategories(updatedExpandedCategories));
 
     };
 }
 
 export {
+    editExpandedCategories,
     editCurrentAncestorNames,
     editAllCategories,
     editTempFolderCreated,
-    editTempFolderDisplay
+    editTempFolderDisplay,
+    editDataRefreshed
 }
 
 export { fetchNextCategory }

@@ -9,11 +9,11 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
         if (error.response) {
             const status = error.response.status;
             if (status === 400) {
-                error_msg = `Bad Request: ${error.response.data}`;
+                error_msg = `Bad Request: ${error.response.data.message}`;
             } else if (status === 500) {
-                error_msg = `Internal Server Error: ${error.response.data}`;
+                error_msg = `Internal Server Error: ${error.response.data.message}`;
             } else {
-                error_msg = `Error: ${error.response.data}`;
+                error_msg = `Error: ${error.response.data.message}`;
             }
         } else {
             error_msg = 'No response received'

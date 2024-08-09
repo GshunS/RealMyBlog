@@ -1,14 +1,17 @@
 import classNames from 'classnames'
 import './NavBarTempFolder.css'
 import React, { useRef } from 'react'
-import { useSelector } from 'react-redux'
-import axios from 'axios'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchData } from '../../../../utils/apiService'
+import { editDataRefreshed } from '../../../../store/modules/blogContentNavBarStore'
+import _ from 'lodash'
 const NavBarTempFolder = () => {
 
     const inputRef = useRef(null)
     const currentAncestorNames = useSelector(state => state.blogContentNavbar.currentAncestorNames)
+    const dispatch = useDispatch()
 
-    const CategoryCreation = async(event) => {
+    const CategoryCreation = _.debounce(async (event) => {
         // process the form submission
         event.preventDefault();
         if (inputRef.current) {
@@ -18,18 +21,29 @@ const NavBarTempFolder = () => {
             const categories = ['first_category', 'second_category', 'third_category', 'fourth_category']
             let Data = {}
             categories.forEach((category, index) => {
-                if (updatedAncestorNames[index]){
+                if (updatedAncestorNames[index]) {
                     Data[category] = updatedAncestorNames[index]
-                }else{
+                } else {
                     Data[category] = null
                 }
             })
-            
+
             // send the data to the backend
-            let url = ''
-            await axios.post(url, Data)
+            let url = 'https://localhost:7219/api/categories'
+            await fetchData(
+                url, 'POST', Data,
+                (data) => {
+                    // clear all the temp folders
+                    const children = document.querySelectorAll('.showFolder')
+                    children.forEach(child => {
+                        child.style.display = "none"
+                    })
+                    // refresh the data
+                    dispatch(editDataRefreshed())
+                },
+                (error) => { console.log(error) })
         }
-    };
+    }, 300);
     /**
      * Handles the click event for category creation.
      */
@@ -43,7 +57,7 @@ const NavBarTempFolder = () => {
             className={classNames("nav-bar__category_div_temp", { 'showFolder': false })}
         >
             <div
-                className="nav-bar__category_name"
+                className="nav-bar__category_name_temp"
             >
 
                 {/* show the arrow or not */}
@@ -63,27 +77,24 @@ const NavBarTempFolder = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className='nav-bar__folder-icon'><path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" /></svg>
 
 
-                {/* level 4 category name */}
-                <span><form onSubmit={CategoryCreation}>
-                    <input ref={inputRef} type="text" placeholder="Enter text" className='nav-bar__create-folder-input' />
-                    <svg
-                        onClick={handleCategoryCreationClick}
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="feather feather-send"
-                    >
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </form></span>
+                <form onSubmit={CategoryCreation}>
+                    <div className="nav-bar__formdiv">
+                        <input ref={inputRef} type="text" placeholder="" className='nav-bar__create-folder-input' />
+                    </div>
+                </form>
 
+
+            </div>
+
+            <div className={classNames("nav-bar__category_img_temp")}>
+                {/* {create a file} */}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                    onClick={handleCategoryCreationClick}
+                >
+                    <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                </svg>
             </div>
 
         </div>

@@ -14,7 +14,44 @@
     /* Light background color for better contrast */
     height: 2rem;
     margin-bottom: 0.3rem;
+    width: auto;
 }
-.nav-bar__create-folder-input{
-    width: 60%;
+
+.nav-bar__category_name_temp{
+    display: flex;
+    align-items: center;
+}
+
+
+.nav-bar__category_name_temp input{
+    outline: none;
+    width: 100%;
+    border: none;
+    background-color: #e9edf2;
+    font-size: 1rem;
+    color: #000;
+}
+
+.nav-bar__formdiv {
+    width: 7rem;
+}
+.nav-bar__category_name_temp svg:nth-of-type(1) {
+    height: 1.2rem;
+    rotate: 90deg;
+    transition: transform 0.2s linear;
+    fill: #2196F3;
+}
+
+.nav-bar__category_img_temp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-bar__category_img_temp svg {
+    margin-right: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+    fill: #2196F3; /* Blue color for folder icon */
+    transition: all 0.1s linear;
 }
