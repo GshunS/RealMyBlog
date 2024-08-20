@@ -120,7 +120,7 @@ const NavBar = () => {
     useEffect(() => {
         async function updateData() {
             if (currentAncestorNames.length > 0 && dataRefreshed) {
-                // clear the expanded categories
+                // clear the expanded categories 
                 dispatch(editExpandedCategories({}))
                 let tempArray = []
                 // important!!! 
