@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchData } from '../../../../utils/apiService'
 import { clearTempElements } from '../../../../utils/folderArticleHelper'
-import { editDataCreated } from '../../../../store/modules/blogContentNavBarStore'
+import { editFolderCreated } from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
 const NavBarTempFolder = () => {
 
@@ -27,7 +27,7 @@ const NavBarTempFolder = () => {
             let Data = {}
             categories.forEach((category, index) => {
                 if (updatedAncestorNames[index]) {
-                    Data[category] = updatedAncestorNames[index]
+                    Data[category] = updatedAncestorNames[index].trim()
                 } else {
                     Data[category] = null
                 }
@@ -40,7 +40,7 @@ const NavBarTempFolder = () => {
                 (data) => {
                     clearTempElements('.showFolder')
                     // refresh the data
-                    dispatch(editDataCreated(true))
+                    dispatch(editFolderCreated(true))
                 },
                 (error) => {
                     clearTempElements('.showFolder')

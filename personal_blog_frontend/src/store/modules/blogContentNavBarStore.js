@@ -10,7 +10,8 @@ const blogContentNavbarStore = createSlice({
         tempFolderCreated: false,
         tempFolderDisplay: false,
         currentAncestorNames: [],
-        dataCreated: false
+        folderCreated: false,
+        fileHid: false
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -28,8 +29,11 @@ const blogContentNavbarStore = createSlice({
         editCurrentAncestorNames(state, action) {
             state.currentAncestorNames = action.payload
         },
-        editDataCreated(state, action) {
-            state.dataCreated = action.payload
+        editFolderCreated(state, action) {
+            state.folderCreated = action.payload
+        },
+        editFileHid(state, action) {
+            state.fileHid = action.payload
         }
 
     }
@@ -41,7 +45,8 @@ const {
     editCurrentAncestorNames,
     editTempFolderCreated,
     editTempFolderDisplay,
-    editDataCreated
+    editFolderCreated,
+    editFileHid
 } = blogContentNavbarStore.actions
 
 // fetch the next category
@@ -109,7 +114,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                 }
             });
         });
-        
+
         await dispatch(editExpandedCategories(updatedExpandedCategories));
 
     };
@@ -117,10 +122,18 @@ const fetchNextCategory = (categoryValue, ...categories) => {
 
 // delete operation(either delete an article or a folder)
 const deleteOperation = (deleteType, articleId, categoryNames) => {
-    return async() => {
-        if(deleteType === 'article') {
-            // delete article
-            console.log('delete article', categoryNames)
+    return async (dispatch) => {
+        if (deleteType === 'article') {
+            const url = `https://localhost:7219/api/articles/${articleId}/hide`
+            // hide article
+            await fetchData(url, 'patch', null,
+                (data) => {
+                    // console.log('success')
+                    dispatch(editFileHid(true))
+                },
+                (error) => {
+                    console.log(error)
+                })
         } else {
             // delete folder
             console.log('delete folder', categoryNames)
@@ -133,10 +146,11 @@ export {
     editAllCategories,
     editTempFolderCreated,
     editTempFolderDisplay,
-    editDataCreated
+    editFolderCreated,
+    editFileHid
 }
 
-export { fetchNextCategory, deleteOperation}
+export { fetchNextCategory, deleteOperation }
 
 const reducer = blogContentNavbarStore.reducer
 
