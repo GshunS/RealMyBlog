@@ -26,6 +26,11 @@ public class CategoryController : ControllerBase
     {
         try
         {
+            categoryCreateDTO.first_category = categoryCreateDTO.first_category.Trim();
+            categoryCreateDTO.second_category = categoryCreateDTO.second_category?.Trim();
+            categoryCreateDTO.third_category = categoryCreateDTO.third_category?.Trim();
+            categoryCreateDTO.fourth_category = categoryCreateDTO.fourth_category?.Trim();
+
             var category = _iMapper.Map<Category>(categoryCreateDTO);
             await _iCategoryService.AddCategory(category);
             return Ok();
@@ -46,6 +51,11 @@ public class CategoryController : ControllerBase
     {
         try
         {
+            categoryUpdateDTO.first_category = categoryUpdateDTO.first_category.Trim();
+            categoryUpdateDTO.second_category = categoryUpdateDTO.second_category?.Trim();
+            categoryUpdateDTO.third_category = categoryUpdateDTO.third_category?.Trim();
+            categoryUpdateDTO.fourth_category = categoryUpdateDTO.fourth_category?.Trim();
+
             var category = _iMapper.Map<Category>(categoryUpdateDTO);
             await _iCategoryService.UpdateCategory(category);
             return Ok(category);
@@ -103,6 +113,7 @@ public class CategoryController : ControllerBase
     {
         try
         {
+            first_category = first_category.Trim();
             var data = await _iCategoryService.GetSecondCategory(first_category);
             return Ok(data);
         }
@@ -117,10 +128,12 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("categories/first_category/{first_category}/second_category/{second_category}")]
-    public async Task<ActionResult> GetSecondCategories([FromRoute] string first_category, string second_category)
+    public async Task<ActionResult> GetThirdCategories([FromRoute] string first_category, string second_category)
     {
         try
         {
+            first_category = first_category.Trim();
+            second_category = second_category.Trim();
             var data = await _iCategoryService.GetThirdCategory(first_category, second_category);
             return Ok(data);
         }
@@ -136,10 +149,13 @@ public class CategoryController : ControllerBase
 
 
     [HttpGet("categories/first_category/{first_category}/second_category/{second_category}/third_category/{third_category}")]
-    public async Task<ActionResult> GetSecondCategories([FromRoute] string first_category, string second_category, string third_category)
+    public async Task<ActionResult> GetFourthCategories([FromRoute] string first_category, string second_category, string third_category)
     {
         try
         {
+            first_category = first_category.Trim();
+            second_category = second_category.Trim();
+            third_category = third_category.Trim();
             var data = await _iCategoryService.GetFourthCategory(first_category, second_category, third_category);
             return Ok(data);
         }

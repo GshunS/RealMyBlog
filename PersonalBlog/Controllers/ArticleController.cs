@@ -100,6 +100,27 @@ public class ArticleController : ControllerBase
         }
     }
 
+
+    [HttpPatch("articles/{id}/hide")]
+    public async Task<ActionResult> UpdateArticleHideStatus([FromRoute] int id)
+    {
+        try
+        {
+            Article art = await _iArticleSercice.QueryOneByIdAsync(id);
+            art.is_hide = !art.is_hide;
+            await _iArticleSercice.UpdateOneAsync(art);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     [HttpGet("articles/{word}")]
     public async Task<ActionResult> SearchArticles([FromRoute] string word)
     {
