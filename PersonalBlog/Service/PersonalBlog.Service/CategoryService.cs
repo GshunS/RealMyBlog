@@ -121,7 +121,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
             }
             if (item.ChildrenCategoryName == null)
             {
-                var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.Id);
+                var articles = await _iArticleRepository.QueryMultipleByCondition(c => c.category_id == item.Id && !c.is_hide);
                 if (articles.Count != 0)
                 {
                     if (!articleDict.ContainsKey(item.CategoryName))
