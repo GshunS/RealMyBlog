@@ -124,7 +124,7 @@ const NavBar = () => {
 
     // if a new sub category(not level 1 category) has been created, refresh the data
     useEffect(() => {
-        function updateData() {
+        async function updateData() {
             if (currentAncestorNames.length > 0 && (folderCreated)) {
                 let nestedObject = {};
                 let tempNames = currentAncestorNames.slice()
@@ -134,7 +134,7 @@ const NavBar = () => {
                     return acc[currentValue];
                 }, nestedObject);
                 dispatch(editExpandedCategories(nestedObject))
-                dispatch(fetchNextCategory(null, ...currentAncestorNames));
+                await dispatch(fetchNextCategory(null, ...currentAncestorNames));
                 dispatch(editFolderCreated(false))
             }
 

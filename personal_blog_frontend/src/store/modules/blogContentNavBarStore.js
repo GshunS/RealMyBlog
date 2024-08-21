@@ -89,6 +89,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                         categories.forEach((category, index) => {
                             if (index === categories.length - 1) {
                                 currentLevel[category].subCategories = data;
+                                currentLevel[category].hasChildren = true;
                             } else {
                                 currentLevel = currentLevel[category].subCategories;
                             }
@@ -115,7 +116,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
             });
         });
 
-        await dispatch(editExpandedCategories(updatedExpandedCategories));
+        dispatch(editExpandedCategories(updatedExpandedCategories));
 
     };
 }

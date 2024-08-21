@@ -9,6 +9,7 @@ const NavBarDeleteOperation = React.memo((props) => {
     const handleDeleteFileOrFolder = () => { 
         dispatch(editCurrentAncestorNames(categoryNames))
         dispatch(deleteOperation(deleteType, articleId, categoryNames))
+        
     }   
     return (
         <svg
