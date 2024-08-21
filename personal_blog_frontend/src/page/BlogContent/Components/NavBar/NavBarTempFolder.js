@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchData } from '../../../../utils/apiService'
 import { clearTempElements } from '../../../../utils/folderArticleHelper'
-import { editDataRefreshed } from '../../../../store/modules/blogContentNavBarStore'
+import { editDataCreated } from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
 const NavBarTempFolder = () => {
 
@@ -12,9 +12,13 @@ const NavBarTempFolder = () => {
     const currentAncestorNames = useSelector(state => state.blogContentNavbar.currentAncestorNames)
     const dispatch = useDispatch()
 
+    const handleCategoryCreation = (event) => {
+        event.preventDefault(); // Prevent the form from submitting
+        CategoryCreation(event); // Call the debounced function
+    };
+
     const CategoryCreation = _.debounce(async (event) => {
         // process the form submission
-        event.preventDefault();
         if (inputRef.current) {
             // append the new category to the current ancestor names
             let updatedAncestorNames = [...currentAncestorNames]
@@ -36,7 +40,7 @@ const NavBarTempFolder = () => {
                 (data) => {
                     clearTempElements('.showFolder')
                     // refresh the data
-                    dispatch(editDataRefreshed(true))
+                    dispatch(editDataCreated(true))
                 },
                 (error) => {
                     clearTempElements('.showFolder')
@@ -77,7 +81,7 @@ const NavBarTempFolder = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className='nav-bar__folder-icon'><path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" /></svg>
 
 
-                <form onSubmit={CategoryCreation}>
+                <form onSubmit={handleCategoryCreation}>
                     <div className="nav-bar__formdiv">
                         <input ref={inputRef} type="text" placeholder="here !!!" className='nav-bar__create-folder-input' />
                     </div>

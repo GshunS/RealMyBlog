@@ -10,7 +10,7 @@ const blogContentNavbarStore = createSlice({
         tempFolderCreated: false,
         tempFolderDisplay: false,
         currentAncestorNames: [],
-        dataRefreshed: false
+        dataCreated: false
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -28,8 +28,8 @@ const blogContentNavbarStore = createSlice({
         editCurrentAncestorNames(state, action) {
             state.currentAncestorNames = action.payload
         },
-        editDataRefreshed(state, action) {
-            state.dataRefreshed = action.payload
+        editDataCreated(state, action) {
+            state.dataCreated = action.payload
         }
 
     }
@@ -41,7 +41,7 @@ const {
     editCurrentAncestorNames,
     editTempFolderCreated,
     editTempFolderDisplay,
-    editDataRefreshed
+    editDataCreated
 } = blogContentNavbarStore.actions
 
 // fetch the next category
@@ -115,16 +115,28 @@ const fetchNextCategory = (categoryValue, ...categories) => {
     };
 }
 
+// delete operation(either delete an article or a folder)
+const deleteOperation = (deleteType, articleId, categoryNames) => {
+    return async() => {
+        if(deleteType === 'article') {
+            // delete article
+            console.log('delete article', categoryNames)
+        } else {
+            // delete folder
+            console.log('delete folder', categoryNames)
+        }
+    }
+}
 export {
     editExpandedCategories,
     editCurrentAncestorNames,
     editAllCategories,
     editTempFolderCreated,
     editTempFolderDisplay,
-    editDataRefreshed
+    editDataCreated
 }
 
-export { fetchNextCategory }
+export { fetchNextCategory, deleteOperation}
 
 const reducer = blogContentNavbarStore.reducer
 

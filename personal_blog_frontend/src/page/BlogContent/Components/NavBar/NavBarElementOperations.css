@@ -6,19 +6,23 @@
     align-items: center;
 }
 
-/* #region create a subfolder*/
-.nav-bar__add-folder {
-    margin-right: 0.5rem;
+.nav-bar__category_img svg {
     height: 1rem;
     width: 1rem;
-    fill: #2196F3; /* Blue color for folder icon */
     transition: all 0.1s linear;
+
 }
 
-.nav-bar__add-folder:hover {
+.nav-bar__category_img svg:hover {
     /* background-color: #e0e0e0; Light grey background color on hover */
     border-radius: 4px; /* Optional: Rounded corners for a smoother look */
     padding: 0.1rem; /* Optional: Padding for better spacing */
+}
+
+/* #region create a subfolder*/
+.nav-bar__add-folder {
+    margin-right: 0.5rem;
+    fill: #2196F3; /* Blue color for folder icon */
 }
 
 .nav-bar__hide-createFolder{
@@ -28,15 +32,12 @@
 
 /* #region create a sub-file*/
 .nav-bar__add-file {
-    height: 1rem;
-    width: 1rem;
+    margin-right: 0.5rem;
     fill: #FFC107; /* Yellow color for file icon */
-    transition: all 0.1s linear;
 }
 
-.nav-bar__add-file:hover {
-    /* background-color: #e0e0e0; Light grey background color on hover */
-    border-radius: 4px; /* Optional: Rounded corners for a smoother look */
-    padding: 0.1rem; /* Optional: Padding for better spacing */
+.nav-bar__delete-file {
+    margin-right: 0.5rem;
+    fill: #ff4107; /* Yellow color for file icon */
 }
 /* #endregion create a sub-file*/

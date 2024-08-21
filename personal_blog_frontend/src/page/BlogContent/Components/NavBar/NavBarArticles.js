@@ -1,11 +1,13 @@
 import './NavBarArticles.css'
 import classNames from 'classnames'
 import React from 'react';
+import NavBarDeleteOperation from './NavBarDeleteOperation';
 
 const NavBarArticles = React.memo((props) => {
     const expandedCategories = props.expandedCategories;
-    const {categoryName, categoryValue} = props.expandedCategoriesInfo;
-   
+    const { categoryName, categoryValue } = props.expandedCategoriesInfo;
+    const ancestorCategoryNames = props.ancestorCategoryNames
+
     return (
         <div className={classNames({ 'nav-bar__category_article': expandedCategories.hasOwnProperty(categoryName) })}>
 
@@ -40,7 +42,14 @@ const NavBarArticles = React.memo((props) => {
                                     <span>{title}</span>
 
                                 </div>
+                                <div className={classNames("nav-bar__category_img")}>
+                                    <NavBarDeleteOperation
+                                        deleteType={'article'}
+                                        articleId={id}
+                                        categoryNames={ancestorCategoryNames} />
+                                </div>
                             </div>
+
                         </li>
                     ))
 

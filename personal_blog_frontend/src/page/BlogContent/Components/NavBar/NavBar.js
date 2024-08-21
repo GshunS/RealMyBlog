@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import { fetchData } from '../../../../utils/apiService'
 import { clearTempElements } from '../../../../utils/folderArticleHelper'
-import { fetchNextCategory, editAllCategories, editTempFolderCreated, editExpandedCategories, editDataRefreshed } from '../../../../store/modules/blogContentNavBarStore'
+import { fetchNextCategory, editAllCategories, editTempFolderCreated, editExpandedCategories, editDataCreated } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
@@ -18,7 +18,7 @@ const NavBar = () => {
         expandedCategories,
         allCategories,
         tempFolderCreated,
-        dataRefreshed,
+        dataCreated,
         currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
     const [expandedElements, setExpandedElements] = useState(new Set())
@@ -119,24 +119,30 @@ const NavBar = () => {
     // if a new sub category(not level 1 category) has been created, refresh the data
     useEffect(() => {
         async function updateData() {
-            if (currentAncestorNames.length > 0 && dataRefreshed) {
-                // clear the expanded categories 
-                dispatch(editExpandedCategories({}))
-                let tempArray = []
+            if (currentAncestorNames.length > 0 && dataCreated) {
+                let nestedObject = {};
+                let tempNames = currentAncestorNames.slice()
+                tempNames.pop()
+                tempNames.reduce((acc, currentValue) => {
+                    acc[currentValue] = {};
+                    return acc[currentValue];
+                }, nestedObject);
+                dispatch(editExpandedCategories(nestedObject))
+                // let tempArray = []
                 // important!!! 
                 // Do NOT USE forEach here, because it will not wait for the async function to finish
-                for (const categoryName of currentAncestorNames) {
-                    tempArray.push(categoryName);
-                    await dispatch(fetchNextCategory(null, ...tempArray));
-                }
-                dispatch(editDataRefreshed(false))
+                // for (const categoryName of currentAncestorNames) {
+                //     tempArray.push(categoryName);
+                // }
+                dispatch(fetchNextCategory(null, ...currentAncestorNames));
+                dispatch(editDataCreated(false))
             }
 
         }
         updateData()
-    }, [dataRefreshed, dispatch, currentAncestorNames])
+    }, [dataCreated, dispatch, currentAncestorNames])
 
-    
+
     return (
         <div className="nav-bar">
             {/* navigation title */}
@@ -261,6 +267,7 @@ const NavBar = () => {
 
                                                                                 <NavBarArticles
                                                                                     expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
+                                                                                    ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
                                                                                     expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }} />
                                                                             </ul>
 
@@ -272,6 +279,7 @@ const NavBar = () => {
                                                                 {/* Articles under level 3 category */}
                                                                 <NavBarArticles
                                                                     expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
+                                                                    ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]}
                                                                     expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }} />
                                                             </ul>
 
@@ -283,6 +291,7 @@ const NavBar = () => {
                                                 {/* Articles under level 2 category */}
                                                 <NavBarArticles
                                                     expandedCategories={expandedCategories[firstCategoryName]}
+                                                    ancestorCategoryNames={[firstCategoryName, secondCategoryName]}
                                                     expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }} />
                                             </ul>
 
@@ -294,7 +303,8 @@ const NavBar = () => {
                                 {/* Articles under level 1 category */}
                                 <NavBarArticles
                                     expandedCategories={expandedCategories}
-                                    expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }} />
+                                    expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }} 
+                                    ancestorCategoryNames={[firstCategoryName]} />
                             </ul>
 
 
