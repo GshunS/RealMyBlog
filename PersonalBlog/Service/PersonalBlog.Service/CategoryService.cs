@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using PersonalBlog.CustomException;
+using PersonalBlog.DTO.Delete;
 using PersonalBlog.DTO.Display;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
@@ -233,4 +235,8 @@ public class CategoryService : BaseService<Category>, ICategoryService
         }
     }
 
+    public async Task<bool> DeleteMultipleCategoriesByConditionAsync(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO)
+    {
+        return true;
+    }
 }

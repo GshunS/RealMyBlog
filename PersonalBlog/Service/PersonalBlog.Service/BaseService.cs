@@ -57,6 +57,18 @@ public class BaseService<T> : IBaseService<T> where T : class
         }
     }
 
+    public async Task<bool> DeleteMultipleByConditionAsync(Expression<Func<T, bool>> func)
+    {
+        try
+        {
+            return await _iBaseRepository.DeleteMultipleByConditionAsync(func);
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+    }
+
     public async Task<List<T>> QueryMultipleByConditionAsync(Expression<Func<T, bool>> func)
     {
         return await _iBaseRepository.QueryMultipleByCondition(func);
@@ -99,4 +111,5 @@ public class BaseService<T> : IBaseService<T> where T : class
         }
     }
 
+    
 }

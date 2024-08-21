@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Create;
+using PersonalBlog.DTO.Delete;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Service.PersonalBlog.IService;
@@ -20,19 +21,51 @@ public class CategoryController : ControllerBase
         this._iCategoryService = iCategoryService;
         this._iMapper = iMapper;
     }
+    public Category TrimCategoryNames(Category category)
+    {
+        category.first_category = category.first_category.Trim();
+        category.second_category = category.second_category?.Trim();
+        category.third_category = category.third_category?.Trim();
+        category.fourth_category = category.fourth_category?.Trim();
+        return category;
+    }
+
+    public bool ValidateCategoryNames(Category category)
+    {
+        if (category.first_category == null || category.first_category.Length == 0)
+        {
+            return false;
+        }
+        
+        if (category.second_category != null && category.second_category.Length == 0)
+        {
+            return false;
+        }
+
+        if (category.third_category != null && category.third_category.Length == 0)
+        {
+            return false;
+        }
+
+        if (category.fourth_category != null && category.fourth_category.Length == 0)
+        {
+            return false;
+        }
+        return true;
+    }
 
     [HttpPost("categories")]
     public async Task<ActionResult> CreateCategory(CategoryCreateDTO categoryCreateDTO)
     {
         try
         {
-            categoryCreateDTO.first_category = categoryCreateDTO.first_category.Trim();
-            categoryCreateDTO.second_category = categoryCreateDTO.second_category?.Trim();
-            categoryCreateDTO.third_category = categoryCreateDTO.third_category?.Trim();
-            categoryCreateDTO.fourth_category = categoryCreateDTO.fourth_category?.Trim();
-
-            var category = _iMapper.Map<Category>(categoryCreateDTO);
-            await _iCategoryService.AddCategory(category);
+            Category category = _iMapper.Map<Category>(categoryCreateDTO);
+            Category trimedCategory = TrimCategoryNames(category);
+            if (!ValidateCategoryNames(trimedCategory))
+            {
+                return BadRequest(new { message = "invalid category name" });
+            }
+            await _iCategoryService.AddCategory(trimedCategory);
             return Ok();
         }
         catch (ServiceException e)
@@ -51,13 +84,13 @@ public class CategoryController : ControllerBase
     {
         try
         {
-            categoryUpdateDTO.first_category = categoryUpdateDTO.first_category.Trim();
-            categoryUpdateDTO.second_category = categoryUpdateDTO.second_category?.Trim();
-            categoryUpdateDTO.third_category = categoryUpdateDTO.third_category?.Trim();
-            categoryUpdateDTO.fourth_category = categoryUpdateDTO.fourth_category?.Trim();
-
             var category = _iMapper.Map<Category>(categoryUpdateDTO);
-            await _iCategoryService.UpdateCategory(category);
+            Category trimedCategory = TrimCategoryNames(category);
+            if (!ValidateCategoryNames(trimedCategory))
+            {
+                return BadRequest(new { message = "invalid category name" });
+            }
+            await _iCategoryService.UpdateCategory(trimedCategory);
             return Ok(category);
         }
         catch (ServiceException e)
@@ -194,6 +227,24 @@ public class CategoryController : ControllerBase
         try
         {
             await _iCategoryService.DeleteOneByIdAsync(id);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpDelete("categories")]
+    public async Task<ActionResult> DeleteMultipleCategories(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO)
+    {
+        try
+        {
+            await _iCategoryService.DeleteMultipleCategoriesByConditionAsync(categoryDeleteMultipleDTO);
             return Ok();
         }
         catch (ServiceException e)

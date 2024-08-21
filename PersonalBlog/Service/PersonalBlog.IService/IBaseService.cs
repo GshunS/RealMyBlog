@@ -22,6 +22,9 @@ public interface IBaseService<T> where T: class
     // delete one by id
     Task<bool> DeleteOneByIdAsync(int id);
 
+    // delete mulitple by conditions
+    Task<bool> DeleteMultipleByConditionAsync(Expression<Func<T, bool>> func);
+
     // create multiple records
     Task<bool> CreateMultipleAsync(List<T> entities);
 

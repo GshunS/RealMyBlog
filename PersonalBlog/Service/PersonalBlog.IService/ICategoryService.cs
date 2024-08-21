@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using PersonalBlog.DTO.Delete;
 using PersonalBlog.DTO.Display;
 using PersonalBlog.Models.Entities;
 
@@ -15,4 +17,5 @@ public interface ICategoryService: IBaseService<Category>
     Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFourthCategory(string first_category, string second_category, string third_category);
     Dictionary<string, bool> HasChildren(List<CategoryRepoDisplayDTO> categories);
     Task<Dictionary<string, Dictionary<int, string>>> GetArticleInfo(List<CategoryRepoDisplayDTO> categories);
+    Task<bool> DeleteMultipleCategoriesByConditionAsync(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO);
 }
