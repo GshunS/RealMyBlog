@@ -21,6 +21,7 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         {
             var result = await _dbContext
                 .Set<Category>()
+                .Where(c => c.id != -1)
                 .Select(g => new CategoryRepoDisplayDTO
                 {
                     Id = g.id,
