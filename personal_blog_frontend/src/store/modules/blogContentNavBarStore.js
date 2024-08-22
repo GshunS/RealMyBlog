@@ -93,7 +93,6 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                         let currentLevel = draft;
                         categories.forEach((category, index) => {
                             if (index === categories.length - 1) {
-                                console.log(url, category, data, allCategories)
                                 currentLevel[category].subCategories = data;
                                 // currentLevel[category].hasChildren = true;
                                 if(Object.keys(currentLevel[category].subCategories).length === 0){
