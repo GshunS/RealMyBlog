@@ -13,9 +13,14 @@ public interface IBaseRepository<T> where T: class
     Task<bool> DeleteOneByIdAsync(int id);
     // delete mulitple by conditions
     Task<bool> DeleteMultipleByConditionAsync(Expression<Func<T, bool>> func);
+    // delete mulitple
+    Task<bool> DeleteMultipleAsync(List<T> entities);
 
     // update one record
     Task<bool> UpdateOneAsync(T entity);
+
+    // update multiple records
+    Task<bool> UpdateMultipleAsync(List<T> entities);
 
     // query one record by id
     Task<T> QueryOneByIdAsync(int id);

@@ -21,7 +21,7 @@ public class CategoryController : ControllerBase
         this._iCategoryService = iCategoryService;
         this._iMapper = iMapper;
     }
-    public Category TrimCategoryNames(Category category)
+    private Category TrimCategoryNames(Category category)
     {
         category.first_category = category.first_category.Trim();
         category.second_category = category.second_category?.Trim();
@@ -30,7 +30,7 @@ public class CategoryController : ControllerBase
         return category;
     }
 
-    public bool ValidateCategoryNames(Category category)
+    private bool ValidateCategoryNames(Category category)
     {
         if (category.first_category == null || category.first_category.Length == 0)
         {

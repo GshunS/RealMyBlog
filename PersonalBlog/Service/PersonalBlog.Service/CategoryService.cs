@@ -1,8 +1,10 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using LinqKit;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Delete;
 using PersonalBlog.DTO.Display;
+using PersonalBlog.Models;
 using PersonalBlog.Models.Entities;
 using PersonalBlog.Repository.PersonalBlog.IRepository;
 using PersonalBlog.Service.PersonalBlog.IService;
@@ -14,13 +16,43 @@ public class CategoryService : BaseService<Category>, ICategoryService
     private readonly ICategoryRepository _iCategoryRepository;
     private readonly IArticleRepository _iArticleRepository;
     private readonly IMapper _iMapper;
-    public CategoryService(ICategoryRepository iCategoryRepository, IArticleRepository iArticleRepository, IMapper iMapper)
+    private readonly BloggingContext _dbContext;
+    public CategoryService(ICategoryRepository iCategoryRepository, IArticleRepository iArticleRepository, IMapper iMapper, BloggingContext dbContext)
     {
         base._iBaseRepository = iCategoryRepository;
         _iCategoryRepository = iCategoryRepository;
         _iArticleRepository = iArticleRepository;
         _iMapper = iMapper;
+        _dbContext = dbContext;
     }
+
+    public Expression<Func<Category, bool>> BuildPredicate(CategoryDeleteMultipleDTO dto)
+    {
+        var predicate = PredicateBuilder.New<Category>(c => true); // Start with a base condition that always matches
+
+        if (!string.IsNullOrEmpty(dto.First_category))
+        {
+            predicate = predicate.And(c => c.first_category == dto.First_category);
+        }
+
+        if (!string.IsNullOrEmpty(dto.Second_category))
+        {
+            predicate = predicate.And(c => c.second_category == dto.Second_category);
+        }
+
+        if (!string.IsNullOrEmpty(dto.Third_category))
+        {
+            predicate = predicate.And(c => c.third_category == dto.Third_category);
+        }
+
+        if (!string.IsNullOrEmpty(dto.Fourth_category))
+        {
+            predicate = predicate.And(c => c.fourth_category == dto.Fourth_category);
+        }
+
+        return predicate;
+    }
+
 
     public async Task<bool> AddCategory(Category category)
     {
@@ -234,9 +266,57 @@ public class CategoryService : BaseService<Category>, ICategoryService
             throw new ServiceException(ex.Message);
         }
     }
-
+    
     public async Task<bool> DeleteMultipleCategoriesByConditionAsync(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO)
     {
-        return true;
+        try
+        {
+            // build conditions
+            var predicate = BuildPredicate(categoryDeleteMultipleDTO);
+            // query all matched categories
+            List<Category> categories = await _iCategoryRepository.QueryMultipleByCondition(predicate);
+            // extract the category IDs from the categories
+            List<int> categoryIds = categories.Select(c => c.id).ToList();
+            // query all articles under those categories
+            List<Article> articles = await _iArticleRepository.QueryMultipleByCondition(a => categoryIds.Contains(a.category_id));
+            // modify category id
+            foreach (var article in articles)
+            {
+                article.category_id = -1;
+            }
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Update matched articles
+                    await _iArticleRepository.UpdateMultipleAsync(articles);
+
+                    // Remove matched categories
+                    await _iCategoryRepository.DeleteMultipleAsync(categories);
+
+                    // Commit transaction
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    // Rollback transaction
+                    await transaction.RollbackAsync();
+                    // Handle or log the exception
+                    throw new ServiceException("Error processing delete operation: " + ex.Message, ex);
+                }
+            }
+        }
+        catch (RepositoryException ex)
+        {
+            throw new RepositoryException(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new ServiceException(ex.Message);
+        }
     }
+
+    
 }
+

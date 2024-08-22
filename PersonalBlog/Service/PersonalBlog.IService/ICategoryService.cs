@@ -18,4 +18,5 @@ public interface ICategoryService: IBaseService<Category>
     Dictionary<string, bool> HasChildren(List<CategoryRepoDisplayDTO> categories);
     Task<Dictionary<string, Dictionary<int, string>>> GetArticleInfo(List<CategoryRepoDisplayDTO> categories);
     Task<bool> DeleteMultipleCategoriesByConditionAsync(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO);
+    Expression<Func<Category, bool>> BuildPredicate(CategoryDeleteMultipleDTO dto);
 }

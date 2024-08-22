@@ -58,6 +58,19 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         }
     }
 
+    public async Task<bool> DeleteMultipleAsync(List<T> entities)
+    {
+        try
+        {
+            _dbContext.Set<T>().RemoveRange(entities);
+            return await DbSaveAllChanges();
+        }
+        catch (RepositoryException)
+        {
+            throw new RepositoryException("delete failure");
+        }
+    }
+
     public async Task<bool> DeleteOneByIdAsync(int id)
     {
 
@@ -120,6 +133,18 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         }
 
     }
+    public async Task<bool> UpdateMultipleAsync(List<T> entities)
+    {
+        try
+        {
+            _dbContext.Set<T>().UpdateRange(entities);
+            return await DbSaveAllChanges();
+        }
+        catch (RepositoryException)
+        {
+            throw new RepositoryException("update failure");
+        }
+    }
 
     public async Task<bool> DbSaveAllChanges()
     {
@@ -131,5 +156,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return true;
     }
 
+    
 
+    
 }
