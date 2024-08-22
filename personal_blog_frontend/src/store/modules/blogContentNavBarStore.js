@@ -11,7 +11,8 @@ const blogContentNavbarStore = createSlice({
         tempFolderDisplay: false,
         currentAncestorNames: [],
         folderCreated: false,
-        fileHid: false
+        fileHid: false,
+        folderDeleted: false
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -34,6 +35,9 @@ const blogContentNavbarStore = createSlice({
         },
         editFileHid(state, action) {
             state.fileHid = action.payload
+        },
+        editFolderDeleted(state, action) {
+            state.folderDeleted = action.payload
         }
 
     }
@@ -46,7 +50,8 @@ const {
     editTempFolderCreated,
     editTempFolderDisplay,
     editFolderCreated,
-    editFileHid
+    editFileHid,
+    editFolderDeleted
 } = blogContentNavbarStore.actions
 
 // fetch the next category
@@ -88,8 +93,14 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                         let currentLevel = draft;
                         categories.forEach((category, index) => {
                             if (index === categories.length - 1) {
+                                console.log(url, category, data, allCategories)
                                 currentLevel[category].subCategories = data;
-                                currentLevel[category].hasChildren = true;
+                                // currentLevel[category].hasChildren = true;
+                                if(Object.keys(currentLevel[category].subCategories).length === 0){
+                                    currentLevel[category].hasChildren = false;
+                                }else{
+                                    currentLevel[category].hasChildren = true;
+                                }
                             } else {
                                 currentLevel = currentLevel[category].subCategories;
                             }
@@ -123,7 +134,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
 
 // delete operation(either delete an article or a folder)
 const deleteOperation = (deleteType, articleId, categoryNames) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         if (deleteType === 'article') {
             const url = `https://localhost:7219/api/articles/${articleId}/hide`
             // hide article
@@ -137,7 +148,27 @@ const deleteOperation = (deleteType, articleId, categoryNames) => {
                 })
         } else {
             // delete folder
-            console.log('delete folder', categoryNames)
+            const url = `https://localhost:7219/api/categories`
+            const updatedAncestorNames = getState().blogContentNavbar.currentAncestorNames;
+
+
+            const categories = ['first_category', 'second_category', 'third_category', 'fourth_category']
+            let Data = {}
+            categories.forEach((category, index) => {
+                if (updatedAncestorNames[index]) {
+                    Data[category] = updatedAncestorNames[index].trim()
+                } else {
+                    Data[category] = null
+                }
+            })
+            
+            await fetchData(url, 'delete', Data,
+                (data) => {
+                    dispatch(editFolderDeleted(true))
+                },
+                (error) => {
+                    console.log(error)
+                })
         }
     }
 }
@@ -148,7 +179,8 @@ export {
     editTempFolderCreated,
     editTempFolderDisplay,
     editFolderCreated,
-    editFileHid
+    editFileHid,
+    editFolderDeleted
 }
 
 export { fetchNextCategory, deleteOperation }

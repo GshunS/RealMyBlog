@@ -9,7 +9,8 @@ import {
     editTempFolderCreated,
     editExpandedCategories,
     editFolderCreated,
-    editFileHid
+    editFileHid,
+    editFolderDeleted
 } from '../../../../store/modules/blogContentNavBarStore'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
@@ -27,6 +28,7 @@ const NavBar = () => {
         tempFolderCreated,
         folderCreated,
         fileHid,
+        folderDeleted,
         currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
     const [expandedElements, setExpandedElements] = useState(new Set())
@@ -143,8 +145,6 @@ const NavBar = () => {
     }, [folderCreated, dispatch, currentAncestorNames])
 
     // if an article has been deleted(hide), refresh the data
-    // if a sub category has been deleted, refresh the data
-
     useEffect(() => {
         async function updateData() {
             if (currentAncestorNames.length > 0 && (fileHid)) {
@@ -184,6 +184,47 @@ const NavBar = () => {
         }
         updateData()
     }, [fileHid, dispatch, currentAncestorNames])
+
+    // if a sub category has been deleted, refresh the data
+    useEffect(() => {
+        async function updateData() {
+            if (currentAncestorNames.length > 0 && (folderDeleted)) {
+                let nestedObject = {};
+
+                if (currentAncestorNames.length === 1) {
+                    dispatch(editExpandedCategories(nestedObject))
+                    // fetchInitialData()
+                    var url = `https://localhost:7219/api/categories/first-category`
+                    // fetch the first category
+                    await fetchData(
+                        url,
+                        'get',
+                        null,
+                        (data) => dispatch(editAllCategories(data)),
+                        (error) => console.log('An error occurred:', error)
+                    );
+                } else {
+                    let tempNames = currentAncestorNames.slice()
+                    tempNames.pop()
+
+                    let initialExpand = tempNames.slice()
+                    initialExpand.pop()
+
+                    initialExpand.reduce((acc, currentValue) => {
+                        acc[currentValue] = {};
+                        return acc[currentValue];
+                    }, nestedObject);
+                    dispatch(editExpandedCategories(nestedObject))
+                    await dispatch(fetchNextCategory(null, ...tempNames));
+                }
+                dispatch(editFolderDeleted(false))
+            }
+
+        }
+        updateData()
+    }, [folderDeleted, dispatch, currentAncestorNames])
+
+    
 
 
 

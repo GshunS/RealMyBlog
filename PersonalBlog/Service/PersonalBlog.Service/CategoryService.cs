@@ -266,7 +266,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
             throw new ServiceException(ex.Message);
         }
     }
-    
+
     public async Task<bool> DeleteMultipleCategoriesByConditionAsync(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO)
     {
         try
@@ -288,8 +288,11 @@ public class CategoryService : BaseService<Category>, ICategoryService
             {
                 try
                 {
-                    // Update matched articles
-                    await _iArticleRepository.UpdateMultipleAsync(articles);
+                    if (articles.Count != 0)
+                    {
+                        // Update matched articles
+                        await _iArticleRepository.UpdateMultipleAsync(articles);
+                    }
 
                     // Remove matched categories
                     await _iCategoryRepository.DeleteMultipleAsync(categories);
@@ -317,6 +320,6 @@ public class CategoryService : BaseService<Category>, ICategoryService
         }
     }
 
-    
+
 }
 

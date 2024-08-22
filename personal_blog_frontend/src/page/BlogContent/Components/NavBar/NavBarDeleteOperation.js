@@ -1,16 +1,16 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import {deleteOperation, editCurrentAncestorNames} from '../../../../store/modules/blogContentNavBarStore'
+import _ from 'lodash'
 const NavBarDeleteOperation = React.memo((props) => {
     const dispatch = useDispatch()
     const {deleteType, articleId, categoryNames} = props
     // if deleteType is article, hide the article
     // if deleteType is folder, delete the folder
-    const handleDeleteFileOrFolder = () => { 
+    const handleDeleteFileOrFolder = _.debounce(() => { 
         dispatch(editCurrentAncestorNames(categoryNames))
         dispatch(deleteOperation(deleteType, articleId, categoryNames))
-        
-    }   
+    }, 300)
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
