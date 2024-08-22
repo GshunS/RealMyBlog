@@ -95,7 +95,9 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                             if (index === categories.length - 1) {
                                 currentLevel[category].subCategories = data;
                                 // currentLevel[category].hasChildren = true;
-                                if(Object.keys(currentLevel[category].subCategories).length === 0){
+                                const subCateLength = Object.keys(currentLevel[category].subCategories).length
+                                const articleLength = Object.keys(currentLevel[category].articles).length
+                                if(articleLength === 0 && subCateLength === 0){
                                     currentLevel[category].hasChildren = false;
                                 }else{
                                     currentLevel[category].hasChildren = true;
@@ -132,7 +134,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
 }
 
 // delete operation(either delete an article or a folder)
-const deleteOperation = (deleteType, articleId, categoryNames) => {
+const deleteOperation = (deleteType, articleId) => {
     return async (dispatch, getState) => {
         if (deleteType === 'article') {
             const url = `https://localhost:7219/api/articles/${articleId}/hide`
