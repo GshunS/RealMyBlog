@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
 import NavBarTempFolder from './NavBarTempFolder'
+import _ from 'lodash'
 // category navigation bar
 const NavBar = () => {
 
@@ -34,6 +35,7 @@ const NavBar = () => {
 
     const [expandedElements, setExpandedElements] = useState(new Set())
     const refMap = useRef([])
+    const heightRef = useRef(0)
 
     // set ref for each temporary folder
     const setRef = useCallback((element) => {
@@ -44,7 +46,6 @@ const NavBar = () => {
             refMap.current = refMap.current.filter(ref => ref !== element);
         }
     }, []);
-
 
     const getExpandedElement = useCallback(() => {
         const nodelist = document.querySelectorAll('.expanded')
@@ -69,7 +70,6 @@ const NavBar = () => {
                 }
             })
             const folderElement = document.querySelector(".showFolder")
-            console.log(isOutside, folderElement)
             if (isOutside && folderElement) {
                 clearTempElements('.showFolder')
             }
@@ -86,7 +86,7 @@ const NavBar = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
 
-            const { newExpandedElement, nodelist } = getExpandedElement()
+            const { newExpandedElement, newCollapseElement, nodelist } = getExpandedElement()
             if (newExpandedElement) {
 
                 let parentElement = newExpandedElement.parentElement
@@ -101,12 +101,35 @@ const NavBar = () => {
                     behavior: 'smooth'
                 })
             }
-            setExpandedElements(new Set(nodelist))
+            if (!(newExpandedElement === undefined && newCollapseElement === undefined)) {
+                setExpandedElements(new Set(nodelist))
+            }
         }, 100)
 
 
         return () => clearTimeout(timer)
     }, [expandedCategories, getExpandedElement])
+
+
+
+    // // set height dynamically
+    // useEffect(() => {
+        
+    //     const { newExpandedElement, newCollapseElement } = getExpandedElement()
+    //     if (newExpandedElement) {
+    //         setTimeout(()=>{
+    //             console.log(heightRef.current.scrollHeight)
+    //         }, 600)
+
+    //     }
+    //     if (newCollapseElement) {
+    //         setTimeout(()=>{
+    //             console.log(heightRef.current.scrollHeight)
+    //         }, 600)
+    //     }
+        
+    // }, [expandedCategories, getExpandedElement])
+
 
     // fetch the first category
     useEffect(() => {
@@ -121,7 +144,7 @@ const NavBar = () => {
                 (error) => {
                     dispatch(editErrorMsg(`${error}`))
                     console.log('An error occurred:', error)
-                } 
+                }
             );
 
         }
@@ -167,7 +190,7 @@ const NavBar = () => {
                         (error) => {
                             dispatch(editErrorMsg(`${error}`))
                             console.log('An error occurred:', error)
-                        } 
+                        }
                     );
                 } else {
                     let tempNames = currentAncestorNames.slice()
@@ -211,7 +234,7 @@ const NavBar = () => {
                         (error) => {
                             dispatch(editErrorMsg(`${error}`))
                             console.log('An error occurred:', error)
-                        } 
+                        }
                     );
                 } else {
                     let tempNames = currentAncestorNames.slice()
@@ -244,7 +267,7 @@ const NavBar = () => {
 
             <div className="nav-bar__categories">
                 {/* first category */}
-                <ul className="nav-bar__first-category">
+                <ul className="nav-bar__first-category" ref={heightRef}>
 
                     {/* firstCategoryName: name for level 1 category */}
                     {/* firstCategoryValue: {hasChildren:true, subCategories:null, articles:null} */}

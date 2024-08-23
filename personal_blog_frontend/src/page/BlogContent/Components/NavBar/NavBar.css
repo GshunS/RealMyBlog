@@ -50,6 +50,7 @@
 
 
 /* #region inner layers */
+
 .nav-bar__first-category>li:nth-child(1) {
     margin-top: 1rem;
 }
@@ -76,21 +77,20 @@
     padding-left: 1rem;
     margin-top: 0.3rem;
     max-height: 0;
+    /* height: 0; */
     overflow: hidden;
-    transition: 1s;
-
+    transition: 0.5s ease-in;
 }
 
 .nav-bar__second-category-items,
 .nav-bar__third-category-items,
 .nav-bar__fourth-category-items {
-    margin-bottom: 0.3rem;
-    
+    margin-bottom: 0rem;
 }
 
 .expanded {
     max-height: 100vh;
-    /* transition: max-height 1s linear; */
+    /* height: auto; */
 }
 
 .nav-bar__has-child{
