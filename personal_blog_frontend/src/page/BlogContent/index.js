@@ -9,7 +9,7 @@ import './index.css'
 const BlogContent = () => {
     return (
         <div className="blog-container">
-            {/* <FolderFileCreationWindow /> */}
+            <FolderFileCreationWindow />
             <ErrorPopUp />
             <Header />
             <div className="body-container">

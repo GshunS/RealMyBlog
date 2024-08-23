@@ -11,8 +11,10 @@ import {
     editExpandedCategories,
     editFolderCreated,
     editFileHid,
-    editFolderDeleted
+    editFolderDeleted,
+    editCurrentAncestorNames
 } from '../../../../store/modules/blogContentNavBarStore'
+import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
@@ -257,6 +259,10 @@ const NavBar = () => {
         updateData()
     }, [folderDeleted, dispatch, currentAncestorNames])
 
+    const callCreationWindow = (type) => {
+        dispatch(editAddType(type))
+        dispatch(editCurrentAncestorNames([]))
+    }
 
     return (
         <div className="nav-bar">
@@ -264,7 +270,7 @@ const NavBar = () => {
             <div className="nav-bar__name">
                 <span>Blog Navigation</span>
             </div>
-            
+
             <div className="nav-bar__categories">
                 {/* first category */}
                 <ul className="nav-bar__first-category" ref={heightRef}>
@@ -430,7 +436,7 @@ const NavBar = () => {
                 </ul>
 
             </div>
-            <div className="nav-bar__addCate__button">
+            <div className="nav-bar__addCate__button" onClick={() => callCreationWindow('folder')}>
                 <div className="nav-bar__addCate_inner">
                     <span>Add Category</span>
                 </div>

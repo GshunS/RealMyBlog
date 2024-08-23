@@ -1,14 +1,16 @@
 .FFCreationWindow {
-    position: fixed; 
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
+    /* display: none; */
 }
 
 .FFCreationWindow__Main {
@@ -30,6 +32,12 @@
     margin-bottom: 1rem;
 }
 
+.FFCreationWindow__Header svg {
+    height: 1.5rem;
+    width: 1.5rem;
+    cursor: pointer;
+}
+
 .FFCreationWindow__Path {
     font-size: 0.875rem;
     color: #666;
@@ -39,7 +47,7 @@
 .FFCreationWindow__Content {
     display: flex;
     align-items: center;
-    gap: 1rem; /* Space between select and input */
+    gap: 1rem;
 }
 
 .FFCreationWindow__Content select {
@@ -51,9 +59,10 @@
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+
 .FFCreationWindow__Content input {
-    flex: 2; /* Wider flex basis */
-    padding: 0.5rem 1rem; /* Add horizontal padding */
+    flex: 2;
+    padding: 0.5rem 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
@@ -62,14 +71,18 @@
 }
 
 .FFCreationWindow__Content input:focus {
-    border-color: #007bff; /* Border color on focus */
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3); /* Subtle shadow on focus */
-    outline: none; /* Remove default focus outline */
+    border-color: #007bff;
+    /* Border color on focus */
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+    /* Subtle shadow on focus */
+    outline: none;
+    /* Remove default focus outline */
 }
 
 .FFCreationWindow__Content select:hover,
 .FFCreationWindow__Content input:hover {
-    border-color: #0056b3; /* Border color on hover */
+    border-color: #0056b3;
+    /* Border color on hover */
 }
 
 
@@ -83,7 +96,8 @@
 }
 
 .FFCreationWindow__Button__Submit {
-    background-color: #007bff; /* Bootstrap primary color */
+    background-color: #007bff;
+    /* Bootstrap primary color */
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 4px;
@@ -92,5 +106,6 @@
 }
 
 .FFCreationWindow__Button__Submit:hover {
-    background-color: #0056b3; /* Darker shade for hover */
+    background-color: #0056b3;
+    /* Darker shade for hover */
 }
