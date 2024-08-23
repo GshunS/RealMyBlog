@@ -69,7 +69,7 @@ const NavBar = () => {
                 }
             })
             const folderElement = document.querySelector(".showFolder")
-
+            console.log(isOutside, folderElement)
             if (isOutside && folderElement) {
                 clearTempElements('.showFolder')
             }

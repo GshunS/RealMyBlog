@@ -11,11 +11,15 @@ const ErrorPopUp = () => {
     useEffect(() => {
         const c = document.querySelector('.ErrorPopUp').classList
         let timer = null;
-        if (errorMsg !== "" && !c.contains('ErrorPopUp__Move')) {
+        
+        if (errorMsg !== "") {
+            if (c.contains('ErrorPopUp__Move')) {
+                c.remove('ErrorPopUp__Move')
+            }
             c.add('ErrorPopUp__Move')
             timer = setTimeout(() => {
                 c.remove('ErrorPopUp__Move')
-                dispatch(editErrorMsg(""))  
+                dispatch(editErrorMsg(""))
             }, 3000)
         }
 

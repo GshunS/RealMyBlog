@@ -52,11 +52,11 @@ const Header = () => {
         }
 
         // Add the event listener
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
 
         // Remove the event listener on component unmount
         return () => {
-            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [searchContainerRef]);
 

@@ -3,8 +3,9 @@
     top: 6rem;
     right: 2rem;
     opacity: 0;
-    transform: translateX(150%);
+    transform: translateX(50%);
     transition: transform  1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+
 }
 
 .ErrorPopUp__Move {
@@ -26,6 +27,8 @@
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     white-space: pre-wrap;
+
+    
 }
 
 .ErrorPopUp__Content span {
@@ -34,7 +37,9 @@
 }
 
 .ErrorPopUp__Content::before {
-    content: 'ℹ️'; /* 信息图标 */
-    margin-right: 0.2rem; /* 调整右边距 */
-    font-size: 1.2rem; /* 增大图标尺寸 */
+    content: 'ℹ️'; 
+    margin-right: 0.2rem; 
+    font-size: 1.2rem; 
 }
+
+
