@@ -15,11 +15,11 @@
 .ErrorPopUp__Content {
     height: auto;
     text-align: center;
-    background: linear-gradient(45deg, #5a9bd8, #3a7cb8);
+    background: #f8f9fa;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
-    color: #fff;
+    color: #333;
     padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
@@ -34,7 +34,7 @@
 }
 
 .ErrorPopUp__Content::before {
-    content: '⚠️'; /* Example warning icon */
-    margin-right: 0.1rem;
-    font-size: 1rem;
+    content: 'ℹ️'; /* 信息图标 */
+    margin-right: 0.2rem; /* 调整右边距 */
+    font-size: 1.2rem; /* 增大图标尺寸 */
 }
