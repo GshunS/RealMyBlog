@@ -1,7 +1,7 @@
 /* #region outer layers */
 .nav-bar {
     /* width: 23%; */
-    
+
     display: flex;
     flex-grow: 0.07;
     flex-direction: column;
@@ -31,7 +31,34 @@
     font-size: 1.2rem;
     font-weight: 900;
     color: #343a40;
-    /* Darker text color for better readability */
+    
+}
+
+.nav-bar__addCate__button {
+    width: 90%; 
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.nav-bar__addCate_inner {
+    display: flex;
+    align-items: center;
+    margin-top: 0; 
+    margin-bottom: 1rem; 
+    margin-left: 0.3rem; 
+    padding: 0.5rem 1rem; 
+    height: 2rem; 
+    border: 1px solid #ccc;
+    border-radius: 8px; 
+    background-color: #ffffff; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    transition: background-color 0.3s ease, border-color 0.3s ease; 
+}
+
+.nav-bar__addCate_inner:hover {
+    background-color: #f1f1f1; 
+    border-color: #bbb; 
 }
 
 .nav-bar span {
@@ -93,7 +120,7 @@
     /* height: auto; */
 }
 
-.nav-bar__has-child{
+.nav-bar__has-child {
     max-height: 0;
 }
 

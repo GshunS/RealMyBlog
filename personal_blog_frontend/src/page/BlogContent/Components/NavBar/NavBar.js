@@ -114,7 +114,7 @@ const NavBar = () => {
 
     // // set height dynamically
     // useEffect(() => {
-        
+
     //     const { newExpandedElement, newCollapseElement } = getExpandedElement()
     //     if (newExpandedElement) {
     //         setTimeout(()=>{
@@ -127,7 +127,7 @@ const NavBar = () => {
     //             console.log(heightRef.current.scrollHeight)
     //         }, 600)
     //     }
-        
+
     // }, [expandedCategories, getExpandedElement])
 
 
@@ -264,7 +264,7 @@ const NavBar = () => {
             <div className="nav-bar__name">
                 <span>Blog Navigation</span>
             </div>
-
+            
             <div className="nav-bar__categories">
                 {/* first category */}
                 <ul className="nav-bar__first-category" ref={heightRef}>
@@ -429,6 +429,11 @@ const NavBar = () => {
 
                 </ul>
 
+            </div>
+            <div className="nav-bar__addCate__button">
+                <div className="nav-bar__addCate_inner">
+                    <span>Add Category</span>
+                </div>
             </div>
         </div>
     )
