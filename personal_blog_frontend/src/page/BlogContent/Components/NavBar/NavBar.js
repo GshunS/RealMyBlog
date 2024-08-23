@@ -224,9 +224,6 @@ const NavBar = () => {
         updateData()
     }, [folderDeleted, dispatch, currentAncestorNames])
 
-    
-
-
 
     return (
         <div className="nav-bar">

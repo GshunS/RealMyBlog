@@ -16,8 +16,7 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
                 error_msg = `Error: ${error.response.data.message}`;
             }
         } else {
-            // error_msg = 'No response received'
-            console.log(error)
+            error_msg = error
         }
 
         if (errorCallback) {

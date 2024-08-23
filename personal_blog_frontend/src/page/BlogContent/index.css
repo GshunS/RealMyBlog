@@ -7,7 +7,7 @@ body {
 }
 
 .blog-container {
-
+    position: relative;
     width: 1180px;
     margin: 0 auto;
     margin-top: 0.5rem;

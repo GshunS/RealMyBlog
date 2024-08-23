@@ -5,6 +5,7 @@ import avatar from '../../../../assets/images/gz.jpg'
 import './Header.css';
 import { editStatus } from '../../../../store/modules/mainHeaderStore';
 import { useDispatch, useSelector } from 'react-redux';
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import _ from 'lodash'
 
 // header js
@@ -132,7 +133,8 @@ const Header = () => {
                     // Set the hasData state to false
                     setHasData(false);
                     // Display a message indicating no articles were found
-                    setDisplayArticles([`No articles found for ${term}`]);
+                    dispatch(editErrorMsg(`No articles found for ${term}`))
+                    // setDisplayArticles([`No articles found for ${term}`]);
                 } else {
                     // Initialize an array to hold the articles
                     var articleArray = [];
@@ -156,10 +158,12 @@ const Header = () => {
             },
             (error) => { // Error callback function
                 // Display the error message
-                setDisplayArticles([error]);
+                dispatch(editErrorMsg(error))
+
+                // setDisplayArticles([error]);
             }
         );
-    }, [])
+    }, [dispatch])
 
     // detect when user stops typing
     // Define a debounced function using lodash's debounce
@@ -180,7 +184,7 @@ const Header = () => {
      * Asynchronous function to fetch articles based on a search term.
      * @param {string} term - The search term to fetch articles for.
      */
- 
+
 
     const onClickArticle = (article_id, category_id) => {
         console.log(`Article ID: ${article_id}, Category ID: ${category_id}`)
