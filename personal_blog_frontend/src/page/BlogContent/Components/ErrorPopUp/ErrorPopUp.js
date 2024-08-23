@@ -16,7 +16,7 @@ const ErrorPopUp = () => {
             timer = setTimeout(() => {
                 c.remove('ErrorPopUp__Move')
                 dispatch(editErrorMsg(""))  
-            }, 2000)
+            }, 3000)
         }
 
         return () => {

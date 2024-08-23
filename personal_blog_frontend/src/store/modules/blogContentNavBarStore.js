@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { produce } from 'immer'
 import { fetchData } from '../../utils/apiService'
+import { editErrorMsg } from './blogContentErrorPopUpStore'
 
 const blogContentNavbarStore = createSlice({
     name: "navbar",
@@ -95,8 +96,15 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                             if (index === categories.length - 1) {
                                 currentLevel[category].subCategories = data;
                                 // currentLevel[category].hasChildren = true;
-                                const subCateLength = Object.keys(currentLevel[category].subCategories).length
-                                const articleLength = Object.keys(currentLevel[category].articles).length
+                                let subCateLength = 0;
+                                let articleLength = 0;
+                                if (data !== null){
+                                    subCateLength = Object.keys(data).length
+                                }
+                                if(currentLevel[category].articles !== null){
+                                    articleLength = Object.keys(currentLevel[category].articles).length
+                                }
+                                    
                                 if(articleLength === 0 && subCateLength === 0){
                                     currentLevel[category].hasChildren = false;
                                 }else{
@@ -109,7 +117,10 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                     });
                     dispatch(editAllCategories(updatedAllCategories));
                 },
-                (error) => console.log('An error occurred:', error)
+                (error) => {
+                    dispatch(editErrorMsg(`${error}`))
+                    console.log('An error occurred:', error)
+                }
             );
 
         }
@@ -145,7 +156,8 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFileHid(true))
                 },
                 (error) => {
-                    console.log(error)
+                    dispatch(editErrorMsg(`${error}`))
+                    console.log('An error occurred:', error)
                 })
         } else {
             // delete folder
@@ -168,7 +180,8 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFolderDeleted(true))
                 },
                 (error) => {
-                    console.log(error)
+                    dispatch(editErrorMsg(`${error}`))
+                    console.log('An error occurred:', error)
                 })
         }
     }

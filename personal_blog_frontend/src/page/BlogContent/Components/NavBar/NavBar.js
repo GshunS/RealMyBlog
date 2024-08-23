@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import { fetchData } from '../../../../utils/apiService'
 import { clearTempElements } from '../../../../utils/folderArticleHelper'
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import {
     fetchNextCategory,
     editAllCategories,
@@ -117,7 +118,10 @@ const NavBar = () => {
                 'get',
                 null,
                 (data) => dispatch(editAllCategories(data)),
-                (error) => console.log('An error occurred:', error)
+                (error) => {
+                    dispatch(editErrorMsg(`${error}`))
+                    console.log('An error occurred:', error)
+                } 
             );
 
         }
@@ -160,7 +164,10 @@ const NavBar = () => {
                         'get',
                         null,
                         (data) => dispatch(editAllCategories(data)),
-                        (error) => console.log('An error occurred:', error)
+                        (error) => {
+                            dispatch(editErrorMsg(`${error}`))
+                            console.log('An error occurred:', error)
+                        } 
                     );
                 } else {
                     let tempNames = currentAncestorNames.slice()
@@ -201,7 +208,10 @@ const NavBar = () => {
                         'get',
                         null,
                         (data) => dispatch(editAllCategories(data)),
-                        (error) => console.log('An error occurred:', error)
+                        (error) => {
+                            dispatch(editErrorMsg(`${error}`))
+                            console.log('An error occurred:', error)
+                        } 
                     );
                 } else {
                     let tempNames = currentAncestorNames.slice()

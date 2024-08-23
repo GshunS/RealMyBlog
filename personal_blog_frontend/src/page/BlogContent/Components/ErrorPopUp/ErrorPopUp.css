@@ -25,6 +25,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    white-space: pre-wrap;
 }
 
 .ErrorPopUp__Content span {
@@ -34,6 +35,6 @@
 
 .ErrorPopUp__Content::before {
     content: '⚠️'; /* Example warning icon */
-    margin-right: 0.5rem;
+    margin-right: 0.1rem;
     font-size: 1rem;
 }

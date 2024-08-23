@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchData } from '../../../../utils/apiService'
 import { clearTempElements } from '../../../../utils/folderArticleHelper'
 import { editFolderCreated } from '../../../../store/modules/blogContentNavBarStore'
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import _ from 'lodash'
 const NavBarTempFolder = () => {
 
@@ -44,8 +45,10 @@ const NavBarTempFolder = () => {
                 },
                 (error) => {
                     clearTempElements('.showFolder')
+                    dispatch(editErrorMsg(`${error}`))
                     console.log(error)
-                })
+                }
+                )
         }
     }, 300);
     /**
