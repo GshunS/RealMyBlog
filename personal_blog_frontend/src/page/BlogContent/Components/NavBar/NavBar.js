@@ -19,7 +19,7 @@ import { editAddType } from '../../../../store/modules/blogContentFolderFileCrea
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
-import {produce} from 'immer'
+import { produce } from 'immer'
 // import NavBarTempFolder from './NavBarTempFolder'
 // category navigation bar
 const NavBar = () => {
@@ -133,18 +133,17 @@ const NavBar = () => {
 
     // }, [expandedCategories, getExpandedElement])
 
-
-    // fetch the first category
-    useEffect(() => {
-        async function fetchInitialData() {
-            var url = `https://localhost:7219/api/categories/first-category`
+    // common method
+    // folderCreated || folderDeleted
+    const fetchInitialData = useCallback(async () => {
+        if (folderCreated || folderDeleted) {
+            const url = `https://localhost:7219/api/categories/first-category`
             // fetch the first category
             await fetchData(
                 url,
                 'get',
                 null,
                 (data) => {
-                    dispatch(editCanRender(true))
                     dispatch(editAllCategories(data))
                 },
                 (error) => {
@@ -152,40 +151,45 @@ const NavBar = () => {
                     console.log('An error occurred:', error)
                 }
             );
-
         }
-        fetchInitialData()
+    }, [dispatch, folderCreated, folderDeleted])
+
+    // fetch the first category
+    useEffect(() => {
+        const firstFetch = async () => {
+            const url = `https://localhost:7219/api/categories/first-category`
+            // fetch the first category
+            await fetchData(
+                url,
+                'get',
+                null,
+                (data) => {
+                    dispatch(editAllCategories(data))
+                    dispatch(editCanRender(true))
+                },
+                (error) => {
+                    dispatch(editErrorMsg(`${error}`))
+                    console.log('An error occurred:', error)
+                }
+            );
+        }
+        firstFetch()
     }, [dispatch])
 
-    // if acategory has been created, refresh the data
+    // if a category has been created, refresh the data
     useEffect(() => {
         async function updateData() {
             if (folderCreated) {
                 if (currentAncestorNames.length > 0) {
                     await dispatch(fetchNextCategory(null, ...currentAncestorNames));
                 } else {
-                    var url = `https://localhost:7219/api/categories/first-category`
-                    // fetch the first category
-                    await fetchData(
-                        url,
-                        'get',
-                        null,
-                        (data) => {
-                            dispatch(editExpandedCategories({}))
-                            dispatch(editAllCategories(data))
-                        },
-                        (error) => {
-                            dispatch(editErrorMsg(`${error}`))
-                            console.log('An error occurred:', error)
-                        }
-                    )
+                    fetchInitialData()
                 }
                 dispatch(editFolderCreated(false))
             }
-
         }
         updateData()
-    }, [folderCreated, dispatch, currentAncestorNames])
+    }, [folderCreated, dispatch, currentAncestorNames, fetchInitialData])
 
     // if an article has been deleted(hide), refresh the data
     useEffect(() => {
@@ -227,7 +231,7 @@ const NavBar = () => {
                         })
                         dispatch(editAllCategories(temp))
                     }
-                    
+
 
                 }
                 dispatch(editFileHid(false))
@@ -246,18 +250,7 @@ const NavBar = () => {
                 if (currentAncestorNames.length > 0) {
                     if (currentAncestorNames.length === 1) {
                         dispatch(editExpandedCategories({}))
-                        // fetchInitialData()
-                        var url = `https://localhost:7219/api/categories/first-category`
-                        // fetch the first category
-                        await fetchData(
-                            url,
-                            'get',
-                            null,
-                            (data) => dispatch(editAllCategories(data)),
-                            (error) => {
-                                dispatch(editErrorMsg(`${error}`))
-                            }
-                        );
+                        fetchInitialData()
                     } else {
                         let tempNames = currentAncestorNames.slice()
                         tempNames.pop()
@@ -268,7 +261,7 @@ const NavBar = () => {
             }
         }
         updateData()
-    }, [folderDeleted, dispatch, currentAncestorNames])
+    }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData])
 
     const callCreationWindow = (type) => {
         dispatch(editExpandedCategories({}))
