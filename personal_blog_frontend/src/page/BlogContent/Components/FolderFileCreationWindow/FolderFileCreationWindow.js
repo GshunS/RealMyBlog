@@ -15,7 +15,7 @@ import _ from 'lodash'
 const FolderFileCreationWindow = () => {
     const dispatch = useDispatch()
     const { addType } = useSelector(state => state.blogContentFFCreationWindow)
-    const { currentAncestorNames} = useSelector(state => state.blogContentNavbar)
+    const { currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
     const modalRef = useRef(null);
     const formRef = useRef(null);
@@ -48,7 +48,9 @@ const FolderFileCreationWindow = () => {
     useEffect(() => {
         if (addType !== '') {
             const FFwindow = document.querySelector('.FFCreationWindow')
-            FFwindow.style.display = 'flex'
+            if (FFwindow.style.display === 'none') {
+                FFwindow.style.display = 'flex'
+            }
         }
     }, [addType])
 
@@ -99,7 +101,7 @@ const FolderFileCreationWindow = () => {
         console.log(data);
         if (data.type === 'folder') {
             createFolder(data)
-        }else{
+        } else {
             console.log('create file')
         }
     }, 300)

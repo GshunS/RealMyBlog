@@ -14,6 +14,8 @@
 }
 
 .FFCreationWindow__Main {
+    position: relative;
+    top: -10%;
     width: 30rem;
     background-color: white;
     padding: 1.5rem;
