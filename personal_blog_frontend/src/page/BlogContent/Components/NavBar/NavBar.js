@@ -111,8 +111,6 @@ const NavBar = () => {
         return () => clearTimeout(timer)
     }, [expandedCategories, getExpandedElement])
 
-
-
     // // set height dynamically
     // useEffect(() => {
 
@@ -277,6 +275,7 @@ const NavBar = () => {
     }, [folderDeleted, dispatch, currentAncestorNames])
 
     const callCreationWindow = (type) => {
+        dispatch(editExpandedCategories({}))
         dispatch(editAddType(type))
         dispatch(editCurrentAncestorNames([]))
     }
