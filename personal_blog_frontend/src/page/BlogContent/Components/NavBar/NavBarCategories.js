@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import './NavBarCategories.css'
 import React from 'react';
-import { fetchNextCategory } from '../../../../store/modules/blogContentNavBarStore';
+import { fetchNextCategory, setExpandedCategories } from '../../../../store/modules/blogContentNavBarStore';
 import { useDispatch } from 'react-redux'
 import NavBarElementOperation from './NavBarElementOperations'
 
@@ -12,8 +12,9 @@ const NavBarCategories = React.memo((props) => {
     const ancestorCategoryNames = props.ancestorCategoryNames
 
     const dispatch = useDispatch()
-    const handleExpandClick = () => {
-        dispatch(fetchNextCategory(categoryValue, ...categories))
+    const handleExpandClick = async () => {
+        await dispatch(fetchNextCategory(categoryValue, ...categories))
+        dispatch(setExpandedCategories(...categories))
     }
 
     return (

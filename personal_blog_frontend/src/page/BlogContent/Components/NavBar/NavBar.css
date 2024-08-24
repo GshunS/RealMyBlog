@@ -109,12 +109,6 @@
     transition: 0.5s ease-in;
 }
 
-.nav-bar__second-category-items,
-.nav-bar__third-category-items,
-.nav-bar__fourth-category-items {
-    margin-bottom: 0rem;
-}
-
 .expanded {
     max-height: 100vh;
     /* height: auto; */
@@ -134,6 +128,7 @@
     display: flex;
     justify-content: space-between;
     margin-left: 0.3rem;
+    /* margin-bottom: 0.3rem; */
     border-radius: 0.7rem;
     padding: 0.5rem;
     /* Added padding for better spacing */

@@ -2,12 +2,12 @@ import './NavBar.css'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import classNames from 'classnames'
 import { fetchData } from '../../../../utils/apiService'
-import { clearTempElements } from '../../../../utils/folderArticleHelper'
+// import { clearTempElements } from '../../../../utils/folderArticleHelper'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import {
     fetchNextCategory,
+    setExpandedCategories,
     editAllCategories,
-    editTempFolderCreated,
     editExpandedCategories,
     editFolderCreated,
     editFileHid,
@@ -19,6 +19,7 @@ import { editAddType } from '../../../../store/modules/blogContentFolderFileCrea
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
+import {produce} from 'immer'
 // import NavBarTempFolder from './NavBarTempFolder'
 // category navigation bar
 const NavBar = () => {
@@ -58,32 +59,33 @@ const NavBar = () => {
 
     }, [expandedElements])
 
+    //(deprecated)
     // click outside the temp folder, cancel the creation of the temp folder
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            // console.log(tempFolderCreated)
-            if (tempFolderCreated) {
-                dispatch(editTempFolderCreated(false))
-                return
-            }
-            let isOutside = true
-            Object.values(refMap.current).forEach((ref) => {
-                if (ref && ref.contains(event.target)) {
-                    isOutside = false
-                }
-            })
-            const folderElement = document.querySelector(".showFolder")
-            if (isOutside && folderElement) {
-                clearTempElements('.showFolder')
-            }
-        }
+    // useEffect(() => {
+    //     const handleClickOutside = (event) => {
+    //         // console.log(tempFolderCreated)
+    //         if (tempFolderCreated) {
+    //             dispatch(editTempFolderCreated(false))
+    //             return
+    //         }
+    //         let isOutside = true
+    //         Object.values(refMap.current).forEach((ref) => {
+    //             if (ref && ref.contains(event.target)) {
+    //                 isOutside = false
+    //             }
+    //         })
+    //         const folderElement = document.querySelector(".showFolder")
+    //         if (isOutside && folderElement) {
+    //             clearTempElements('.showFolder')
+    //         }
+    //     }
 
-        document.addEventListener('click', handleClickOutside)
+    //     document.addEventListener('click', handleClickOutside)
 
-        return () => {
-            document.removeEventListener('click', handleClickOutside)
-        }
-    }, [dispatch, tempFolderCreated])
+    //     return () => {
+    //         document.removeEventListener('click', handleClickOutside)
+    //     }
+    // }, [dispatch, tempFolderCreated])
 
     // scroll to the expanded category
     useEffect(() => {
@@ -155,19 +157,11 @@ const NavBar = () => {
         fetchInitialData()
     }, [dispatch])
 
-    // if a new sub category(not level 1 category) has been created, refresh the data
+    // if acategory has been created, refresh the data
     useEffect(() => {
         async function updateData() {
             if (folderCreated) {
                 if (currentAncestorNames.length > 0) {
-                    let nestedObject = {};
-                    let tempNames = currentAncestorNames.slice()
-                    tempNames.pop()
-                    tempNames.reduce((acc, currentValue) => {
-                        acc[currentValue] = {};
-                        return acc[currentValue];
-                    }, nestedObject);
-                    dispatch(editExpandedCategories(nestedObject))
                     await dispatch(fetchNextCategory(null, ...currentAncestorNames));
                 } else {
                     var url = `https://localhost:7219/api/categories/first-category`
@@ -196,85 +190,82 @@ const NavBar = () => {
     // if an article has been deleted(hide), refresh the data
     useEffect(() => {
         async function updateData() {
-            if (currentAncestorNames.length > 0 && (fileHid)) {
-                let nestedObject = {};
+            if (fileHid) {
+                if (currentAncestorNames.length > 0) {
+                    if (currentAncestorNames.length === 1) {
+                        dispatch(editExpandedCategories({}))
+                        // fetchInitialData()
+                        var url = `https://localhost:7219/api/categories/first-category`
+                        // fetch the first category
+                        await fetchData(
+                            url,
+                            'get',
+                            null,
+                            (data) => dispatch(editAllCategories(data)),
+                            (error) => {
+                                dispatch(editErrorMsg(`${error}`))
+                                console.log('An error occurred:', error)
+                            }
+                        );
+                        await dispatch(fetchNextCategory(null, ...currentAncestorNames));
+                    } else {
+                        console.log(currentAncestorNames)
+                        let tempNames = currentAncestorNames.slice()
+                        tempNames.pop()
 
-                if (currentAncestorNames.length === 1) {
-                    dispatch(editExpandedCategories(nestedObject))
-                    // fetchInitialData()
-                    var url = `https://localhost:7219/api/categories/first-category`
-                    // fetch the first category
-                    await fetchData(
-                        url,
-                        'get',
-                        null,
-                        (data) => dispatch(editAllCategories(data)),
-                        (error) => {
-                            dispatch(editErrorMsg(`${error}`))
-                            console.log('An error occurred:', error)
-                        }
-                    );
-                } else {
-                    let tempNames = currentAncestorNames.slice()
-                    tempNames.pop()
+                        // let initialExpand = tempNames.slice()
+                        // initialExpand.pop()
 
-                    let initialExpand = tempNames.slice()
-                    initialExpand.pop()
+                        // initialExpand.reduce((acc, currentValue) => {
+                        //     acc[currentValue] = {};
+                        //     return acc[currentValue];
+                        // }, nestedObject);
+                        // dispatch(editExpandedCategories(nestedObject))
+                        await dispatch(fetchNextCategory(null, ...currentAncestorNames));
+                        let temp = produce(allCategories, draft => {
+                            delete draft['123'].subCategories['abc'].articles[5]
+                        })
+                        dispatch(editAllCategories(temp))
+                    }
+                    
 
-                    initialExpand.reduce((acc, currentValue) => {
-                        acc[currentValue] = {};
-                        return acc[currentValue];
-                    }, nestedObject);
-                    dispatch(editExpandedCategories(nestedObject))
-                    await dispatch(fetchNextCategory(null, ...tempNames));
                 }
-                await dispatch(fetchNextCategory(null, ...currentAncestorNames));
                 dispatch(editFileHid(false))
 
             }
+
 
         }
         updateData()
     }, [fileHid, dispatch, currentAncestorNames])
 
-    // if a sub category has been deleted, refresh the data
+    // if a folder has been deleted, refresh the data
     useEffect(() => {
         async function updateData() {
-            if (currentAncestorNames.length > 0 && (folderDeleted)) {
-                let nestedObject = {};
-
-                if (currentAncestorNames.length === 1) {
-                    dispatch(editExpandedCategories(nestedObject))
-                    // fetchInitialData()
-                    var url = `https://localhost:7219/api/categories/first-category`
-                    // fetch the first category
-                    await fetchData(
-                        url,
-                        'get',
-                        null,
-                        (data) => dispatch(editAllCategories(data)),
-                        (error) => {
-                            dispatch(editErrorMsg(`${error}`))
-                            console.log('An error occurred:', error)
-                        }
-                    );
-                } else {
-                    let tempNames = currentAncestorNames.slice()
-                    tempNames.pop()
-
-                    let initialExpand = tempNames.slice()
-                    initialExpand.pop()
-
-                    initialExpand.reduce((acc, currentValue) => {
-                        acc[currentValue] = {};
-                        return acc[currentValue];
-                    }, nestedObject);
-                    dispatch(editExpandedCategories(nestedObject))
-                    await dispatch(fetchNextCategory(null, ...tempNames));
+            if (folderDeleted) {
+                if (currentAncestorNames.length > 0) {
+                    if (currentAncestorNames.length === 1) {
+                        dispatch(editExpandedCategories({}))
+                        // fetchInitialData()
+                        var url = `https://localhost:7219/api/categories/first-category`
+                        // fetch the first category
+                        await fetchData(
+                            url,
+                            'get',
+                            null,
+                            (data) => dispatch(editAllCategories(data)),
+                            (error) => {
+                                dispatch(editErrorMsg(`${error}`))
+                            }
+                        );
+                    } else {
+                        let tempNames = currentAncestorNames.slice()
+                        tempNames.pop()
+                        await dispatch(fetchNextCategory(null, ...tempNames));
+                    }
+                    dispatch(editFolderDeleted(false))
                 }
-                dispatch(editFolderDeleted(false))
             }
-
         }
         updateData()
     }, [folderDeleted, dispatch, currentAncestorNames])

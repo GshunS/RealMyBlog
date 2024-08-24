@@ -2,7 +2,7 @@ import './NavBarElementOperations.css'
 import React from 'react'
 import classNames from 'classnames'
 import { useDispatch } from 'react-redux'
-import { fetchNextCategory, editCurrentAncestorNames, editTempFolderCreated } from '../../../../store/modules/blogContentNavBarStore';
+import { fetchNextCategory, editCurrentAncestorNames, setExpandedCategories } from '../../../../store/modules/blogContentNavBarStore';
 import NavBarDeleteOperation from './NavBarDeleteOperation';
 // import axios from 'axios'
 import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
@@ -14,50 +14,45 @@ const NavBarElementOperation = React.memo((props) => {
     const categories = props.categories;
     const ancestorCategoryNames = props.ancestorCategoryNames
 
-    /**
-     * Function to find matched ancestor categories in the DOM tree.
-     * @param {HTMLElement} element - The starting element to begin the search.
-     * @param {string} targetClassName - The class name to match ancestor categories.
-     * @returns {boolean} - Returns true if all ancestor categories match, otherwise false.
-     */
-    function findMatchedAncestorCategories(element, targetClassName) {
-        let currentElement = element; // Initialize current element to the starting element
-        let ancestorIndex = ancestorCategoryNames.length - 1 // Initialize the index to the last ancestor category name
 
-        // Traverse up the DOM tree until an <li> element is found
-        while (currentElement && currentElement.tagName !== 'LI') {
-            currentElement = currentElement.parentElement;
-        }
+    // function findMatchedAncestorCategories(element, targetClassName) {
+    //     let currentElement = element; // Initialize current element to the starting element
+    //     let ancestorIndex = ancestorCategoryNames.length - 1 // Initialize the index to the last ancestor category name
 
-        // Continue traversing as long as the element is an <li>
-        while (currentElement && currentElement.tagName === 'LI') {
-            // Get the text content of the current <li> element, split by newline, and take the first part
-            let text = currentElement.innerText.split('\n')[0]
+    //     // Traverse up the DOM tree until an <li> element is found
+    //     while (currentElement && currentElement.tagName !== 'LI') {
+    //         currentElement = currentElement.parentElement;
+    //     }
 
-            // Check if the text matches the current ancestor category name
-            if (text === ancestorCategoryNames[ancestorIndex]) {
-                ancestorIndex-- // Move to the previous ancestor category name
-            } else {
-                return false // If the text does not match, return false
-            }
+    //     // Continue traversing as long as the element is an <li>
+    //     while (currentElement && currentElement.tagName === 'LI') {
+    //         // Get the text content of the current <li> element, split by newline, and take the first part
+    //         let text = currentElement.innerText.split('\n')[0]
 
-            // If all ancestor categories have been matched, return true
-            if (ancestorIndex < 0) {
-                return true
-            }
+    //         // Check if the text matches the current ancestor category name
+    //         if (text === ancestorCategoryNames[ancestorIndex]) {
+    //             ancestorIndex-- // Move to the previous ancestor category name
+    //         } else {
+    //             return false // If the text does not match, return false
+    //         }
 
-            // Move to the parent <li> element
-            currentElement = currentElement.parentElement;
+    //         // If all ancestor categories have been matched, return true
+    //         if (ancestorIndex < 0) {
+    //             return true
+    //         }
 
-            // Continue moving up until the next parent <li> is found
-            while (currentElement && currentElement.tagName !== 'LI') {
-                currentElement = currentElement.parentElement;
-            }
-        }
+    //         // Move to the parent <li> element
+    //         currentElement = currentElement.parentElement;
 
-        // If the loop completes without matching all ancestor categories, return false
-        return false
-    }
+    //         // Continue moving up until the next parent <li> is found
+    //         while (currentElement && currentElement.tagName !== 'LI') {
+    //             currentElement = currentElement.parentElement;
+    //         }
+    //     }
+
+    //     // If the loop completes without matching all ancestor categories, return false
+    //     return false
+    // }
 
     // when user click the create folder icon (Deprecated)
     // const createFolder = () => {
@@ -94,9 +89,10 @@ const NavBarElementOperation = React.memo((props) => {
     // }
 
 
-    const createFolderInNewWindow = () => {
+    const createFolderInNewWindow = async () => {
         if (!expandedCategories.hasOwnProperty(categoryName)) {
-            dispatch(fetchNextCategory(categoryValue, ...categories))
+            await dispatch(fetchNextCategory(categoryValue, ...categories))
+            dispatch(setExpandedCategories(...categories))
         }
         dispatch(editAddType('folder'))
         dispatch(editCurrentAncestorNames(ancestorCategoryNames))

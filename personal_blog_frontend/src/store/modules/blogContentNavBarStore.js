@@ -63,7 +63,7 @@ const {
 // fetch the next category
 const fetchNextCategory = (categoryValue, ...categories) => {
     return async (dispatch, getState) => {
-        const expandedCategories = getState().blogContentNavbar.expandedCategories;
+        // const expandedCategories = getState().blogContentNavbar.expandedCategories;
         const allCategories = getState().blogContentNavbar.allCategories;
         let url = 'https://localhost:7219/api/categories';
         // let categoryName = null
@@ -76,19 +76,19 @@ const fetchNextCategory = (categoryValue, ...categories) => {
         });
 
 
-        let expanded = true
-        let currentExpandedLevel = expandedCategories;
-        categories.forEach((category, index) => {
-            if (index === categories.length - 1) {
-                if (currentExpandedLevel.hasOwnProperty(category)) {
-                    expanded = false;
-                }
-            } else {
-                currentExpandedLevel = currentExpandedLevel[category];
-            }
-        });
+        // let expanded = true
+        // let currentExpandedLevel = expandedCategories;
+        // categories.forEach((category, index) => {
+        //     if (index === categories.length - 1) {
+        //         if (currentExpandedLevel.hasOwnProperty(category)) {
+        //             expanded = false;
+        //         }
+        //     } else {
+        //         currentExpandedLevel = currentExpandedLevel[category];
+        //     }
+        // });
 
-        if (categories.length !== 4 && expanded) {
+        if (categories.length !== 4) {
             // const response = await axios.get(url);
             await fetchData(
                 url,
@@ -103,16 +103,16 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                                 // currentLevel[category].hasChildren = true;
                                 let subCateLength = 0;
                                 let articleLength = 0;
-                                if (data !== null){
+                                if (data !== null) {
                                     subCateLength = Object.keys(data).length
                                 }
-                                if(currentLevel[category].articles !== null){
+                                if (currentLevel[category].articles !== null) {
                                     articleLength = Object.keys(currentLevel[category].articles).length
                                 }
-                                    
-                                if(articleLength === 0 && subCateLength === 0){
+
+                                if (articleLength === 0 && subCateLength === 0) {
                                     currentLevel[category].hasChildren = false;
-                                }else{
+                                } else {
                                     currentLevel[category].hasChildren = true;
                                 }
                             } else {
@@ -129,6 +129,12 @@ const fetchNextCategory = (categoryValue, ...categories) => {
             );
 
         }
+    };
+}
+
+const setExpandedCategories = (...categories) => {
+    return (dispatch, getState) => {
+        const expandedCategories = getState().blogContentNavbar.expandedCategories;
         let updatedExpandedCategories = produce(expandedCategories, draft => {
             let currentExpandedLevel = draft;
             categories.forEach((category, index) => {
@@ -143,10 +149,9 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                 }
             });
         });
-
+    
         dispatch(editExpandedCategories(updatedExpandedCategories));
-
-    };
+    }
 }
 
 // delete operation(either delete an article or a folder)
@@ -179,7 +184,7 @@ const deleteOperation = (deleteType, articleId) => {
                     Data[category] = null
                 }
             })
-            
+
             await fetchData(url, 'delete', Data,
                 (data) => {
                     dispatch(editFolderDeleted(true))
@@ -203,7 +208,7 @@ export {
     editCanRender
 }
 
-export { fetchNextCategory, deleteOperation }
+export { fetchNextCategory, setExpandedCategories, deleteOperation }
 
 const reducer = blogContentNavbarStore.reducer
 
