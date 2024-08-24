@@ -5,8 +5,8 @@ import './FolderFileCreationWindow.css'
 import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRef } from 'react'
-
-
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+import _ from 'lodash'
 
 const FolderFileCreationWindow = () => {
     const dispatch = useDispatch()
@@ -14,8 +14,9 @@ const FolderFileCreationWindow = () => {
     const { currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
     const modalRef = useRef(null);
+    const formRef = useRef(null);
 
-    
+
     const closeModal = useCallback(() => {
         const FFwindow = document.querySelector('.FFCreationWindow')
         FFwindow.style.display = 'none'
@@ -41,6 +42,29 @@ const FolderFileCreationWindow = () => {
         }
     }, [addType])
 
+    const createFF = _.debounce(() => {
+        const formData = new FormData(formRef.current);
+        const data = {
+            type: formData.get("FFCreationWindow_Add").trim(),
+            filename: formData.get("Input_Content").trim(),
+        };
+        if (data.type !== 'file' && data.type !== 'folder') {
+            dispatch(editErrorMsg('invalid type'))
+        }
+
+        if (data.filename === null || (data.filename.length === 0)) {
+            dispatch(editErrorMsg(`invalid ${data.type} name`))
+        }
+        console.log(currentAncestorNames);
+        console.log(data);
+    }, 300)
+
+    const handleFormSubmit = (event) => {
+        if (event) event.preventDefault();
+        createFF()
+    }
+
+
     return (
         <div className="FFCreationWindow">
             <div className="FFCreationWindow__Main" ref={modalRef}>
@@ -54,7 +78,7 @@ const FolderFileCreationWindow = () => {
                     </svg>
                 </div>
                 <div className="FFCreationWindow__Path">{'/' + currentAncestorNames.join('/')}</div>
-                <form id='FFCreationWindow__Form'>
+                <form id='FFCreationWindow__Form' onSubmit={handleFormSubmit} ref={formRef} autoComplete="off">
                     <div className="FFCreationWindow__Content">
                         <select
                             name="FFCreationWindow_Add"
@@ -64,11 +88,19 @@ const FolderFileCreationWindow = () => {
                             <option value="file">file</option>
                             <option value="folder">folder</option>
                         </select>
-                        <input placeholder='filename' required></input>
+                        <input
+                            name='Input_Content'
+                            placeholder={`${addType} name`}
+                        >
+                        </input>
                     </div>
                 </form>
                 <div className="FFCreationWindow__Button">
-                    <div className='FFCreationWindow__Button__Submit'>Submit</div>
+                    <div
+                        className='FFCreationWindow__Button__Submit'
+                        onClick={handleFormSubmit}>
+                        Submit
+                    </div>
                 </div>
 
             </div>
