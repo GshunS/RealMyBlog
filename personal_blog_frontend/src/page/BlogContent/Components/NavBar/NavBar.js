@@ -181,7 +181,21 @@ const NavBar = () => {
         async function updateData() {
             if (folderCreated) {
                 if (currentAncestorNames.length > 0) {
+                    let temp_expand = produce(expandedCategories, draft => {
+                        let current = draft;
+                        currentAncestorNames.forEach((element) => {
+                            if (!current[element]) {
+                                current[element] = {};
+                            }
+                            current = current[element];
+                        });
+                        Object.keys(current).forEach(key => {
+                            delete current[key];
+                        });
+                    });
+                    dispatch(editExpandedCategories(temp_expand))
                     await dispatch(fetchNextCategory(null, ...currentAncestorNames));
+
                 } else {
                     fetchInitialData()
                 }
@@ -189,7 +203,7 @@ const NavBar = () => {
             }
         }
         updateData()
-    }, [folderCreated, dispatch, currentAncestorNames, fetchInitialData])
+    }, [folderCreated, dispatch, currentAncestorNames, fetchInitialData, expandedCategories])
 
     // if an article has been deleted(hide), refresh the data
     useEffect(() => {
@@ -212,6 +226,7 @@ const NavBar = () => {
                             }
                         );
                         await dispatch(fetchNextCategory(null, ...currentAncestorNames));
+                        dispatch(setExpandedCategories(...currentAncestorNames))
                     } else {
                         console.log(currentAncestorNames)
                         let tempNames = currentAncestorNames.slice()
@@ -254,6 +269,20 @@ const NavBar = () => {
                     } else {
                         let tempNames = currentAncestorNames.slice()
                         tempNames.pop()
+                        let temp_expand = produce(expandedCategories, draft => {
+                            let current = draft;
+                            tempNames.forEach((element) => {
+                                if (!current[element]) {
+                                    current[element] = {};
+                                }
+                                current = current[element];
+                            });
+                            Object.keys(current).forEach(key => {
+                                delete current[key];
+                            });
+                        });
+                        dispatch(editExpandedCategories(temp_expand))
+
                         await dispatch(fetchNextCategory(null, ...tempNames));
                     }
                     dispatch(editFolderDeleted(false))
@@ -261,7 +290,7 @@ const NavBar = () => {
             }
         }
         updateData()
-    }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData])
+    }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData, expandedCategories])
 
     const callCreationWindow = (type) => {
         dispatch(editExpandedCategories({}))
