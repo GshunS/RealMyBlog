@@ -27,12 +27,17 @@ const FolderFileCreationWindow = () => {
     useEffect(() => {
         function handleClickOutside(event) {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
-                // closeModal()
+                closeModal()
             }
         }
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        const timeoutId = setTimeout(() => {
+            document.addEventListener('mousedown', handleClickOutside);
+        }, 100);
+        return () => {
+            clearTimeout(timeoutId);
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
     }, [closeModal]);
 
     useEffect(() => {
