@@ -6,12 +6,16 @@ import { editAddType } from '../../../../store/modules/blogContentFolderFileCrea
 import { useDispatch, useSelector } from 'react-redux'
 import { useRef } from 'react'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+import { fetchData } from '../../../../utils/apiService'
+import {
+    editFolderCreated
+} from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
 
 const FolderFileCreationWindow = () => {
     const dispatch = useDispatch()
     const { addType } = useSelector(state => state.blogContentFFCreationWindow)
-    const { currentAncestorNames } = useSelector(state => state.blogContentNavbar)
+    const { currentAncestorNames} = useSelector(state => state.blogContentNavbar)
 
     const modalRef = useRef(null);
     const formRef = useRef(null);
@@ -20,6 +24,7 @@ const FolderFileCreationWindow = () => {
     const closeModal = useCallback(() => {
         const FFwindow = document.querySelector('.FFCreationWindow')
         FFwindow.style.display = 'none'
+        document.querySelector('.FFCreationWindow_Input').value = ''
         dispatch(editAddType(''))
     }, [dispatch])
 
@@ -47,26 +52,62 @@ const FolderFileCreationWindow = () => {
         }
     }, [addType])
 
-    const createFF = _.debounce(() => {
+
+    const createFolder = async (data) => {
+        // append the new category to the current ancestor names
+        let updatedAncestorNames = [...currentAncestorNames]
+        updatedAncestorNames.push(data.content)
+        const categories = ['first_category', 'second_category', 'third_category', 'fourth_category']
+        let Data = {}
+        categories.forEach((category, index) => {
+            if (updatedAncestorNames[index]) {
+                Data[category] = updatedAncestorNames[index].trim()
+            } else {
+                Data[category] = null
+            }
+        })
+
+        // send the data to the backend
+        let url = 'https://localhost:7219/api/categories'
+        await fetchData(
+            url, 'POST', Data,
+            (data) => {
+                closeModal()
+                dispatch(editErrorMsg(`Success`))
+                dispatch(editFolderCreated(true))
+            },
+            (error) => {
+                dispatch(editErrorMsg(`${error}`))
+                console.log(error)
+            }
+        )
+    }
+    const validateData = _.debounce(() => {
         const formData = new FormData(formRef.current);
         const data = {
             type: formData.get("FFCreationWindow_Add").trim(),
-            filename: formData.get("Input_Content").trim(),
+            content: formData.get("Input_Content").trim(),
         };
         if (data.type !== 'file' && data.type !== 'folder') {
             dispatch(editErrorMsg('invalid type'))
         }
 
-        if (data.filename === null || (data.filename.length === 0)) {
+        if (data.content === null || (data.content.length === 0)) {
             dispatch(editErrorMsg(`invalid ${data.type} name`))
         }
-        console.log(currentAncestorNames);
+
         console.log(data);
+        if (data.type === 'folder') {
+            createFolder(data)
+        }else{
+            console.log('create file')
+        }
     }, 300)
+
 
     const handleFormSubmit = (event) => {
         if (event) event.preventDefault();
-        createFF()
+        validateData()
     }
 
 
@@ -94,6 +135,7 @@ const FolderFileCreationWindow = () => {
                             <option value="folder">folder</option>
                         </select>
                         <input
+                            className='FFCreationWindow_Input'
                             name='Input_Content'
                             placeholder={`${addType} name`}
                         >

@@ -156,17 +156,35 @@ const NavBar = () => {
     // if a new sub category(not level 1 category) has been created, refresh the data
     useEffect(() => {
         async function updateData() {
-            if (currentAncestorNames.length > 0 && (folderCreated)) {
-                let nestedObject = {};
-                let tempNames = currentAncestorNames.slice()
-                tempNames.pop()
-                tempNames.reduce((acc, currentValue) => {
-                    acc[currentValue] = {};
-                    return acc[currentValue];
-                }, nestedObject);
-                dispatch(editExpandedCategories(nestedObject))
-                await dispatch(fetchNextCategory(null, ...currentAncestorNames));
-                dispatch(editFolderCreated(false))
+            if (folderCreated) {
+                if (currentAncestorNames.length > 0) {
+                    let nestedObject = {};
+                    let tempNames = currentAncestorNames.slice()
+                    tempNames.pop()
+                    tempNames.reduce((acc, currentValue) => {
+                        acc[currentValue] = {};
+                        return acc[currentValue];
+                    }, nestedObject);
+                    dispatch(editExpandedCategories(nestedObject))
+                    await dispatch(fetchNextCategory(null, ...currentAncestorNames));
+                    dispatch(editFolderCreated(false))
+                } else {
+                    var url = `https://localhost:7219/api/categories/first-category`
+                    // fetch the first category
+                    await fetchData(
+                        url,
+                        'get',
+                        null,
+                        (data) => {
+                            dispatch(editExpandedCategories({}))
+                            dispatch(editAllCategories(data))
+                        },
+                        (error) => {
+                            dispatch(editErrorMsg(`${error}`))
+                            console.log('An error occurred:', error)
+                        }
+                    );
+                }
             }
 
         }
