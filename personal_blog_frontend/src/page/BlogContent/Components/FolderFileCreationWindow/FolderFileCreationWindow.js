@@ -90,15 +90,17 @@ const FolderFileCreationWindow = () => {
             type: formData.get("FFCreationWindow_Add").trim(),
             content: formData.get("Input_Content").trim(),
         };
+        console.log(data)
         if (data.type !== 'file' && data.type !== 'folder') {
             dispatch(editErrorMsg('invalid type'))
+            return
         }
 
         if (data.content === null || (data.content.length === 0)) {
             dispatch(editErrorMsg(`invalid ${data.type} name`))
+            return
         }
 
-        console.log(data);
         if (data.type === 'folder') {
             createFolder(data)
         } else {

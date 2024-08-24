@@ -6,7 +6,9 @@ import { fetchData } from '../../../../utils/apiService'
 import { clearTempElements } from '../../../../utils/folderArticleHelper'
 import { editFolderCreated } from '../../../../store/modules/blogContentNavBarStore'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+import {produce} from 'immer'
 import _ from 'lodash'
+// (Deprecated)
 const NavBarTempFolder = () => {
 
     const inputRef = useRef(null)
@@ -15,8 +17,10 @@ const NavBarTempFolder = () => {
 
     const handleCategoryCreation = (event) => {
         event.preventDefault(); // Prevent the form from submitting
-        CategoryCreation(event); // Call the debounced function
+        // CategoryCreation(event); // Call the debounced function
     };
+
+   
 
     const CategoryCreation = _.debounce(async (event) => {
         // process the form submission

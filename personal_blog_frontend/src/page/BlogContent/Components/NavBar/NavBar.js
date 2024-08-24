@@ -18,8 +18,7 @@ import { editAddType } from '../../../../store/modules/blogContentFolderFileCrea
 import { useDispatch, useSelector } from 'react-redux'
 import NavBarArticles from './NavBarArticles'
 import NavBarCategories from './NavBarCategories'
-import NavBarTempFolder from './NavBarTempFolder'
-import _ from 'lodash'
+// import NavBarTempFolder from './NavBarTempFolder'
 // category navigation bar
 const NavBar = () => {
 
@@ -167,7 +166,6 @@ const NavBar = () => {
                     }, nestedObject);
                     dispatch(editExpandedCategories(nestedObject))
                     await dispatch(fetchNextCategory(null, ...currentAncestorNames));
-                    dispatch(editFolderCreated(false))
                 } else {
                     var url = `https://localhost:7219/api/categories/first-category`
                     // fetch the first category
@@ -183,8 +181,9 @@ const NavBar = () => {
                             dispatch(editErrorMsg(`${error}`))
                             console.log('An error occurred:', error)
                         }
-                    );
+                    )
                 }
+                dispatch(editFolderCreated(false))
             }
 
         }
@@ -317,10 +316,10 @@ const NavBar = () => {
                                         { "nav-bar__has-child": !firstCategoryValue.hasChildren }
                                     )}
                                 >
-                                    <div
+                                    {/* <div
                                         ref={setRef}>
                                         <NavBarTempFolder ancestorCategoryNames={[firstCategoryName]} />
-                                    </div>
+                                    </div> */}
 
                                     {/* if the parent category has been clicked, show all children categories */}
                                     {expandedCategories.hasOwnProperty(firstCategoryName) && (
@@ -346,10 +345,10 @@ const NavBar = () => {
                                                         { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) },
                                                         { "nav-bar__has-child": !secondCategoryValue.hasChildren }
                                                     )}>
-                                                    <div
+                                                    {/* <div
                                                         ref={setRef}>
                                                         <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName]} />
-                                                    </div>
+                                                    </div> */}
 
                                                     {/* if the parent category has been clicked, show all children categories */}
                                                     {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) && (
@@ -376,10 +375,10 @@ const NavBar = () => {
                                                                             { "nav-bar__has-child": !thirdCategoryValue.hasChildren }
                                                                         )
                                                                     }>
-                                                                    <div
+                                                                    {/* <div
                                                                         ref={setRef}>
                                                                         <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]} />
-                                                                    </div>
+                                                                    </div> */}
                                                                     {/* if the parent category has been clicked, show all children categories */}
                                                                     {expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) && (
 
