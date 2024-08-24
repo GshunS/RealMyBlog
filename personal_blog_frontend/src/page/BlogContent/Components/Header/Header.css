@@ -105,16 +105,20 @@
     align-items: center;
     width: 28rem;
     font-size: 1.1rem;
-    flex-grow: 0;
+    flex-grow: 1;
+    flex-basis: 0;
 }
 /*#endregion */
 
 /* #region header-attrs-view */
-.header__view{
+.header__view,
+.header__theme,
+.header__login{
     width: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
+    gap: 0.1rem;
     position: relative;
 }
 .header__view_button{
@@ -129,10 +133,13 @@
     transition: all 0.2s linear;
 }
 
-.header__view_arrow {
+.header__view_arrow,
+.header__theme_icon,
+.header__login_icon {
     width: 1.5rem;
     height: 1.5rem;
     transition: 0.2s linear;
+    margin-left: -0.5rem;
 }
 
 .arrow_expand{
