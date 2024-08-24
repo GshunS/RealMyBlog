@@ -12,7 +12,8 @@ import {
     editFolderCreated,
     editFileHid,
     editFolderDeleted,
-    editCurrentAncestorNames
+    editCurrentAncestorNames,
+    editCanRender
 } from '../../../../store/modules/blogContentNavBarStore'
 import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
 import { useDispatch, useSelector } from 'react-redux'
@@ -31,6 +32,7 @@ const NavBar = () => {
         tempFolderCreated,
         folderCreated,
         fileHid,
+        canRender,
         folderDeleted,
         currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
@@ -39,14 +41,14 @@ const NavBar = () => {
     const heightRef = useRef(0)
 
     // set ref for each temporary folder
-    const setRef = useCallback((element) => {
-        if (element) {
-            refMap.current.push(element);
-        } else {
-            // Handle cleanup when the component is unmounted or the element is removed
-            refMap.current = refMap.current.filter(ref => ref !== element);
-        }
-    }, []);
+    // const setRef = useCallback((element) => {
+    //     if (element) {
+    //         refMap.current.push(element);
+    //     } else {
+    //         // Handle cleanup when the component is unmounted or the element is removed
+    //         refMap.current = refMap.current.filter(ref => ref !== element);
+    //     }
+    // }, []);
 
     const getExpandedElement = useCallback(() => {
         const nodelist = document.querySelectorAll('.expanded')
@@ -139,7 +141,10 @@ const NavBar = () => {
                 url,
                 'get',
                 null,
-                (data) => dispatch(editAllCategories(data)),
+                (data) => {
+                    dispatch(editCanRender(true))
+                    dispatch(editAllCategories(data))
+                },
                 (error) => {
                     dispatch(editErrorMsg(`${error}`))
                     console.log('An error occurred:', error)
@@ -280,185 +285,192 @@ const NavBar = () => {
         dispatch(editCurrentAncestorNames([]))
     }
 
-    return (
-        <div className="nav-bar">
-            {/* navigation title */}
-            <div className="nav-bar__name">
-                <span>Blog Navigation</span>
-            </div>
+    if (canRender) {
+        return (
+            <div className="nav-bar">
+                {/* navigation title */}
+                <div className="nav-bar__name">
+                    <span>Blog Navigation</span>
+                </div>
 
-            <div className="nav-bar__categories">
-                {/* first category */}
-                <ul className="nav-bar__first-category" ref={heightRef}>
+                <div className="nav-bar__categories">
+                    {/* first category */}
+                    <ul className="nav-bar__first-category" ref={heightRef}>
 
-                    {/* firstCategoryName: name for level 1 category */}
-                    {/* firstCategoryValue: {hasChildren:true, subCategories:null, articles:null} */}
-                    {(allCategories !== null) &&
-                        (Object.entries(allCategories).map(([firstCategoryName, firstCategoryValue], index) => (
-                            <li className="nav-bar__first-category-items"
-                                key={index}
-                            >
-
-                                {/* level 1 category <li> content */}
-                                <NavBarCategories
-                                    ancestorCategoryNames={[firstCategoryName]}
-                                    expandedCategories={expandedCategories}
-                                    expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }}
-                                    categories={[firstCategoryName]}
-                                />
-
-                                {/* second category */}
-                                <ul className={
-                                    classNames(
-                                        "nav-bar__second-category",
-                                        { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) },
-                                        { "nav-bar__has-child": !firstCategoryValue.hasChildren }
-                                    )}
+                        {/* firstCategoryName: name for level 1 category */}
+                        {/* firstCategoryValue: {hasChildren:true, subCategories:null, articles:null} */}
+                        {(allCategories !== null) &&
+                            (Object.entries(allCategories).map(([firstCategoryName, firstCategoryValue], index) => (
+                                <li className="nav-bar__first-category-items"
+                                    key={index}
                                 >
-                                    {/* <div
-                                        ref={setRef}>
-                                        <NavBarTempFolder ancestorCategoryNames={[firstCategoryName]} />
-                                    </div> */}
 
-                                    {/* if the parent category has been clicked, show all children categories */}
-                                    {expandedCategories.hasOwnProperty(firstCategoryName) && (
-                                        // secondCategoryValue: {hasChildren:true, subCategories:null, articles:null}
-
-                                        Object.entries(firstCategoryValue["subCategories"]).map(([secondCategoryName, secondCategoryValue], secondIndex) => (
-
-                                            <li className={classNames("nav-bar__second-category-items")}
-                                                key={secondIndex}>
-                                                {/* level 2 category <li> content */}
-
-                                                <NavBarCategories
-                                                    ancestorCategoryNames={[firstCategoryName, secondCategoryName]}
-                                                    expandedCategories={expandedCategories[firstCategoryName]}
-                                                    expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }}
-                                                    categories={[firstCategoryName, secondCategoryName]}
-                                                />
-
-                                                {/* third category */}
-                                                <ul className={
-                                                    classNames(
-                                                        "nav-bar__third-category",
-                                                        { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) },
-                                                        { "nav-bar__has-child": !secondCategoryValue.hasChildren }
-                                                    )}>
-                                                    {/* <div
-                                                        ref={setRef}>
-                                                        <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName]} />
-                                                    </div> */}
-
-                                                    {/* if the parent category has been clicked, show all children categories */}
-                                                    {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) && (
-
-                                                        // thirdCategoryValue: {hasChildren:true, subCategories:null, articles:null}
-                                                        Object.entries(secondCategoryValue["subCategories"]).map(([thirdCategoryName, thirdCategoryValue], thirdIndex) => (
-                                                            <li className={classNames("nav-bar__third-category-items")}
-                                                                key={thirdIndex}>
-
-                                                                {/* level 3 category <li> content */}
-                                                                <NavBarCategories
-                                                                    ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]}
-                                                                    expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
-                                                                    expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }}
-                                                                    categories={[firstCategoryName, secondCategoryName, thirdCategoryName]}
-                                                                />
-
-                                                                {/* fourth category */}
-                                                                <ul
-                                                                    className={
-                                                                        classNames(
-                                                                            "nav-bar__fourth-category",
-                                                                            { "expanded": expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) },
-                                                                            { "nav-bar__has-child": !thirdCategoryValue.hasChildren }
-                                                                        )
-                                                                    }>
-                                                                    {/* <div
-                                                                        ref={setRef}>
-                                                                        <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]} />
-                                                                    </div> */}
-                                                                    {/* if the parent category has been clicked, show all children categories */}
-                                                                    {expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) && (
-
-                                                                        // fourthCategoryValue: {hasChildren:true, subCategories:null, articles:null}
-                                                                        Object.entries(thirdCategoryValue["subCategories"]).map(([fourthCategoryName, fourthCategoryValue], fourthIndex) => (
-                                                                            <li className={classNames("nav-bar__fourth-category-items")}
-                                                                                key={fourthIndex}>
-                                                                                {/* level 4 category <li> content */}
-                                                                                <NavBarCategories
-                                                                                    ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
-                                                                                    expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
-                                                                                    expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }}
-                                                                                    categories={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
-                                                                                />
-
-                                                                                {/* Articles under level 4 category */}
-                                                                                <ul
-                                                                                    className={
-                                                                                        classNames(
-                                                                                            "nav-bar__fourth-category",
-                                                                                            { "expanded": expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) },
-                                                                                            { "nav-bar__has-child": !fourthCategoryValue.hasChildren }
-                                                                                        )
-                                                                                    }>
-
-                                                                                    <NavBarArticles
-                                                                                        expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
-                                                                                        ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
-                                                                                        expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }} />
-                                                                                </ul>
-
-                                                                            </li>
-                                                                        ))
-
-                                                                    )}
-
-                                                                    {/* Articles under level 3 category */}
-                                                                    <NavBarArticles
-                                                                        expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
-                                                                        ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]}
-                                                                        expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }} />
-                                                                </ul>
-
-                                                            </li>
-                                                        ))
-
-                                                    )}
-
-                                                    {/* Articles under level 2 category */}
-                                                    <NavBarArticles
-                                                        expandedCategories={expandedCategories[firstCategoryName]}
-                                                        ancestorCategoryNames={[firstCategoryName, secondCategoryName]}
-                                                        expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }} />
-                                                </ul>
-
-                                            </li>
-                                        ))
-
-                                    )}
-
-                                    {/* Articles under level 1 category */}
-                                    <NavBarArticles
+                                    {/* level 1 category <li> content */}
+                                    <NavBarCategories
+                                        ancestorCategoryNames={[firstCategoryName]}
                                         expandedCategories={expandedCategories}
                                         expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }}
-                                        ancestorCategoryNames={[firstCategoryName]} />
-                                </ul>
+                                        categories={[firstCategoryName]}
+                                    />
+
+                                    {/* second category */}
+                                    <ul className={
+                                        classNames(
+                                            "nav-bar__second-category",
+                                            { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) },
+                                            { "nav-bar__has-child": !firstCategoryValue.hasChildren }
+                                        )}
+                                    >
+                                        {/* <div
+                                            ref={setRef}>
+                                            <NavBarTempFolder ancestorCategoryNames={[firstCategoryName]} />
+                                        </div> */}
+
+                                        {/* if the parent category has been clicked, show all children categories */}
+                                        {expandedCategories.hasOwnProperty(firstCategoryName) && (
+                                            // secondCategoryValue: {hasChildren:true, subCategories:null, articles:null}
+
+                                            Object.entries(firstCategoryValue["subCategories"]).map(([secondCategoryName, secondCategoryValue], secondIndex) => (
+
+                                                <li className={classNames("nav-bar__second-category-items")}
+                                                    key={secondIndex}>
+                                                    {/* level 2 category <li> content */}
+
+                                                    <NavBarCategories
+                                                        ancestorCategoryNames={[firstCategoryName, secondCategoryName]}
+                                                        expandedCategories={expandedCategories[firstCategoryName]}
+                                                        expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }}
+                                                        categories={[firstCategoryName, secondCategoryName]}
+                                                    />
+
+                                                    {/* third category */}
+                                                    <ul className={
+                                                        classNames(
+                                                            "nav-bar__third-category",
+                                                            { "expanded": expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) },
+                                                            { "nav-bar__has-child": !secondCategoryValue.hasChildren }
+                                                        )}>
+                                                        {/* <div
+                                                            ref={setRef}>
+                                                            <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName]} />
+                                                        </div> */}
+
+                                                        {/* if the parent category has been clicked, show all children categories */}
+                                                        {expandedCategories[firstCategoryName].hasOwnProperty(secondCategoryName) && (
+
+                                                            // thirdCategoryValue: {hasChildren:true, subCategories:null, articles:null}
+                                                            Object.entries(secondCategoryValue["subCategories"]).map(([thirdCategoryName, thirdCategoryValue], thirdIndex) => (
+                                                                <li className={classNames("nav-bar__third-category-items")}
+                                                                    key={thirdIndex}>
+
+                                                                    {/* level 3 category <li> content */}
+                                                                    <NavBarCategories
+                                                                        ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]}
+                                                                        expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
+                                                                        expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }}
+                                                                        categories={[firstCategoryName, secondCategoryName, thirdCategoryName]}
+                                                                    />
+
+                                                                    {/* fourth category */}
+                                                                    <ul
+                                                                        className={
+                                                                            classNames(
+                                                                                "nav-bar__fourth-category",
+                                                                                { "expanded": expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) },
+                                                                                { "nav-bar__has-child": !thirdCategoryValue.hasChildren }
+                                                                            )
+                                                                        }>
+                                                                        {/* <div
+                                                                            ref={setRef}>
+                                                                            <NavBarTempFolder ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]} />
+                                                                        </div> */}
+                                                                        {/* if the parent category has been clicked, show all children categories */}
+                                                                        {expandedCategories[firstCategoryName][secondCategoryName].hasOwnProperty(thirdCategoryName) && (
+
+                                                                            // fourthCategoryValue: {hasChildren:true, subCategories:null, articles:null}
+                                                                            Object.entries(thirdCategoryValue["subCategories"]).map(([fourthCategoryName, fourthCategoryValue], fourthIndex) => (
+                                                                                <li className={classNames("nav-bar__fourth-category-items")}
+                                                                                    key={fourthIndex}>
+                                                                                    {/* level 4 category <li> content */}
+                                                                                    <NavBarCategories
+                                                                                        ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
+                                                                                        expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
+                                                                                        expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }}
+                                                                                        categories={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
+                                                                                    />
+
+                                                                                    {/* Articles under level 4 category */}
+                                                                                    <ul
+                                                                                        className={
+                                                                                            classNames(
+                                                                                                "nav-bar__fourth-category",
+                                                                                                { "expanded": expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName].hasOwnProperty(fourthCategoryName) },
+                                                                                                { "nav-bar__has-child": !fourthCategoryValue.hasChildren }
+                                                                                            )
+                                                                                        }>
+
+                                                                                        <NavBarArticles
+                                                                                            expandedCategories={expandedCategories[firstCategoryName][secondCategoryName][thirdCategoryName]}
+                                                                                            ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName, fourthCategoryName]}
+                                                                                            expandedCategoriesInfo={{ categoryName: fourthCategoryName, categoryValue: fourthCategoryValue }} />
+                                                                                    </ul>
+
+                                                                                </li>
+                                                                            ))
+
+                                                                        )}
+
+                                                                        {/* Articles under level 3 category */}
+                                                                        <NavBarArticles
+                                                                            expandedCategories={expandedCategories[firstCategoryName][secondCategoryName]}
+                                                                            ancestorCategoryNames={[firstCategoryName, secondCategoryName, thirdCategoryName]}
+                                                                            expandedCategoriesInfo={{ categoryName: thirdCategoryName, categoryValue: thirdCategoryValue }} />
+                                                                    </ul>
+
+                                                                </li>
+                                                            ))
+
+                                                        )}
+
+                                                        {/* Articles under level 2 category */}
+                                                        <NavBarArticles
+                                                            expandedCategories={expandedCategories[firstCategoryName]}
+                                                            ancestorCategoryNames={[firstCategoryName, secondCategoryName]}
+                                                            expandedCategoriesInfo={{ categoryName: secondCategoryName, categoryValue: secondCategoryValue }} />
+                                                    </ul>
+
+                                                </li>
+                                            ))
+
+                                        )}
+
+                                        {/* Articles under level 1 category */}
+                                        <NavBarArticles
+                                            expandedCategories={expandedCategories}
+                                            expandedCategoriesInfo={{ categoryName: firstCategoryName, categoryValue: firstCategoryValue }}
+                                            ancestorCategoryNames={[firstCategoryName]} />
+                                    </ul>
 
 
-                            </li>
-                        )))}
+                                </li>
+                            )))}
 
-                </ul>
+                    </ul>
 
-            </div>
-            <div className="nav-bar__addCate__button" onClick={() => callCreationWindow('folder')}>
-                <div className="nav-bar__addCate_inner">
-                    <span>Add Category</span>
+                </div>
+                <div className="nav-bar__addCate__button" onClick={() => callCreationWindow('folder')}>
+                    <div className="nav-bar__addCate_inner">
+                        <span>Add Category</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    } else {
+        return
+    }
+
+
+
 }
 
 

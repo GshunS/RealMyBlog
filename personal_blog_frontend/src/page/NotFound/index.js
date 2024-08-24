@@ -1,7 +1,8 @@
 
 const NotFound = () => {
+    const a = true
     return (
-        <div></div>
+        <div><div></div></div>
     )
 }
 

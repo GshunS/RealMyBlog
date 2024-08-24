@@ -13,7 +13,8 @@ const blogContentNavbarStore = createSlice({
         currentAncestorNames: [],
         folderCreated: false,
         fileHid: false,
-        folderDeleted: false
+        folderDeleted: false,
+        canRender: false
     },
     reducers: {
         editExpandedCategories(state, action) {
@@ -39,6 +40,9 @@ const blogContentNavbarStore = createSlice({
         },
         editFolderDeleted(state, action) {
             state.folderDeleted = action.payload
+        },
+        editCanRender(state, action) {
+            state.canRender = action.payload
         }
 
     }
@@ -52,7 +56,8 @@ const {
     editTempFolderDisplay,
     editFolderCreated,
     editFileHid,
-    editFolderDeleted
+    editFolderDeleted,
+    editCanRender
 } = blogContentNavbarStore.actions
 
 // fetch the next category
@@ -194,7 +199,8 @@ export {
     editTempFolderDisplay,
     editFolderCreated,
     editFileHid,
-    editFolderDeleted
+    editFolderDeleted,
+    editCanRender
 }
 
 export { fetchNextCategory, deleteOperation }
