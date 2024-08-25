@@ -144,7 +144,27 @@ const NavBar = () => {
                 'get',
                 null,
                 (data) => {
-                    dispatch(editAllCategories(data))
+                    let updatedAllCategories = produce(allCategories, draft => {
+                        let current = draft
+                        // key in data but not in allCategories
+                        const missingKeysInData = Object.keys(data).filter(key => !(key in current));
+                        missingKeysInData.forEach(key => {
+                            current[key] = data[key]
+                        })
+
+                        // key in allCategories but not in data
+                        const missingKeysInCate = Object.keys(current).filter(key => !(key in data));
+                        missingKeysInCate.forEach(key => {
+                            delete current[key]
+                        })
+                    })
+
+                    if(data !== null && allCategories !== null){
+                        dispatch(editAllCategories(updatedAllCategories))
+                    }else{
+                        dispatch(editAllCategories(data))
+                    }
+
                 },
                 (error) => {
                     dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
@@ -152,7 +172,7 @@ const NavBar = () => {
                 }
             );
         }
-    }, [dispatch, folderCreated, folderDeleted])
+    }, [dispatch, folderCreated, folderDeleted, allCategories])
 
     // fetch the first category
     useEffect(() => {
@@ -242,7 +262,6 @@ const NavBar = () => {
                 dispatch(editErrorMsg({ type: 'INFO', msg: 'Success' }))
                 if (currentAncestorNames.length > 0) {
                     if (currentAncestorNames.length === 1) {
-                        dispatch(editExpandedCategories({}))
                         fetchInitialData()
                     } else {
                         let tempNames = currentAncestorNames.slice()
@@ -257,7 +276,7 @@ const NavBar = () => {
     }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData])
 
     const callCreationWindow = (type) => {
-        dispatch(editExpandedCategories({}))
+        // dispatch(editExpandedCategories({}))
         dispatch(editAddType(type))
         dispatch(editCurrentAncestorNames([]))
     }
@@ -294,8 +313,8 @@ const NavBar = () => {
                                     <ul className={
                                         classNames(
                                             "nav-bar__second-category",
+                                            { "nav-bar__has-child": !firstCategoryValue.hasChildren },
                                             { "expanded": expandedCategories.hasOwnProperty(firstCategoryName) },
-                                            { "nav-bar__has-child": !firstCategoryValue.hasChildren }
                                         )}
                                     >
                                         {/* <div

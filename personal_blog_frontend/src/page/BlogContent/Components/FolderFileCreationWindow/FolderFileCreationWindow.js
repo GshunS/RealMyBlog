@@ -50,7 +50,8 @@ const FolderFileCreationWindow = () => {
     useEffect(() => {
         if (addType !== '') {
             const FFwindow = document.querySelector('.FFCreationWindow')
-            if (FFwindow.style.display === 'none') {
+            console.log(FFwindow)
+            if (FFwindow.style.display === '' || FFwindow.style.display === 'none') {
                 FFwindow.style.display = 'flex'
             }
         }
