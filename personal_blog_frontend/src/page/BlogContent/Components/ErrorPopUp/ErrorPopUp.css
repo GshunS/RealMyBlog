@@ -31,15 +31,26 @@
     
 }
 
-.ErrorPopUp__Content span {
-    display: inline-block;
-    margin-left: 0.5rem;
+
+.ErrorPopUp__Content svg{
+    height: 1.2rem; 
+    width: 1.2rem;
 }
 
-.ErrorPopUp__Content::before {
-    content: 'ℹ️'; 
-    margin-right: 0.2rem; 
-    font-size: 1.2rem; 
+.ErrorPopUp__INFO{
+    fill: green;
 }
+.ErrorPopUp__WARNING{
+    fill: white;
+}
+.ErrorPopUp__ERROR{
+    fill: red;
+}
+
+.ErrorPopUp__Content span {
+    margin-left: 0.2rem;
+}
+
+
 
 

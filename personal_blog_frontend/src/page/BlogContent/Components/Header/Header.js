@@ -133,7 +133,7 @@ const Header = () => {
                     // Set the hasData state to false
                     setHasData(false);
                     // Display a message indicating no articles were found
-                    dispatch(editErrorMsg({type: 'INFO', msg: `No articles found for ${term}`}))
+                    dispatch(editErrorMsg({type: 'WARNING', msg: `No articles found for ${term}`}))
                     // setDisplayArticles([`No articles found for ${term}`]);
                 } else {
                     // Initialize an array to hold the articles

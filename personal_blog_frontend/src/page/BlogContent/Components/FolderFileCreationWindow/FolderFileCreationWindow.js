@@ -22,11 +22,13 @@ const FolderFileCreationWindow = () => {
 
 
     const closeModal = useCallback(() => {
-        const FFwindow = document.querySelector('.FFCreationWindow')
-        FFwindow.style.display = 'none'
-        document.querySelector('.FFCreationWindow_Input').value = ''
-        dispatch(editAddType(''))
-    }, [dispatch])
+        if (addType !== '') {
+            const FFwindow = document.querySelector('.FFCreationWindow')
+            FFwindow.style.display = 'none'
+            document.querySelector('.FFCreationWindow_Input').value = ''
+            dispatch(editAddType(''))
+        }
+    }, [dispatch, addType])
 
     // close if user clicks outside of the area
     useEffect(() => {
@@ -75,11 +77,11 @@ const FolderFileCreationWindow = () => {
             url, 'POST', Data,
             (data) => {
                 closeModal()
-                dispatch(editErrorMsg({type: 'INFO', msg: `Success`}))
+                dispatch(editErrorMsg({ type: 'INFO', msg: `Success` }))
                 dispatch(editFolderCreated(true))
             },
             (error) => {
-                dispatch(editErrorMsg({type: 'ERROR', msg: error}))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                 console.log(error)
             }
         )
@@ -90,14 +92,13 @@ const FolderFileCreationWindow = () => {
             type: formData.get("FFCreationWindow_Add").trim(),
             content: formData.get("Input_Content").trim(),
         };
-        console.log(data)
         if (data.type !== 'file' && data.type !== 'folder') {
-            dispatch(editErrorMsg({type: 'WARNING', msg: 'invalid type'}))
+            dispatch(editErrorMsg({ type: 'WARNING', msg: 'invalid type' }))
             return
         }
 
         if (data.content === null || (data.content.length === 0)) {
-            dispatch(editErrorMsg({type: 'WARNING', msg: `invalid ${data.type} name`}))
+            dispatch(editErrorMsg({ type: 'WARNING', msg: `invalid ${data.type} name` }))
             return
         }
 
