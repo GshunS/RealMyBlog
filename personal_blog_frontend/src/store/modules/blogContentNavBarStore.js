@@ -61,9 +61,9 @@ const {
 } = blogContentNavbarStore.actions
 
 // fetch the next category
-const fetchNextCategory = (categoryValue, ...categories) => {
+const fetchNextCategory = (checkExpanded, ...categories) => {
     return async (dispatch, getState) => {
-        // const expandedCategories = getState().blogContentNavbar.expandedCategories;
+        const expandedCategories = getState().blogContentNavbar.expandedCategories;
         const allCategories = getState().blogContentNavbar.allCategories;
         let url = 'https://localhost:7219/api/categories';
         // let categoryName = null
@@ -75,20 +75,21 @@ const fetchNextCategory = (categoryValue, ...categories) => {
             }
         });
 
+        let expanded = true
+        if (checkExpanded === true) {
+            let currentExpandedLevel = expandedCategories;
+            categories.forEach((category, index) => {
+                if (index === categories.length - 1) {
+                    if (currentExpandedLevel.hasOwnProperty(category)) {
+                        expanded = false;
+                    }
+                } else {
+                    currentExpandedLevel = currentExpandedLevel[category];
+                }
+            });
+        }
 
-        // let expanded = true
-        // let currentExpandedLevel = expandedCategories;
-        // categories.forEach((category, index) => {
-        //     if (index === categories.length - 1) {
-        //         if (currentExpandedLevel.hasOwnProperty(category)) {
-        //             expanded = false;
-        //         }
-        //     } else {
-        //         currentExpandedLevel = currentExpandedLevel[category];
-        //     }
-        // });
-
-        if (categories.length !== 4) {
+        if (categories.length !== 4 && expanded) {
             // const response = await axios.get(url);
             await fetchData(
                 url,
@@ -99,8 +100,22 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                         let currentLevel = draft;
                         categories.forEach((category, index) => {
                             if (index === categories.length - 1) {
-                                currentLevel[category].subCategories = data;
-                                // currentLevel[category].hasChildren = true;
+                                if (data !== null && currentLevel[category].subCategories !== null) {
+                                    // key in data but not in subCategories
+                                    const missingKeysInData = Object.keys(data).filter(key => !(key in currentLevel[category].subCategories));
+                                    missingKeysInData.forEach(key => {
+                                        currentLevel[category].subCategories[key] = data[key]
+                                    })
+
+                                    // key in subCategories but not in data
+                                    const missingKeysInCate = Object.keys(currentLevel[category].subCategories).filter(key => !(key in data));
+                                    missingKeysInCate.forEach(key => {
+                                        delete currentLevel[category].subCategories[key]
+                                    })
+                                } else {
+                                    currentLevel[category].subCategories = data;
+                                }
+
                                 let subCateLength = 0;
                                 let articleLength = 0;
                                 if (data !== null) {
@@ -123,8 +138,7 @@ const fetchNextCategory = (categoryValue, ...categories) => {
                     dispatch(editAllCategories(updatedAllCategories));
                 },
                 (error) => {
-                    dispatch(editErrorMsg(`${error}`))
-                    console.log('An error occurred:', error)
+                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
                 }
             );
 
@@ -149,7 +163,7 @@ const setExpandedCategories = (...categories) => {
                 }
             });
         });
-    
+
         dispatch(editExpandedCategories(updatedExpandedCategories));
     }
 }
@@ -166,7 +180,7 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFileHid(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg(`${error}`))
+                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
                     console.log('An error occurred:', error)
                 })
         } else {
@@ -190,7 +204,7 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFolderDeleted(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg(`${error}`))
+                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
                     console.log('An error occurred:', error)
                 })
         }

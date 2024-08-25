@@ -3,11 +3,14 @@ import { createSlice } from "@reduxjs/toolkit"
 const blogContentErrorPopUpStore = createSlice({
     name: "ErrorPopUp",
     initialState: {
-        errorMsg: ""
+        type: '',
+        msg: ''
     },
     reducers: {
-        editErrorMsg(state, action){
-            state.errorMsg = action.payload
+        editErrorMsg(state, action) {
+            const {type, msg} = action.payload
+            state.type = type
+            state.msg = msg
         }
     }
 

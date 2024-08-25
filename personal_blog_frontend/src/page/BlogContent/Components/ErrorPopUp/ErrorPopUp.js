@@ -6,31 +6,31 @@ import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpSto
 
 const ErrorPopUp = () => {
     const dispatch = useDispatch()
-    const { errorMsg } = useSelector(state => state.blogContentErrorPopUp)
+    const { type, msg } = useSelector(state => state.blogContentErrorPopUp)
 
     useEffect(() => {
         const c = document.querySelector('.ErrorPopUp').classList
         let timer = null;
         
-        if (errorMsg !== "") {
+        if (msg !== "") {
             if (c.contains('ErrorPopUp__Move')) {
                 c.remove('ErrorPopUp__Move')
             }
             c.add('ErrorPopUp__Move')
             timer = setTimeout(() => {
                 c.remove('ErrorPopUp__Move')
-                dispatch(editErrorMsg(""))
+                dispatch(editErrorMsg({type: '', msg: ''}))
             }, 3000)
         }
 
         return () => {
             clearTimeout(timer)
         }
-    }, [dispatch, errorMsg])
+    }, [dispatch, msg])
     return (
         <div className={className("ErrorPopUp")}>
             <div className="ErrorPopUp__Content">
-                <span> {errorMsg} </span>
+                <span> {msg} </span>
             </div>
         </div>
     )

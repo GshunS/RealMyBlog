@@ -49,7 +49,7 @@ const NavBarTempFolder = () => {
                 },
                 (error) => {
                     clearTempElements('.showFolder')
-                    dispatch(editErrorMsg(`${error}`))
+                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
                     console.log(error)
                 }
                 )

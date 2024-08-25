@@ -13,7 +13,7 @@ const NavBarCategories = React.memo((props) => {
 
     const dispatch = useDispatch()
     const handleExpandClick = async () => {
-        await dispatch(fetchNextCategory(categoryValue, ...categories))
+        await dispatch(fetchNextCategory(true, ...categories))
         dispatch(setExpandedCategories(...categories))
     }
 

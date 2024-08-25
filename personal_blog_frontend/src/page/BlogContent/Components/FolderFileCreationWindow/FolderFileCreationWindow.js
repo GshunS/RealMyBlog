@@ -75,11 +75,11 @@ const FolderFileCreationWindow = () => {
             url, 'POST', Data,
             (data) => {
                 closeModal()
-                dispatch(editErrorMsg(`Success`))
+                dispatch(editErrorMsg({type: 'INFO', msg: `Success`}))
                 dispatch(editFolderCreated(true))
             },
             (error) => {
-                dispatch(editErrorMsg(`${error}`))
+                dispatch(editErrorMsg({type: 'ERROR', msg: error}))
                 console.log(error)
             }
         )
@@ -92,12 +92,12 @@ const FolderFileCreationWindow = () => {
         };
         console.log(data)
         if (data.type !== 'file' && data.type !== 'folder') {
-            dispatch(editErrorMsg('invalid type'))
+            dispatch(editErrorMsg({type: 'WARNING', msg: 'invalid type'}))
             return
         }
 
         if (data.content === null || (data.content.length === 0)) {
-            dispatch(editErrorMsg(`invalid ${data.type} name`))
+            dispatch(editErrorMsg({type: 'WARNING', msg: `invalid ${data.type} name`}))
             return
         }
 

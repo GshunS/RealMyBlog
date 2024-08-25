@@ -147,7 +147,7 @@ const NavBar = () => {
                     dispatch(editAllCategories(data))
                 },
                 (error) => {
-                    dispatch(editErrorMsg(`${error}`))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                     console.log('An error occurred:', error)
                 }
             );
@@ -168,7 +168,7 @@ const NavBar = () => {
                     dispatch(editCanRender(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg(`${error}`))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                     console.log('An error occurred:', error)
                 }
             );
@@ -180,20 +180,8 @@ const NavBar = () => {
     useEffect(() => {
         async function updateData() {
             if (folderCreated) {
+                dispatch(editErrorMsg({ type: 'INFO', msg: 'Success' }))
                 if (currentAncestorNames.length > 0) {
-                    let temp_expand = produce(expandedCategories, draft => {
-                        let current = draft;
-                        currentAncestorNames.forEach((element) => {
-                            if (!current[element]) {
-                                current[element] = {};
-                            }
-                            current = current[element];
-                        });
-                        Object.keys(current).forEach(key => {
-                            delete current[key];
-                        });
-                    });
-                    dispatch(editExpandedCategories(temp_expand))
                     await dispatch(fetchNextCategory(null, ...currentAncestorNames));
 
                 } else {
@@ -203,10 +191,11 @@ const NavBar = () => {
             }
         }
         updateData()
-    }, [folderCreated, dispatch, currentAncestorNames, fetchInitialData, expandedCategories])
+    }, [folderCreated, dispatch, currentAncestorNames, fetchInitialData])
 
     // if an article has been deleted(hide), refresh the data
     useEffect(() => {
+        // dispatch(editErrorMsg({ type: 'INFO', msg: 'Success' }))
         async function updateData() {
             if (fileHid) {
                 if (currentAncestorNames.length > 0) {
@@ -221,7 +210,7 @@ const NavBar = () => {
                             null,
                             (data) => dispatch(editAllCategories(data)),
                             (error) => {
-                                dispatch(editErrorMsg(`${error}`))
+                                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                                 console.log('An error occurred:', error)
                             }
                         );
@@ -231,15 +220,6 @@ const NavBar = () => {
                         console.log(currentAncestorNames)
                         let tempNames = currentAncestorNames.slice()
                         tempNames.pop()
-
-                        // let initialExpand = tempNames.slice()
-                        // initialExpand.pop()
-
-                        // initialExpand.reduce((acc, currentValue) => {
-                        //     acc[currentValue] = {};
-                        //     return acc[currentValue];
-                        // }, nestedObject);
-                        // dispatch(editExpandedCategories(nestedObject))
                         await dispatch(fetchNextCategory(null, ...currentAncestorNames));
                         let temp = produce(allCategories, draft => {
                             delete draft['123'].subCategories['abc'].articles[5]
@@ -250,10 +230,7 @@ const NavBar = () => {
 
                 }
                 dispatch(editFileHid(false))
-
             }
-
-
         }
         updateData()
     }, [fileHid, dispatch, currentAncestorNames])
@@ -262,6 +239,7 @@ const NavBar = () => {
     useEffect(() => {
         async function updateData() {
             if (folderDeleted) {
+                dispatch(editErrorMsg({ type: 'INFO', msg: 'Success' }))
                 if (currentAncestorNames.length > 0) {
                     if (currentAncestorNames.length === 1) {
                         dispatch(editExpandedCategories({}))
@@ -269,20 +247,6 @@ const NavBar = () => {
                     } else {
                         let tempNames = currentAncestorNames.slice()
                         tempNames.pop()
-                        let temp_expand = produce(expandedCategories, draft => {
-                            let current = draft;
-                            tempNames.forEach((element) => {
-                                if (!current[element]) {
-                                    current[element] = {};
-                                }
-                                current = current[element];
-                            });
-                            Object.keys(current).forEach(key => {
-                                delete current[key];
-                            });
-                        });
-                        dispatch(editExpandedCategories(temp_expand))
-
                         await dispatch(fetchNextCategory(null, ...tempNames));
                     }
                     dispatch(editFolderDeleted(false))
@@ -290,7 +254,7 @@ const NavBar = () => {
             }
         }
         updateData()
-    }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData, expandedCategories])
+    }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData])
 
     const callCreationWindow = (type) => {
         dispatch(editExpandedCategories({}))
