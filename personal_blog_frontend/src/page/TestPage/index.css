@@ -2,13 +2,13 @@
     background-color: #f0f0f0;
     height: 100vh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
 .TestPage__Content {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     /* /* height: 50vh; */
     width: 50%;
     border: 1px solid black;

@@ -23,14 +23,15 @@ public class ArticleController : ControllerBase
         this._iMapper = iMapper;
     }
 
-    [Authorize]
+    
     [HttpPost("articles")]
     public async Task<ActionResult> CreateArticles(ArticleCreateDTO articleCreateDTO)
     {
         try
         {
             var article = _iMapper.Map<Article>(articleCreateDTO);
-            article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
+            // article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
+            article.author_id = 3;
             await _iArticleSercice.CreateOneAsync(article);
             return Ok(article);
         }

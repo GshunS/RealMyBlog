@@ -144,6 +144,44 @@ public class CategoryService : BaseService<Category>, ICategoryService
         return categoryDict;
     }
 
+    public Dictionary<string, (bool, int)> HasChildrenWithID(List<CategoryRepoDisplayDTO> categories)
+    {
+        Dictionary<string, (bool, int)> categoryDict = new();
+        foreach (var category in categories)
+        {
+            if (category.CategoryName == null)
+            {
+                continue;
+            }
+
+            if (category.ChildrenCategoryName == null)
+            {
+                bool status = false;
+                if (categoryDict.ContainsKey(category.CategoryName))
+                {
+                    status = categoryDict[category.CategoryName].Item1;
+                }
+                categoryDict[category.CategoryName] = (status, category.Id);
+            }
+
+            if (categoryDict.ContainsKey(category.CategoryName))
+            {
+                if (categoryDict[category.CategoryName].Item1 != false)
+                {
+                    continue;
+                }
+                int cid = categoryDict[category.CategoryName].Item2;
+                categoryDict[category.CategoryName] = (category.ChildrenCategoryName != null, cid);
+            }
+            else
+            {
+                categoryDict.Add(category.CategoryName, (category.ChildrenCategoryName != null, category.Id));
+            }
+
+        }
+        return categoryDict;
+    }
+
     public async Task<Dictionary<string, Dictionary<int, string>>> GetArticleInfo(List<CategoryRepoDisplayDTO> categories)
     {
         Dictionary<string, Dictionary<int, string>> articleDict = new();
@@ -198,12 +236,39 @@ public class CategoryService : BaseService<Category>, ICategoryService
         return categoryDict;
     }
 
+
+    public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetCategoryDataTemplateWithId(List<CategoryRepoDisplayDTO> categories)
+    {
+        Dictionary<string, CategoryChildrenDisplayDTO> categoryDict = new();
+
+        // check if category has children
+        Dictionary<string, (bool, int)> hasChildrenDict = HasChildrenWithID(categories);
+
+        // check if category has articles
+        Dictionary<string, Dictionary<int, string>> articleDict = await GetArticleInfo(categories);
+
+        foreach (string categoryName in hasChildrenDict.Keys)
+        {
+
+            categoryDict.Add(categoryName, new CategoryChildrenDisplayDTO
+            {
+                CategoryId = hasChildrenDict[categoryName].Item2,
+                HasChildren = articleDict.ContainsKey(categoryName) ? true : hasChildrenDict[categoryName].Item1,
+                SubCategories = null,
+                Articles = articleDict.ContainsKey(categoryName) ? articleDict[categoryName] : null
+            });
+
+
+        }
+        return categoryDict;
+    }
+
     public async Task<Dictionary<string, CategoryChildrenDisplayDTO>> GetFirstCategory()
     {
         try
         {
             var categories = await _iCategoryRepository.GetFirstCategoryAsync();
-            return await GetCategoryDataTemplate(categories);
+            return await GetCategoryDataTemplateWithId(categories);
         }
         catch (RepositoryException ex)
         {
@@ -221,7 +286,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         try
         {
             var categories = await _iCategoryRepository.GetSecondCategoryAsync(first_category);
-            return await GetCategoryDataTemplate(categories);
+            return await GetCategoryDataTemplateWithId(categories);
         }
         catch (RepositoryException ex)
         {
@@ -238,7 +303,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         try
         {
             var categories = await _iCategoryRepository.GetThirdCategoryAsync(first_category, second_category);
-            return await GetCategoryDataTemplate(categories);
+            return await GetCategoryDataTemplateWithId(categories);
         }
         catch (RepositoryException ex)
         {
@@ -255,7 +320,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         try
         {
             var categories = await _iCategoryRepository.GetFourthCategoryAsync(first_category, second_category, third_category);
-            return await GetCategoryDataTemplate(categories);
+            return await GetCategoryDataTemplateWithId(categories);
         }
         catch (RepositoryException ex)
         {
