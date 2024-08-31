@@ -238,6 +238,7 @@ const NavBar = () => {
     useEffect(() => {
         async function updateData() {
             if (fileCreatedObj.status) {
+                const { fileId, fileName } = fileCreatedObj
                 let updatedAllCategories = produce(allCategories, draft => {
                     let current = draft
                     currentAncestorNames.forEach((item, index) => {
@@ -246,9 +247,9 @@ const NavBar = () => {
                         }
                         else {
                             if (current[item].articles !== null) {
-                                current[item].articles['temp'] = 'name'
+                                current[item].articles[fileId] = fileName
                             } else {
-                                current[item].articles = { 'temp': 'name' }
+                                current[item].articles = { fileId: fileName }
                             }
                             current[item].hasChildren = true;
                         }

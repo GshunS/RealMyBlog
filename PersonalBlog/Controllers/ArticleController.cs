@@ -33,7 +33,7 @@ public class ArticleController : ControllerBase
             // article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
             article.author_id = 3;
             await _iArticleSercice.CreateOneAsync(article);
-            return Ok(article);
+            return Ok(article.id);
         }
         catch (ServiceException e)
         {

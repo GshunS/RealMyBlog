@@ -111,11 +111,13 @@ const FolderFileCreationWindow = () => {
         const url = "https://localhost:7219/api/articles"
         await fetchData(
             url, "POST", Data,
-            (data) => {
+            (res) => {
                 closeModal()
                 dispatch(editErrorMsg({ type: 'INFO', msg: `Success` }))
                 let tempFileCreatedObj = produce(fileCreatedObj, draft => {
-                    draft.status = true;
+                    draft.status = true
+                    draft.fileId = res
+                    draft.fileName = data.content
                 })
                 dispatch(editFileCreatedObj(tempFileCreatedObj))
             },
