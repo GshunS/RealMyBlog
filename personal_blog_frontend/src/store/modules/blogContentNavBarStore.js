@@ -12,8 +12,13 @@ const blogContentNavbarStore = createSlice({
         tempFolderDisplay: false,
         currentAncestorNames: [],
         folderCreated: false,
-        fileHid: false,
         folderDeleted: false,
+        fileCreatedObj: {
+            status: false,
+            fileId: null,
+            fileName: null
+        },
+        fileHid: false,
         canRender: false
     },
     reducers: {
@@ -38,6 +43,9 @@ const blogContentNavbarStore = createSlice({
         editFileHid(state, action) {
             state.fileHid = action.payload
         },
+        editFileCreatedObj(state, action) {
+            state.fileCreatedObj = action.payload
+        },
         editFolderDeleted(state, action) {
             state.folderDeleted = action.payload
         },
@@ -57,6 +65,7 @@ const {
     editFolderCreated,
     editFileHid,
     editFolderDeleted,
+    editFileCreatedObj,
     editCanRender
 } = blogContentNavbarStore.actions
 
@@ -138,7 +147,7 @@ const fetchNextCategory = (checkExpanded, ...categories) => {
                     dispatch(editAllCategories(updatedAllCategories));
                 },
                 (error) => {
-                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                 }
             );
 
@@ -180,7 +189,7 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFileHid(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                     console.log('An error occurred:', error)
                 })
         } else {
@@ -204,7 +213,7 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFolderDeleted(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg({type: 'ERROR', msg: error}))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                     console.log('An error occurred:', error)
                 })
         }
@@ -218,6 +227,7 @@ export {
     editTempFolderDisplay,
     editFolderCreated,
     editFileHid,
+    editFileCreatedObj,
     editFolderDeleted,
     editCanRender
 }

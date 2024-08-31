@@ -11,6 +11,7 @@ import {
     editExpandedCategories,
     editFolderCreated,
     editFileHid,
+    editFileCreatedObj,
     editFolderDeleted,
     editCurrentAncestorNames,
     editCanRender
@@ -30,15 +31,15 @@ const NavBar = () => {
     const {
         expandedCategories,
         allCategories,
-        tempFolderCreated,
         folderCreated,
         fileHid,
+        fileCreatedObj,
         canRender,
         folderDeleted,
         currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
     const [expandedElements, setExpandedElements] = useState(new Set())
-    const refMap = useRef([])
+    // const refMap = useRef([])
     const heightRef = useRef(0)
 
     // set ref for each temporary folder
@@ -159,9 +160,9 @@ const NavBar = () => {
                         })
                     })
 
-                    if(data !== null && allCategories !== null){
+                    if (data !== null && allCategories !== null) {
                         dispatch(editAllCategories(updatedAllCategories))
-                    }else{
+                    } else {
                         dispatch(editAllCategories(data))
                     }
 
@@ -213,48 +214,6 @@ const NavBar = () => {
         updateData()
     }, [folderCreated, dispatch, currentAncestorNames, fetchInitialData])
 
-    // if an article has been deleted(hide), refresh the data
-    useEffect(() => {
-        // dispatch(editErrorMsg({ type: 'INFO', msg: 'Success' }))
-        async function updateData() {
-            if (fileHid) {
-                if (currentAncestorNames.length > 0) {
-                    if (currentAncestorNames.length === 1) {
-                        dispatch(editExpandedCategories({}))
-                        // fetchInitialData()
-                        var url = `https://localhost:7219/api/categories/first-category`
-                        // fetch the first category
-                        await fetchData(
-                            url,
-                            'get',
-                            null,
-                            (data) => dispatch(editAllCategories(data)),
-                            (error) => {
-                                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
-                                console.log('An error occurred:', error)
-                            }
-                        );
-                        await dispatch(fetchNextCategory(null, ...currentAncestorNames));
-                        dispatch(setExpandedCategories(...currentAncestorNames))
-                    } else {
-                        console.log(currentAncestorNames)
-                        let tempNames = currentAncestorNames.slice()
-                        tempNames.pop()
-                        await dispatch(fetchNextCategory(null, ...currentAncestorNames));
-                        let temp = produce(allCategories, draft => {
-                            delete draft['123'].subCategories['abc'].articles[5]
-                        })
-                        dispatch(editAllCategories(temp))
-                    }
-
-
-                }
-                dispatch(editFileHid(false))
-            }
-        }
-        updateData()
-    }, [fileHid, dispatch, currentAncestorNames])
-
     // if a folder has been deleted, refresh the data
     useEffect(() => {
         async function updateData() {
@@ -274,6 +233,37 @@ const NavBar = () => {
         }
         updateData()
     }, [folderDeleted, dispatch, currentAncestorNames, fetchInitialData])
+
+    // if an article has been created, refresh the data
+    useEffect(() => {
+        async function updateData() {
+            if (fileCreatedObj.status) {
+                let updatedAllCategories = produce(allCategories, draft => {
+                    let current = draft
+                    currentAncestorNames.forEach((item, index) => {
+                        if (index !== currentAncestorNames.length - 1) {
+                            current = current[item].subCategories
+                        }
+                        else {
+                            if (current[item].articles !== null) {
+                                current[item].articles['temp'] = 'name'
+                            } else {
+                                current[item].articles = { 'temp': 'name' }
+                            }
+                            current[item].hasChildren = true;
+                        }
+                    })
+                })
+                dispatch(editAllCategories(updatedAllCategories))
+                let tempFileCreatedObj = produce(fileCreatedObj, draft => {
+                    draft.status = false;
+                })
+                dispatch(editFileCreatedObj(tempFileCreatedObj))
+            }
+        }
+        updateData()
+    }, [fileCreatedObj, dispatch, currentAncestorNames, allCategories])
+
 
     const callCreationWindow = (type) => {
         // dispatch(editExpandedCategories({}))

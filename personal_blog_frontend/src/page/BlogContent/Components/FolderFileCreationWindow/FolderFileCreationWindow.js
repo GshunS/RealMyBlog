@@ -8,14 +8,16 @@ import { useRef } from 'react'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { fetchData } from '../../../../utils/apiService'
 import {
+    editFileCreatedObj,
     editFolderCreated
 } from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
+import {produce} from 'immer'
 
 const FolderFileCreationWindow = () => {
     const dispatch = useDispatch()
     const { addType } = useSelector(state => state.blogContentFFCreationWindow)
-    const { currentAncestorNames } = useSelector(state => state.blogContentNavbar)
+    const { currentAncestorNames, allCategories, fileCreatedObj} = useSelector(state => state.blogContentNavbar)
 
     const modalRef = useRef(null);
     const formRef = useRef(null);
@@ -50,7 +52,6 @@ const FolderFileCreationWindow = () => {
     useEffect(() => {
         if (addType !== '') {
             const FFwindow = document.querySelector('.FFCreationWindow')
-            console.log(FFwindow)
             if (FFwindow.style.display === '' || FFwindow.style.display === 'none') {
                 FFwindow.style.display = 'flex'
             }
@@ -87,6 +88,43 @@ const FolderFileCreationWindow = () => {
             }
         )
     }
+
+    const createFile = async(data) => {
+        if (currentAncestorNames.length === 0){
+            dispatch(editErrorMsg({ type: 'ERROR', msg: 'Please create the file under a folder' }))
+            return;
+        }
+        let tempObj = allCategories;
+        let category_id = null;
+        currentAncestorNames.forEach((item, index) => {
+            if (index !== currentAncestorNames.length -1){
+                tempObj = tempObj[item].subCategories
+            }else{
+                category_id = tempObj[item].categoryId
+            }
+        })
+        const Data = {
+            title: data.content,
+            content: "",
+            category_id: category_id
+        }
+        const url = "https://localhost:7219/api/articles"
+        await fetchData(
+            url, "POST", Data,
+            (data) => {
+                closeModal()
+                dispatch(editErrorMsg({ type: 'INFO', msg: `Success` }))
+                let tempFileCreatedObj = produce(fileCreatedObj, draft => {
+                    draft.status = true;
+                })
+                dispatch(editFileCreatedObj(tempFileCreatedObj))
+            },
+            (error) => {
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+            }
+        )
+    }
+
     const validateData = _.debounce(() => {
         const formData = new FormData(formRef.current);
         const data = {
@@ -106,7 +144,7 @@ const FolderFileCreationWindow = () => {
         if (data.type === 'folder') {
             createFolder(data)
         } else {
-            console.log('create file')
+            createFile(data)
         }
     }, 300)
 
