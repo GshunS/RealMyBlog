@@ -12,13 +12,16 @@ const blogContentNavbarStore = createSlice({
         tempFolderDisplay: false,
         currentAncestorNames: [],
         folderCreated: false,
-        folderDeleted: false,
+        folderDeletedObj: false,
         fileCreatedObj: {
             status: false,
             fileId: null,
             fileName: null
         },
-        fileHid: false,
+        fileHidObj: {
+            status: false,
+            fileId: null
+        },
         canRender: false
     },
     reducers: {
@@ -40,8 +43,8 @@ const blogContentNavbarStore = createSlice({
         editFolderCreated(state, action) {
             state.folderCreated = action.payload
         },
-        editFileHid(state, action) {
-            state.fileHid = action.payload
+        editFileHidObj(state, action) {
+            state.fileHidObj = action.payload
         },
         editFileCreatedObj(state, action) {
             state.fileCreatedObj = action.payload
@@ -63,7 +66,7 @@ const {
     editTempFolderCreated,
     editTempFolderDisplay,
     editFolderCreated,
-    editFileHid,
+    editFileHidObj,
     editFolderDeleted,
     editFileCreatedObj,
     editCanRender
@@ -185,12 +188,16 @@ const deleteOperation = (deleteType, articleId) => {
             // hide article
             await fetchData(url, 'patch', null,
                 (data) => {
-                    // console.log('success')
-                    dispatch(editFileHid(true))
+                    dispatch(editErrorMsg({ type: 'INFO', msg: 'Success' }))
+                    dispatch(editFileHidObj(
+                        {
+                            status: true,
+                            fileId: articleId
+                        }
+                    ))
                 },
                 (error) => {
                     dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
-                    console.log('An error occurred:', error)
                 })
         } else {
             // delete folder
@@ -226,7 +233,7 @@ export {
     editTempFolderCreated,
     editTempFolderDisplay,
     editFolderCreated,
-    editFileHid,
+    editFileHidObj,
     editFileCreatedObj,
     editFolderDeleted,
     editCanRender

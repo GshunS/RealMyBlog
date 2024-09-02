@@ -10,7 +10,7 @@ import {
     editAllCategories,
     editExpandedCategories,
     editFolderCreated,
-    editFileHid,
+    editFileHidObj,
     editFileCreatedObj,
     editFolderDeleted,
     editCurrentAncestorNames,
@@ -32,7 +32,7 @@ const NavBar = () => {
         expandedCategories,
         allCategories,
         folderCreated,
-        fileHid,
+        fileHidObj,
         fileCreatedObj,
         canRender,
         folderDeleted,
@@ -249,7 +249,7 @@ const NavBar = () => {
                             if (current[item].articles !== null) {
                                 current[item].articles[fileId] = fileName
                             } else {
-                                current[item].articles = { fileId: fileName }
+                                current[item].articles = { [fileId]: fileName }
                             }
                             current[item].hasChildren = true;
                         }
@@ -265,6 +265,33 @@ const NavBar = () => {
         updateData()
     }, [fileCreatedObj, dispatch, currentAncestorNames, allCategories])
 
+    // if an article has been hid
+    useEffect(() => {
+        if (fileHidObj.status) {
+            const { fileId } = fileHidObj
+            let updatedAllCategories = produce(allCategories, draft => {
+                let current = draft
+                currentAncestorNames.forEach((item, index) => {
+                    if (index !== currentAncestorNames.length - 1) {
+                        current = current[item].subCategories
+                    }
+                    else {
+                        delete current[item].articles[fileId]
+                        if (Object.keys(current[item].articles).length === 0 && Object.keys(current[item].subCategories).length === 0) {
+                            current[item].hasChildren = false;
+                        }
+                    }
+                })
+            })
+            dispatch(editAllCategories(updatedAllCategories))
+            dispatch(editFileHidObj(
+                {
+                    status: false,
+                    fileId: null
+                }
+            ))
+        }
+    }, [fileHidObj, dispatch, allCategories, currentAncestorNames])
 
     const callCreationWindow = (type) => {
         // dispatch(editExpandedCategories({}))
@@ -453,7 +480,7 @@ const NavBar = () => {
             </div>
         )
     } else {
-        return
+        return (<div></div>)
     }
 
 

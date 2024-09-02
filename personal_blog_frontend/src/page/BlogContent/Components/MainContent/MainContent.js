@@ -12,7 +12,9 @@ const MainContent = () => {
             <div className="main-content">main</div>
         )
     }else{
-        return
+        return (
+            <div></div>
+        )
     }
     
 }
