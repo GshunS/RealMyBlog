@@ -178,6 +178,7 @@ const NavBar = () => {
     // fetch the first category
     useEffect(() => {
         const firstFetch = async () => {
+            dispatch(editCanRender(false))
             const url = `https://localhost:7219/api/categories/first-category`
             // fetch the first category
             await fetchData(
@@ -189,7 +190,8 @@ const NavBar = () => {
                     dispatch(editCanRender(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                    dispatch(editCanRender(false))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                     console.log('An error occurred:', error)
                 }
             );
