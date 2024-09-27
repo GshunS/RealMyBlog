@@ -168,7 +168,7 @@ const NavBar = () => {
 
                 },
                 (error) => {
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                     console.log('An error occurred:', error)
                 }
             );

@@ -150,7 +150,7 @@ const fetchNextCategory = (checkExpanded, ...categories) => {
                     dispatch(editAllCategories(updatedAllCategories));
                 },
                 (error) => {
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                 }
             );
 
@@ -197,7 +197,7 @@ const deleteOperation = (deleteType, articleId) => {
                     ))
                 },
                 (error) => {
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                 })
         } else {
             // delete folder
@@ -220,7 +220,7 @@ const deleteOperation = (deleteType, articleId) => {
                     dispatch(editFolderDeleted(true))
                 },
                 (error) => {
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                     console.log('An error occurred:', error)
                 })
         }

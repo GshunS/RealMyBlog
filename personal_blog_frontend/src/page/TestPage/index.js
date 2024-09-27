@@ -9,7 +9,7 @@ const TestPage = () => {
     useEffect(() => {
         const fetchLiveData = async () => {
             try {
-                const response = await axios.get('https://localhost:7219/api/live/live/8604981/0');
+                const response = await axios.get('https://192.168.1.199:7219/api/live/live/8604981/0');
                 // console.log(response.data);
 
                 // const adminTexts = response.data.data.admin.map(item => ({
@@ -30,7 +30,7 @@ const TestPage = () => {
 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                setConstText([error]);
+                setConstText([error.config.url]);
             }
         };
         // fetchLiveData();

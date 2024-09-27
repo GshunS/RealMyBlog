@@ -83,7 +83,7 @@ const FolderFileCreationWindow = () => {
                 dispatch(editFolderCreated(true))
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                 console.log(error)
             }
         )
@@ -122,7 +122,7 @@ const FolderFileCreationWindow = () => {
                 dispatch(editFileCreatedObj(tempFileCreatedObj))
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
             }
         )
     }
