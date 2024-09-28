@@ -1,22 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import './index.css';
 import _ from 'lodash';
 
 const TestPage = () => {
     const [constText, setConstText] = useState([]);
+    const [isFetching, setIsFetching] = useState(false); // New state to control the interval
+    const [timer, setTimer] = useState(null); // To store the interval ID
+    const [showAddr, setShowAddr] = useState(true);
+    const inputRef = useRef(null);
 
     useEffect(() => {
         const fetchLiveData = async () => {
             try {
                 const response = await axios.get('https://192.168.1.199:7219/api/live/live/8604981/0');
-                // console.log(response.data);
-
-                // const adminTexts = response.data.data.admin.map(item => ({
-                //     text: item.text,
-                //     timeline: item.timeline
-                // }));
-
                 const roomTexts = response.data.data.room.map(item => ({
                     text: item.text,
                     timeline: item.timeline
@@ -25,21 +22,68 @@ const TestPage = () => {
                 const combinedTexts = [...roomTexts];
                 const sortedTexts = _.sortBy(combinedTexts, ['timeline']);
                 const pureText = sortedTexts.map(item => (item.text));
-                // console.log(pureText);
                 setConstText(pureText);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                setConstText([error.config.url]);
+                // setConstText([error.config.url]);
             }
         };
-        // fetchLiveData();
-        const timer = setInterval(() => {
-            fetchLiveData();
-        }, 500);
 
-        return () => setInterval(timer);
-    }, []);
+        if (isFetching && !timer) {
+            const newTimer = setInterval(fetchLiveData, 500);
+            setTimer(newTimer); // Save the interval ID
+        }
+
+        return () => {
+            if (timer) {
+                clearInterval(timer);
+                setTimer(null); // Reset the timer when stopped
+            }
+        };
+    }, [isFetching, timer]);
+
+    // Function to start continuous request sending
+    const startFetching = () => {
+        setIsFetching(true);
+    };
+
+    // Function to stop continuous request sending
+    const stopFetching = () => {
+        setIsFetching(false);
+    };
+
+    const fetchStreamAddr = async () => {
+        if (!showAddr) {
+            setShowAddr(true);
+            return;
+        }
+        try {
+            const response = await axios.get('https://192.168.1.199:7219/api/live/liveStream/8604981');
+            const streamUrl = response.data.data.durl[0].url
+            inputRef.current.value = streamUrl;
+            inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
+            setShowAddr(false);
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
+    const textAreaClick = async () => {
+        try {
+            await navigator.clipboard.writeText(inputRef.current.value); // Use Clipboard API to copy text
+            setShowAddr(true);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        if (showAddr) {
+            inputRef.current.value = "";
+        }
+    }, [showAddr])
 
     return (
         <div className="TestPage">
@@ -50,9 +94,16 @@ const TestPage = () => {
                     ))}
                 </ul>
             </div>
-
+            <div className="TestPage__Controls">
+                <button onClick={startFetching} disabled={isFetching}>Start Fetching</button>
+                <button onClick={stopFetching} disabled={!isFetching}>Stop Fetching</button>
+                <button onClick={() => fetchStreamAddr()}> {showAddr ? "Show" : "Hide"} Stream Addr</button>
+            </div>
+            <div className="TestPage__Link" onClick={textAreaClick}>
+                <textarea readOnly ref={inputRef} className='TestPage__Link__Input'></textarea>
+            </div>
         </div>
     );
-}
+};
 
 export default TestPage;

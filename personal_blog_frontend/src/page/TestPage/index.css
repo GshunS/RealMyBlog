@@ -2,7 +2,8 @@
     background-color: #f0f0f0;
     height: 100vh;
     display: flex;
-    justify-content: flex-start;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
@@ -16,9 +17,75 @@
     padding: 1rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.TestPage__Controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.TestPage__Controls button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.TestPage__Controls button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.TestPage__Controls button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.TestPage__Link {
+    width: 50vw;
+}
+
+.TestPage__Link__Input {
+    background-color: #f0f0f0;
+    border-style: none;
+    text-align: center;
+    outline: none;
+    font-size: 16px;
+    width: 100%;
+    resize: none;
+    overflow: hidden;
+    padding: 0;
+    cursor: default;
+}
+
+
+@media (max-width: 768px) {
+
+    /* Adjust the max-width as needed */
+    .TestPage {
+        justify-content: center;
+        /* Center content on mobile */
+    }
+    .TestPage__Controls{
+        width: 90%;
+    }
+    
+    .TestPage__Content {
+        width: 90%;
+        /* Adjust width for mobile */
+    }
+    .TestPage__Link {
+        width: 90%;
+    }
+}
+
 /* 
 li {
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
 } */
- 
