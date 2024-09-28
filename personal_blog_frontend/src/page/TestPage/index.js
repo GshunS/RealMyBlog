@@ -72,7 +72,13 @@ const TestPage = () => {
 
     const textAreaClick = async () => {
         try {
-            await navigator.clipboard.writeText(inputRef.current.value); // Use Clipboard API to copy text
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(inputRef.current.value); // Copy to clipboard
+            } else {
+                // Fallback for browsers that don't support Clipboard API (not ideal for mobile)
+                inputRef.current.select();
+                document.execCommand('copy');
+            }
             setShowAddr(true);
         } catch (err) {
             console.error(err);
