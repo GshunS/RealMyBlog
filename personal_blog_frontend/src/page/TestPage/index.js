@@ -9,11 +9,12 @@ const TestPage = () => {
     const [timer, setTimer] = useState(null); // To store the interval ID
     const [showAddr, setShowAddr] = useState(true);
     const inputRef = useRef(null);
+    const localIp = process.env.REACT_APP_LOCAL_IP;
 
     useEffect(() => {
         const fetchLiveData = async () => {
             try {
-                const response = await axios.get('https://192.168.1.199:7219/api/live/live/8604981/0');
+                const response = await axios.get(`https://${localIp}:7219/api/live/live/8604981/0`);
                 const roomTexts = response.data.data.room.map(item => ({
                     text: item.text,
                     timeline: item.timeline
@@ -41,7 +42,7 @@ const TestPage = () => {
                 setTimer(null); // Reset the timer when stopped
             }
         };
-    }, [isFetching, timer]);
+    }, [isFetching, timer, localIp]);
 
     // Function to start continuous request sending
     const startFetching = () => {
@@ -59,7 +60,7 @@ const TestPage = () => {
             return;
         }
         try {
-            const response = await axios.get('https://192.168.1.199:7219/api/live/liveStream/8604981');
+            const response = await axios.get(`https://${localIp}:7219/api/live/liveStream/8604981`);
             const streamUrl = response.data.data.durl[0].url
             inputRef.current.value = streamUrl;
             inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
@@ -88,6 +89,7 @@ const TestPage = () => {
     useEffect(() => {
         if (showAddr) {
             inputRef.current.value = "";
+            inputRef.current.style.height = 0;
         }
     }, [showAddr])
 
