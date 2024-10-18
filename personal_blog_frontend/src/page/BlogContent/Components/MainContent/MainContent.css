@@ -1,6 +1,86 @@
-.main-content{
-    /* width: 70%; */
-    padding: 1rem;
-    border: 1px solid red;
+/* Reset some basic styles */
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     flex-grow: 1;
+}
+
+.main-content__info {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.main_content__title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.main_content__otherInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.main_content__path {
+    font-style: italic;
+    color: #888;
+}
+
+.main_content__stats {
+    display: flex;
+    gap: 10px;
+}
+
+.main_content__stats svg{
+    width: 20px;
+    height: 20px;
+    cursor: default;
+}
+
+.main_content__author,
+.main_content__view,
+.main_content__upvote {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #444;
+    transition: color 0.2s ease;
+    cursor: default;
+    flex: 1 0 30px;
+}
+
+.main_content__author:hover,
+.main_content__view:hover,
+.main_content__upvote:hover {
+    color: #222;
+}
+
+
+.main-content__textBody {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.main-content__textContent {
+    min-height: 200px;
+    outline: none;
+    font-size: 1rem;
+    line-height: 1.5;
 }
