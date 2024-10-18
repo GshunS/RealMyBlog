@@ -2,6 +2,14 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+:root {
+    --background-z-index: -100;
+    --msgPopup-z-index: 100;
+    --filePopup-z-index: 90;
+    --regular-z-index: 50;
+    --plusRegular-z-index: 60
+}
+
 body {
     overflow-y: scroll;
 }
@@ -10,13 +18,15 @@ body {
     position: relative;
     width: 1180px;
     margin: 0 auto;
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
+
 }
 
 .body-container {
     /* border: 1px solid black; */
-    margin-top: 1.7rem;
     display: flex;
     justify-content: space-between;
     height: 100%;
+    /* background-color: #f9f9f9; */
+
 }

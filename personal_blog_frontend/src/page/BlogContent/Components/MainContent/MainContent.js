@@ -18,7 +18,7 @@ const MainContent = () => {
             <div className="main-content">
                 <div className="main-content__info">
                     <div className="main_content__title">
-                        this is a title
+                        <span>this is a title</span>
                     </div>
                     <div className="main_content__otherInfo">
                         <div className="main_content__path">

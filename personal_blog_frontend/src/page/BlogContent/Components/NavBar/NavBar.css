@@ -15,12 +15,15 @@
     /* Firefox */
     -ms-user-select: none;
     /* Internet Explorer/Edge */
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     /* Light background color for better contrast */
     border-radius: 8px;
     /* Rounded corners for a modern look */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     /* Subtle shadow for depth */
+    z-index: var(--regular-z-index);
+    backdrop-filter: blur(15px);
+
 }
 
 .nav-bar__categories {

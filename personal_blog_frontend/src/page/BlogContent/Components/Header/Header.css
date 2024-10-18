@@ -1,6 +1,9 @@
 /* #region header */
 .header{
+    position: relative;
+    z-index: var(--plusRegular-z-index);
     margin: 0 auto;
+    /* background-color: #f9f9f9; */
     height: 2.5rem;
     display: flex;
     justify-content: space-between;
@@ -8,7 +11,8 @@
     -webkit-user-select: none; /* Webkit (Chrome, Safari) */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
-    
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(15px);
 }
 
 .header img {
@@ -64,7 +68,6 @@
     height: auto;
     top: 2.2rem;
     border-radius: 0.3rem;
-    
 }
 
 .header__display li > span{
