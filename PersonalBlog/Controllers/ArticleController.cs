@@ -15,11 +15,11 @@ namespace PersonalBlog.Controllers;
 [Route("api")]
 public class ArticleController : ControllerBase
 {
-    private IArticleService _iArticleSercice;
+    private IArticleService _iArticleService;
     private IMapper _iMapper;
     public ArticleController(IArticleService iArticleSercice, IMapper iMapper)
     {
-        this._iArticleSercice = iArticleSercice;
+        this._iArticleService = iArticleSercice;
         this._iMapper = iMapper;
     }
 
@@ -32,7 +32,7 @@ public class ArticleController : ControllerBase
             var article = _iMapper.Map<Article>(articleCreateDTO);
             // article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
             article.author_id = 3;
-            await _iArticleSercice.CreateOneAsync(article);
+            await _iArticleService.CreateOneAsync(article);
             return Ok(article.id);
         }
         catch (ServiceException e)
@@ -51,7 +51,7 @@ public class ArticleController : ControllerBase
     {
         try
         {
-            await _iArticleSercice.UpdateCommon(articleUpdateDTO);
+            await _iArticleService.UpdateCommon(articleUpdateDTO);
             return Ok(articleUpdateDTO);
         }
         catch (ServiceException e)
@@ -69,8 +69,26 @@ public class ArticleController : ControllerBase
     {
         try
         {
-            var articles = await _iArticleSercice.QueryMultipleByConditionAsync(c => c.is_hide == false);
+            var articles = await _iArticleService.QueryMultipleByConditionAsync(c => c.is_hide == false);
             return Ok(articles);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet("articles/id/{id}")]
+    public async Task<ActionResult> GetSingleArticleInfo([FromRoute] int id)
+    {
+        try
+        {
+            var article = await _iArticleService.QueryOneByConditionAsync(a => a.id == id && !a.is_hide);
+            return Ok(article);
         }
         catch (ServiceException e)
         {
@@ -88,7 +106,7 @@ public class ArticleController : ControllerBase
     {
         try
         {
-            var articles = await _iArticleSercice.QueryMultipleByConditionAsync(c => c.is_hide == true);
+            var articles = await _iArticleService.QueryMultipleByConditionAsync(c => c.is_hide == true);
             return Ok(articles);
         }
         catch (ServiceException e)
@@ -107,9 +125,9 @@ public class ArticleController : ControllerBase
     {
         try
         {
-            Article art = await _iArticleSercice.QueryOneByIdAsync(id);
+            Article art = await _iArticleService.QueryOneByIdAsync(id);
             art.is_hide = !art.is_hide;
-            await _iArticleSercice.UpdateOneAsync(art);
+            await _iArticleService.UpdateOneAsync(art);
             return Ok();
         }
         catch (ServiceException e)
@@ -127,7 +145,7 @@ public class ArticleController : ControllerBase
     {
         try
         {
-            var articles = await _iArticleSercice.FullTextSearchAsync(word);
+            var articles = await _iArticleService.FullTextSearchAsync(word);
             return Ok(articles);
         }
         catch (ServiceException e)

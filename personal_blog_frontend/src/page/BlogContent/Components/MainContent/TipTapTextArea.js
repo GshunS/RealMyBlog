@@ -7,13 +7,22 @@ import Text from '@tiptap/extension-text'
 import ListItem from '@tiptap/extension-list-item'
 import OrderedList from '@tiptap/extension-ordered-list'
 import BulletList from '@tiptap/extension-bullet-list'
-import Image from '@tiptap/extension-image';
+// import Image from '@tiptap/extension-image';
 import CodeBlock from '@tiptap/extension-code-block'
+import ResizableImageExtension from './ResizableImageTemplate';
+import { useSelector } from 'react-redux'
+
 import './TipTapTextArea.css'
 import { useEffect, useRef } from 'react'
 
 
 const TiptapTextArea = () => {
+
+    const {
+        articleInfo
+    } = useSelector(state => state.blogContentMainContent)
+
+
     const editor = useEditor({
         extensions: [
             Document,
@@ -26,9 +35,10 @@ const TiptapTextArea = () => {
             }),
             CodeBlock,
             BulletList, OrderedList, ListItem,
-            Image
+            ResizableImageExtension
         ],
-        content: `        <img src="https://placehold.co/200x100" />      `,
+        content: '',
+
         // editable: false,
         onUpdate: ({ editor }) => {
             resetAutoSubmit();
@@ -43,7 +53,11 @@ const TiptapTextArea = () => {
                     const file = item.getAsFile();
                     const reader = new FileReader();
                     reader.onload = () => {
-                        editor.chain().focus().setImage({ src: reader.result }).run();
+                        editor.chain().focus().setImage({
+                            src: reader.result,
+                            width: 300,
+                            height: 200
+                        }).run();
                     };
                     reader.readAsDataURL(file);
                 }
@@ -58,9 +72,36 @@ const TiptapTextArea = () => {
 
     });
 
+    useEffect(() => {
+        if (editor && articleInfo.articleId) {
+            editor.commands.setContent(articleInfo.articleContent);
+        }
+    }, [articleInfo, editor])
+
     const handleClick = () => {
         // console.log(editor.isFocused)
     }
+
+    const handleDrop = (event) => {
+        event.preventDefault();
+
+        const files = Array.from(event.dataTransfer.files);
+
+        files.forEach((file) => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    editor
+                        .chain()
+                        .focus()
+                        .setImage({ src: reader.result, width: 300, height: 200 })
+                        .run();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     const timerRef = useRef(null);
 
     const handleSubmit = async () => {
@@ -88,7 +129,7 @@ const TiptapTextArea = () => {
 
         timerRef.current = setTimeout(() => {
             handleSubmit();
-        }, 5000); 
+        }, 5000);
     };
 
     useEffect(() => {
@@ -101,7 +142,12 @@ const TiptapTextArea = () => {
 
 
     return (
-        <div className="tiptap-editor" onClick={handleClick}>
+        <div
+            className="tiptap-editor"
+            onClick={handleClick}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+        >
             <EditorContent editor={editor} />
         </div>
     );

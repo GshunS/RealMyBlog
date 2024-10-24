@@ -2,7 +2,8 @@
 .nav-bar {
     /* width: 23%; */
     display: flex;
-    flex-grow: 1;
+    /* flex-grow: 1; */
+    width: 20%;
     flex-direction: column;
     align-items: center;
     margin-top: 1rem;
@@ -34,11 +35,11 @@
     font-size: 1.2rem;
     font-weight: 900;
     color: #343a40;
-    
+
 }
 
 .nav-bar__addCate__button {
-    width: 90%; 
+    width: 90%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -47,25 +48,31 @@
 .nav-bar__addCate_inner {
     display: flex;
     align-items: center;
-    margin-top: 0; 
-    margin-bottom: 1rem; 
-    margin-left: 0.3rem; 
-    padding: 0.5rem 1rem; 
-    height: 2rem; 
+    margin-top: 0;
+    margin-bottom: 1rem;
+    margin-left: 0.3rem;
+    padding: 0.5rem 1rem;
+    height: 2rem;
     border: 1px solid #ccc;
-    border-radius: 8px; 
-    background-color: #ffffff; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-    transition: background-color 0.3s ease, border-color 0.3s ease; 
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .nav-bar__addCate_inner:hover {
-    background-color: #f1f1f1; 
-    border-color: #bbb; 
+    background-color: #f1f1f1;
+    border-color: #bbb;
 }
 
 .nav-bar span {
     cursor: default;
+    vertical-align: middle;
+    margin-left: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 0.2rem
 }
 
 .nav-bar img {
@@ -93,12 +100,6 @@
 
 .nav-bar__first-category-items:last-child {
     border-bottom: none;
-}
-
-.nav-bar__first-category-items span {
-    /* font-size: 1.1rem; */
-    vertical-align: middle;
-    margin-left: 0.2rem;
 }
 
 .nav-bar__second-category,
@@ -131,22 +132,27 @@
 
 
 .nav-bar__category_div {
+
     display: flex;
     justify-content: space-between;
     margin-left: 0.3rem;
     /* margin-bottom: 0.3rem; */
     border-radius: 0.7rem;
-    padding: 0.5rem;
+    padding-left: 0.5rem;
     /* Added padding for better spacing */
     background-color: #e9edf2;
     /* Light background color for better contrast */
     height: 2rem;
+
 }
 
 .nav-bar__category_name {
     display: flex;
     align-items: center;
-    flex-grow: 1;
+    overflow: hidden;
+    
+    /* width: auto; */
+    /* flex-grow: 1; */
     /* width: auto; */
     /* margin-right: 2rem; */
 }
@@ -156,6 +162,7 @@
     rotate: 90deg;
     transition: transform 0.2s linear;
     fill: #2196F3;
+    flex-shrink: 0;
 }
 
 

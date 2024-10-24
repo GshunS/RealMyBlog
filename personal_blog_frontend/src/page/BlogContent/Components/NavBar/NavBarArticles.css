@@ -6,4 +6,5 @@
     margin-left: 0.3rem;
     margin-right: 0.3rem;
     fill: #FF9800;
+    flex-shrink: 0;
 }

@@ -11,13 +11,18 @@ import {
     editFileCreatedObj,
     editFolderCreated
 } from '../../../../store/modules/blogContentNavBarStore'
+
+import {
+    getArticleInfo
+} from '../../../../store/modules/blogContentMainContentStore'
 import _ from 'lodash'
-import {produce} from 'immer'
+import { produce } from 'immer'
 
 const FolderFileCreationWindow = () => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const { addType } = useSelector(state => state.blogContentFFCreationWindow)
-    const { currentAncestorNames, allCategories, fileCreatedObj} = useSelector(state => state.blogContentNavbar)
+    const { currentAncestorNames, allCategories, fileCreatedObj } = useSelector(state => state.blogContentNavbar)
+
 
     const modalRef = useRef(null);
     const formRef = useRef(null);
@@ -89,17 +94,17 @@ const FolderFileCreationWindow = () => {
         )
     }
 
-    const createFile = async(data) => {
-        if (currentAncestorNames.length === 0){
+    const createFile = async (data) => {
+        if (currentAncestorNames.length === 0) {
             dispatch(editErrorMsg({ type: 'ERROR', msg: 'Please create the file under a folder' }))
             return;
         }
         let tempObj = allCategories;
         let category_id = null;
         currentAncestorNames.forEach((item, index) => {
-            if (index !== currentAncestorNames.length -1){
+            if (index !== currentAncestorNames.length - 1) {
                 tempObj = tempObj[item].subCategories
-            }else{
+            } else {
                 category_id = tempObj[item].categoryId
             }
         })
@@ -112,17 +117,19 @@ const FolderFileCreationWindow = () => {
         await fetchData(
             url, "POST", Data,
             (res) => {
-                closeModal()
-                dispatch(editErrorMsg({ type: 'INFO', msg: `Success` }))
+                closeModal();
+                dispatch(editErrorMsg({ type: 'INFO', msg: `Success` }));
                 let tempFileCreatedObj = produce(fileCreatedObj, draft => {
                     draft.status = true
                     draft.fileId = res
                     draft.fileName = data.content
-                })
-                dispatch(editFileCreatedObj(tempFileCreatedObj))
+                });
+                dispatch(editFileCreatedObj(tempFileCreatedObj));
+                dispatch(getArticleInfo(res));
+                
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }));
             }
         )
     }

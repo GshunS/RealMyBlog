@@ -1,12 +1,27 @@
 import './NavBarArticles.css'
 import classNames from 'classnames'
 import React from 'react';
+import { useDispatch } from 'react-redux'
 import NavBarDeleteOperation from './NavBarDeleteOperation';
+import {
+    getArticleInfo
+} from '../../../../store/modules/blogContentMainContentStore'
+
+import {
+    editCurrentAncestorNames
+} from '../../../../store/modules/blogContentNavBarStore'
 
 const NavBarArticles = React.memo((props) => {
     const expandedCategories = props.expandedCategories;
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const ancestorCategoryNames = props.ancestorCategoryNames
+
+    
+    const dispatch = useDispatch()
+    const handleArticleClick = (id) => {
+        dispatch(editCurrentAncestorNames(ancestorCategoryNames));
+        dispatch(getArticleInfo(id));
+    }
 
     return (
         <div className={classNames({ 'nav-bar__category_article': expandedCategories.hasOwnProperty(categoryName) })}>
@@ -18,7 +33,7 @@ const NavBarArticles = React.memo((props) => {
                     Object.entries(categoryValue['articles']).map(([id, title]) => (
                         <li className={classNames("nav-bar__second-category-items")}
                             key={`article-${id}`}>
-                            <div className="nav-bar__category_div">
+                            <div className="nav-bar__category_div" onClick={() => handleArticleClick(id)}>
                                 <div className="nav-bar__category_name">
                                     {/* arrow icon - always hide for articles */}
                                     <svg

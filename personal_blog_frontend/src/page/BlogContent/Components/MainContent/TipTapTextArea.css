@@ -24,8 +24,7 @@
 
 .tiptap {
     outline: none;
-    min-height: 65vh;
-
+    min-height: 70vh;
     line-height: 1.1rem;
 
     padding: 1rem;
@@ -46,7 +45,7 @@
     img {
         display: block;
         height: auto;
-        margin: 1rem 0;
+        /* margin: 1rem 0; */
         max-width: 100%;
 
         &.ProseMirror-selectednode {

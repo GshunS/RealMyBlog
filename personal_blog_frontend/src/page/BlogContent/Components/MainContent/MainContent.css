@@ -19,17 +19,15 @@
 .main-content__info {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
 }
 
-.main_content__title {
+.main-content__title {
     font-size: 2rem;
     font-weight: bold;
-    margin-bottom: 10px;
     color: #333;
 }
 
-.main_content__otherInfo {
+.main-content__otherInfo {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -38,25 +36,25 @@
     color: #666;
 }
 
-.main_content__path {
+.main-content__path {
     font-style: italic;
     color: #888;
 }
 
-.main_content__stats {
+.main-content__stats {
     display: flex;
     gap: 10px;
 }
 
-.main_content__stats svg{
+.main-content__stats svg{
     width: 20px;
     height: 20px;
     cursor: default;
 }
 
-.main_content__author,
-.main_content__view,
-.main_content__upvote {
+.main-content__author,
+.main-content__view,
+.main-content__upvote {
     display: flex;
     align-items: center;
     font-size: 0.95rem;
@@ -66,9 +64,9 @@
     flex: 1 0 30px;
 }
 
-.main_content__author:hover,
-.main_content__view:hover,
-.main_content__upvote:hover {
+.main-content__author:hover,
+.main-content__view:hover,
+.main-content__upvote:hover {
     color: #222;
 }
 
