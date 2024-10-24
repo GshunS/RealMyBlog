@@ -1,6 +1,6 @@
 .ErrorPopUp {
     position: absolute;
-    top: 6rem;
+    top: 4rem;
     right: 2rem;
     opacity: 0;
     transform: translateX(50%);
