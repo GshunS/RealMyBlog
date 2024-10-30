@@ -59,26 +59,6 @@ const TiptapTextArea = () => {
             // console.log(editor)
             resetAutoSubmit();
         },
-        onPaste: (event) => {
-            event.preventDefault();
-            const items = event.clipboardData.items;
-
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        editor.chain().focus().setImage({
-                            src: reader.result,
-                            width: 300,
-                            height: 200
-                        }).run();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            }
-        },
         onCreate: (event) => {
             // const lastPos = editor.state.doc.content.size;
             // editor.commands.insertContentAt(lastPos, '<p></p>');
