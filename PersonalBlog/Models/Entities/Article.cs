@@ -4,6 +4,7 @@ public class Article: BaseModel
 {
     public string title { get; set; }
     public string content { get; set; }
+    public string json_content { get; set; }
 
     public int author_id { get; set; }
     public Author author { get; set; } = null!;

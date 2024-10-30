@@ -8,9 +8,12 @@ const blogContentErrorPopUpStore = createSlice({
     },
     reducers: {
         editErrorMsg(state, action) {
-            const {type, msg} = action.payload
+            const { type, msg } = action.payload
             state.type = type
             state.msg = msg
+            if (msg === null || msg === "") {
+                state.msg = "unknown error"
+            }
         }
     }
 

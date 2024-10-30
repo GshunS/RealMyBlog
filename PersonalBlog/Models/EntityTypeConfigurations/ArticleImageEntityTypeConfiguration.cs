@@ -20,13 +20,11 @@ public class ArticleImageEntityTypeConfiguration : IEntityTypeConfiguration<Arti
             .IsRequired();
 
         // Properties
-        builder.Property(e => e.image_name)
+        builder.Property(e => e.image_hashvalue)
             .HasMaxLength(100)
-            .IsRequired(false);
+            .IsRequired();
         builder.Property(e => e.image_path)
             .HasMaxLength(255)
-            .IsRequired();
-        builder.Property(e => e.position)
             .IsRequired();
         builder.Property(e => e.article_id)
             .IsRequired();

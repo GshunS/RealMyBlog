@@ -5,6 +5,7 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
         const response = await axios({ method, url, data });
         successCallback(response.data);
     } catch (error) {
+        console.log(error)
         let error_msg = '';
         if (error.response) {
             error_msg = `${error.response.data.message}`;

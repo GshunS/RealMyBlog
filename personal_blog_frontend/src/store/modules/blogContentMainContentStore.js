@@ -13,6 +13,7 @@ const blogContentMainContent = createSlice({
             articleId: null,
             articleTitle: null,
             articleContent: null,
+            articleJsonContent: null,
             articlePath: null,
             authorName: null,
             articleViewAmount: null,
@@ -31,10 +32,61 @@ const blogContentMainContent = createSlice({
     }
 })
 
+const replaceSrcInJson = (jsonContent, srcMap) => {
+    const parsedContent = JSON.parse(jsonContent);
+
+    const replaceSrc = (node) => {
+        if (typeof node === 'object' && node !== null) {
+            if (node.type === 'image' && node.attrs && srcMap[node.attrs.src]) {
+                node.attrs.src = srcMap[node.attrs.src];
+            } else if (node.content) {
+                node.content.forEach(replaceSrc);
+            }
+        }
+    };
+
+    replaceSrc(parsedContent);
+    return JSON.stringify(parsedContent);
+};
+
+
+
 const getArticleInfo = (articleId) => {
     return async (dispatch, getState) => {
         const currentAncestorNames = getState().blogContentNavbar.currentAncestorNames;
         const articlePath = '/' + currentAncestorNames.join('/');
+        // request all images
+        const mimeTypes = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.bmp': 'image/bmp',
+            '.tiff': 'image/tiff',
+            '.webp': 'image/webp',
+            '.svg': 'image/svg+xml',
+            '.heif': 'image/heif',
+        };
+        let mappedImages = null;
+        let imageUrl = `https://localhost:7219/api/images/articles-id/${articleId}`
+        await fetchData(
+            imageUrl,
+            'get',
+            null,
+            (data) => {
+                // console.log(data)
+                mappedImages = data.reduce((acc, image) => {
+                    const hashvalue = image.image_hashvalue;
+                    const imageData = `data:${mimeTypes[image.image_ext.toLowerCase()]};base64,${image.image_data}`;
+
+                    acc[hashvalue] = imageData;
+                    return acc;
+                }, {});
+            },
+            (error => {
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+            })
+        )
 
         let url = `https://localhost:7219/api/articles/id/${articleId}`;
         await fetchData(
@@ -42,11 +94,16 @@ const getArticleInfo = (articleId) => {
             'get',
             null,
             (data) => {
+                let updatedJson = data.json_content
+                if (mappedImages !== null) {
+                    updatedJson = replaceSrcInJson(data.json_content, mappedImages);
+                }
                 dispatch(editArticleInfo(
                     {
                         articleId: articleId,
                         articleTitle: data.title,
                         articleContent: data.content,
+                        articleJsonContent: updatedJson,
                         authorName: "123",
                         articlePath: articlePath,
                         articleViewAmount: data.view_count,
@@ -56,6 +113,29 @@ const getArticleInfo = (articleId) => {
                     }
                 ));
                 dispatch(editShowTextArea(true));
+            },
+            (error) => {
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+            }
+        )
+    }
+}
+
+// update attrs of articles except for content
+const updateAttrs = (patchData) => {
+    return async (dispatch, getState) => {
+        const articleInfo = getState().blogContentMainContent.articleInfo
+        const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}`;
+        await fetchData(
+            url,
+            "PATCH",
+            patchData,
+            (data) => {
+                // let newArticleInfo = produce(articleInfo, draft => {
+                //     draft.articleUpdatedTime = data
+                // });
+                // dispatch(editArticleInfo(newArticleInfo))
+                dispatch(editErrorMsg({ type: 'INFO', msg: "Saved!" }))
             },
             (error) => {
                 dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
@@ -76,7 +156,8 @@ export {
 }
 
 export {
-    getArticleInfo
+    getArticleInfo,
+    updateAttrs
 }
 
 const reducer = blogContentMainContent.reducer

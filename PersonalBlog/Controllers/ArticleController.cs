@@ -1,7 +1,9 @@
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
+using Newtonsoft.Json.Linq;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Create;
 using PersonalBlog.DTO.Display;
@@ -23,7 +25,7 @@ public class ArticleController : ControllerBase
         this._iMapper = iMapper;
     }
 
-    
+
     [HttpPost("articles")]
     public async Task<ActionResult> CreateArticles(ArticleCreateDTO articleCreateDTO)
     {
@@ -32,6 +34,8 @@ public class ArticleController : ControllerBase
             var article = _iMapper.Map<Article>(articleCreateDTO);
             // article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
             article.author_id = 3;
+            article.content = "";
+            article.json_content = "{}";
             await _iArticleService.CreateOneAsync(article);
             return Ok(article.id);
         }
@@ -45,14 +49,50 @@ public class ArticleController : ControllerBase
         }
     }
 
-    [Authorize]
-    [HttpPatch("articles/{id}")]
-    public async Task<ActionResult> UpdateArticles(ArticleUpdateDTO articleUpdateDTO)
+    [HttpPost("articles/id/{id}/content")]
+    public async Task<ActionResult> UpdateArticleContent(int id)
     {
         try
         {
-            await _iArticleService.UpdateCommon(articleUpdateDTO);
-            return Ok(articleUpdateDTO);
+            string textContent = Request.Form["TextContent"];
+            string cleanTextContent = Regex.Replace(textContent.Replace("\n", ""), @"(\r)+", " ");
+
+            string jsonContent = Request.Form["jsonContent"];
+            var jsonData = JObject.Parse(jsonContent);
+
+            List<IFormFile> images = Request.Form.Files.ToList();
+            await _iArticleService.UpdateArticleContentAsync(id, cleanTextContent, jsonData, images);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    // [Authorize]
+    [HttpPatch("articles/id/{id}")]
+    public async Task<ActionResult> UpdateArticle(int id, [FromBody] JsonPatchDocument<ArticleUpdateDTO> patchDoc)
+    {
+        try
+        {
+            if (patchDoc == null) return BadRequest();
+            var article = await _iArticleService.QueryOneByIdAsync(id);
+            var articleUpdateDTO = _iMapper.Map<ArticleUpdateDTO>(article);
+
+            patchDoc.ApplyTo(articleUpdateDTO, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _iMapper.Map(articleUpdateDTO, article);
+            await _iArticleService.UpdateOneAsync(article);
+
+            return Ok(article.update_time);
         }
         catch (ServiceException e)
         {
@@ -162,6 +202,6 @@ public class ArticleController : ControllerBase
         }
     }
 
-    
+
 }
 

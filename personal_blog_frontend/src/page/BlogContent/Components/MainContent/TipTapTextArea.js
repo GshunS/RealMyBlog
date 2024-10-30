@@ -10,14 +10,17 @@ import BulletList from '@tiptap/extension-bullet-list'
 // import Image from '@tiptap/extension-image';
 import CodeBlock from '@tiptap/extension-code-block'
 import ResizableImageExtension from './ResizableImageTemplate';
-import { useSelector } from 'react-redux'
-
+import { fetchData } from '../../../../utils/apiService'
+import { useSelector, useDispatch } from 'react-redux'
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+import { editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import './TipTapTextArea.css'
+import { produce } from 'immer'
 import { useEffect, useRef } from 'react'
 
 
 const TiptapTextArea = () => {
-
+    const dispatch = useDispatch();
     const {
         articleInfo
     } = useSelector(state => state.blogContentMainContent)
@@ -64,8 +67,8 @@ const TiptapTextArea = () => {
             }
         },
         onCreate: (event) => {
-            const lastPos = editor.state.doc.content.size;
-            editor.commands.insertContentAt(lastPos, '<p></p>');
+            // const lastPos = editor.state.doc.content.size;
+            // editor.commands.insertContentAt(lastPos, '<p></p>');
             editor.commands.focus();
         },
 
@@ -74,7 +77,8 @@ const TiptapTextArea = () => {
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
-            editor.commands.setContent(articleInfo.articleContent);
+            console.log(JSON.parse(articleInfo.articleJsonContent))
+            editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
         }
     }, [articleInfo, editor])
 
@@ -109,17 +113,51 @@ const TiptapTextArea = () => {
             return;
         }
 
-        const content = editor.getHTML();
-        console.log('提交成功:', content);
-        // try {
-        //     const response = await axios.post('http://your-backend-api.com/submit', {
-        //         content,
-        //     });
+        const json = editor.getJSON();
+        const text = editor.getText();
+        const images = [];
 
-        //     console.log('提交成功:', response.data);
-        // } catch (error) {
-        //     console.error('提交失败:', error);
-        // }
+        const traverse = (node) => {
+            if (node.type === 'image') {
+                images.push(node.attrs.src);
+            }
+            if (node.content) {
+                node.content.forEach(traverse);
+            }
+        };
+
+        traverse(json);
+
+
+        const formData = new FormData();
+        formData.append('TextContent', text)
+        formData.append('JsonContent', JSON.stringify(json))
+
+        let index = 0;
+        for (const src of images) {
+            const response = await fetch(src);
+            const blob = await response.blob();
+            formData.append('Images', blob, `image${index}.png`);
+            index++;
+        }
+        // console.log(json);
+
+        const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
+        await fetchData(
+            url,
+            "POST",
+            formData,
+            (data) => {
+                // let newArticleInfo = produce(articleInfo, draft => {
+                //     draft.articleUpdatedTime = data
+                // });
+                // dispatch(editArticleInfo(newArticleInfo))
+                dispatch(editErrorMsg({ type: 'INFO', msg: "Saved!" }))
+            },
+            (error) => {
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+            }
+        )
     };
 
     const resetAutoSubmit = () => {

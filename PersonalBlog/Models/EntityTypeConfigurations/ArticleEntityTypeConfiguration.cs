@@ -30,7 +30,11 @@ public class ArticleEntityTypeConfiguration : IEntityTypeConfiguration<Article>
         builder.Property(e => e.content)
             .IsRequired()
             .HasColumnType("text");
-        
+
+        // content - text - not null
+        builder.Property(e => e.json_content)
+            .IsRequired()
+            .HasColumnType("json");
 
         // Foreign Key for Author
         builder.Property(e => e.author_id)
