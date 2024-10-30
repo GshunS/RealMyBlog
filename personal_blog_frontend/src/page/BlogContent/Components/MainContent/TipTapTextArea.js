@@ -8,8 +8,12 @@ import ListItem from '@tiptap/extension-list-item'
 import OrderedList from '@tiptap/extension-ordered-list'
 import BulletList from '@tiptap/extension-bullet-list'
 // import Image from '@tiptap/extension-image';
-import CodeBlock from '@tiptap/extension-code-block'
+// import CodeBlock from '@tiptap/extension-code-block'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import csharp from 'highlight.js/lib/languages/csharp'
+import { createLowlight } from 'lowlight'
 import ResizableImageExtension from './ResizableImageTemplate';
+import IndentHandler from "./IndentHandler";
 import { fetchData } from '../../../../utils/apiService'
 import { useSelector, useDispatch } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
@@ -20,6 +24,9 @@ import { useEffect, useRef } from 'react'
 
 
 const TiptapTextArea = () => {
+    const lowlight = createLowlight();
+    lowlight.register({csharp})
+    // console.log(lowlight.listLanguages())
     const dispatch = useDispatch();
     const {
         articleInfo
@@ -36,14 +43,18 @@ const TiptapTextArea = () => {
                 autolink: true,
                 defaultProtocol: 'https',
             }),
-            CodeBlock,
+            CodeBlockLowlight.configure({
+                lowlight,
+            }),
             BulletList, OrderedList, ListItem,
-            ResizableImageExtension
+            ResizableImageExtension,
+            IndentHandler,
         ],
         content: '',
 
         // editable: false,
         onUpdate: ({ editor }) => {
+            // console.log(editor)
             resetAutoSubmit();
         },
         onPaste: (event) => {
@@ -77,7 +88,7 @@ const TiptapTextArea = () => {
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
-            console.log(JSON.parse(articleInfo.articleJsonContent))
+            // console.log(JSON.parse(articleInfo.articleJsonContent))
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
         }
     }, [articleInfo, editor])

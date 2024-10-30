@@ -11,9 +11,6 @@ const blogContentErrorPopUpStore = createSlice({
             const { type, msg } = action.payload
             state.type = type
             state.msg = msg
-            if (msg === null || msg === "") {
-                state.msg = "unknown error"
-            }
         }
     }
 
