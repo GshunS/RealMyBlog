@@ -151,6 +151,7 @@ public class ArticleService : BaseService<Article>, IArticleService
             var dbImageInfoDict = dbImageInfos.ToDictionary(item => item.image_hashvalue, item => item.image_path);
 
             List<ArticleImage> insertImages = new();
+            HashSet<string> repeatImages = new();
 
             // Directory where saved images
             string uploadPath = Path.Combine(_env.ContentRootPath, "Upload/Images");
@@ -174,8 +175,9 @@ public class ArticleService : BaseService<Article>, IArticleService
                         string fileHash = FileMD5Helper.CalculateFileMD5(file);
                         images_hash.Add(fileHash);
                         // only save file if that is a new one
-                        if (!dbImageInfoDict.ContainsKey(fileHash))
+                        if (!dbImageInfoDict.ContainsKey(fileHash) && !repeatImages.Contains(fileHash))
                         {
+                            repeatImages.Add(fileHash);
                             string fileExtension = Path.GetExtension(file.FileName);
 
                             // append article id to ensure no overwrite

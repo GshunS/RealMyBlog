@@ -12,8 +12,9 @@ import BulletList from '@tiptap/extension-bullet-list'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import csharp from 'highlight.js/lib/languages/csharp'
 import { createLowlight } from 'lowlight'
-import ResizableImageExtension from './ResizableImageTemplate';
-import IndentHandler from "./IndentHandler";
+import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemplate';
+import IndentHandler from "./TipTapCustomExtensions/IndentHandler";
+import ImageClipboardHandler from "./TipTapCustomExtensions/ImageClipboardHandler";
 import { fetchData } from '../../../../utils/apiService'
 import { useSelector, useDispatch } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
@@ -49,6 +50,7 @@ const TiptapTextArea = () => {
             BulletList, OrderedList, ListItem,
             ResizableImageExtension,
             IndentHandler,
+            ImageClipboardHandler,
         ],
         content: '',
 
