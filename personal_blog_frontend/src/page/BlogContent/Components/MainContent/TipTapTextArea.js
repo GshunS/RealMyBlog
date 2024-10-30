@@ -106,6 +106,26 @@ const TiptapTextArea = () => {
         });
     }
 
+    function getExtensionFromDataURL(dataURL) {
+        const mimeType = dataURL.split(',')[0].split(':')[1].split(';')[0];
+        switch (mimeType) {
+            case 'image/jpeg':
+                return 'jpg';
+            case 'image/png':
+                return 'png';
+            case 'image/gif':
+                return 'gif';
+            case 'image/webp':
+                return 'webp';
+            case 'image/bmp':
+                return 'bmp';
+            case 'image/svg+xml':
+                return 'svg';
+            default:
+                return 'jpg';
+        }
+    }
+
     const timerRef = useRef(null);
 
     const handleSubmit = async () => {
@@ -137,9 +157,13 @@ const TiptapTextArea = () => {
         for (const src of images) {
             const response = await fetch(src);
             const blob = await response.blob();
-            formData.append('Images', blob, `image${index}.png`);
+
+            const extension = getExtensionFromDataURL(src);
+            const fileName = `image${index}.${extension}`;
+            formData.append('Images', blob, fileName);
             index++;
         }
+
         // console.log(json);
 
         const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
