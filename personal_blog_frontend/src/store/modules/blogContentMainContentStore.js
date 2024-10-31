@@ -20,7 +20,8 @@ const blogContentMainContent = createSlice({
             articleUpvoteAmount: null,
             articleCreatedTime: null,
             articleUpdatedTime: null
-        }
+        },
+        articleSaveStatus: "unsave"
     },
     reducers: {
         editShowTextArea(state, action) {
@@ -28,7 +29,10 @@ const blogContentMainContent = createSlice({
         },
         editArticleInfo(state, action) {
             state.articleInfo = action.payload
-        }
+        },
+        editArticleSaveStatus(state, action) {
+            state.articleSaveStatus = action.payload
+        },
     }
 })
 
@@ -146,13 +150,15 @@ const updateAttrs = (patchData) => {
 
 const {
     editShowTextArea,
-    editArticleInfo
+    editArticleInfo,
+    editArticleSaveStatus
 } = blogContentMainContent.actions
 
 
 export {
     editShowTextArea,
     editArticleInfo,
+    editArticleSaveStatus
 }
 
 export {

@@ -5,6 +5,7 @@ import { ReactComponent as View } from '../../../../assets/images/view_count.svg
 import { ReactComponent as Upvote } from '../../../../assets/images/upvote.svg'
 
 import TiptapTextArea from './TipTapTextArea'
+import { useEffect, useState } from 'react'
 
 const MainContent = () => {
 
@@ -14,9 +15,27 @@ const MainContent = () => {
 
     const {
         showTextArea,
-        articleInfo
+        articleInfo,
+        articleSaveStatus
     } = useSelector(state => state.blogContentMainContent)
 
+    const [saveMsg, setSaveMsg] = useState('');
+    const [dotCount, setDotCount] = useState(0);
+    useEffect(() => {
+        if (articleSaveStatus !== 'unsave') {
+            if (articleSaveStatus === 'saving') {
+                setSaveMsg('saving')
+                const intervalId = setInterval(() => {
+                    setDotCount(prevDotCount => (prevDotCount % 3) + 1);
+                }, 1000);
+                return () => clearInterval(intervalId);
+            }
+            else {
+                setSaveMsg('saved')
+            }
+        }
+        setDotCount(0);
+    }, [articleSaveStatus])
 
     if (!canRender) return <div></div>;
 
@@ -48,6 +67,20 @@ const MainContent = () => {
                             <TiptapTextArea />
                         </div>
                     </div>
+                    <div className="main-content__footer">
+                            <div className="main-content__footer-left">
+                                <span className={`main-content__status main-content__status--${articleSaveStatus}`}>
+                                    {saveMsg}
+                                    <span className="dots">{'.'.repeat(dotCount)}</span>
+                                </span>
+                            </div>
+                            <div className="main-content__footer-right">
+                                {/* <span className="main-content__wordCount">Words: {200}</span>
+                                <span className="main-content__cursorPosition">Line: {14}, Col: {56}</span> */}
+                                <span className="main-content__createdAt">Created: {articleInfo.articleCreatedTime}</span>
+                                <span className="main-content__updatedAt">Updated: {articleInfo.articleUpdatedTime}</span>
+                            </div>
+                        </div>
                 </>
             ) : null}
         </div>

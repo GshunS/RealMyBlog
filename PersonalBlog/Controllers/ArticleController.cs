@@ -34,8 +34,6 @@ public class ArticleController : ControllerBase
             var article = _iMapper.Map<Article>(articleCreateDTO);
             // article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
             article.author_id = 3;
-            article.content = "";
-            article.json_content = "{}";
             await _iArticleService.CreateOneAsync(article);
             return Ok(article.id);
         }
@@ -61,8 +59,8 @@ public class ArticleController : ControllerBase
             var jsonData = JObject.Parse(jsonContent);
 
             List<IFormFile> images = Request.Form.Files.ToList();
-            await _iArticleService.UpdateArticleContentAsync(id, cleanTextContent, jsonData, images);
-            return Ok();
+            DateTime updatedTime = await _iArticleService.UpdateArticleContentAsync(id, cleanTextContent, jsonData, images);
+            return Ok(updatedTime);
         }
         catch (ServiceException e)
         {

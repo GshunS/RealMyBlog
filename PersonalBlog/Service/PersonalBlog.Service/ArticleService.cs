@@ -142,7 +142,7 @@ public class ArticleService : BaseService<Article>, IArticleService
         traverse(jsonContent);
     }
 
-    public async Task<bool> UpdateArticleContentAsync(int id, string textContent, JObject jsonContent, List<IFormFile> images)
+    public async Task<DateTime> UpdateArticleContentAsync(int id, string textContent, JObject jsonContent, List<IFormFile> images)
     {
         try
         {
@@ -211,6 +211,7 @@ public class ArticleService : BaseService<Article>, IArticleService
                 }
             }
 
+            DateTime updatedDate = DateTime.Now;
             // start a transaction
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
@@ -234,6 +235,8 @@ public class ArticleService : BaseService<Article>, IArticleService
                 }
                 await transaction.CommitAsync();
 
+                updatedDate = (DateTime)oldArticle.update_time;
+
                 // delete images locally
                 foreach (var hash in hashToDelete)
                 {
@@ -252,7 +255,7 @@ public class ArticleService : BaseService<Article>, IArticleService
 
 
 
-            return true;
+            return updatedDate;
         }
         catch (RepositoryException ex)
         {

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 import { produce } from 'immer'
 import { fetchData } from '../../utils/apiService'
 import { editErrorMsg } from './blogContentErrorPopUpStore'
+import { editArticleInfo, editShowTextArea } from "./blogContentMainContentStore"
 
 const blogContentNavbarStore = createSlice({
     name: "navbar",
@@ -183,6 +184,7 @@ const setExpandedCategories = (...categories) => {
 // delete operation(either delete an article or a folder)
 const deleteOperation = (deleteType, articleId) => {
     return async (dispatch, getState) => {
+        const currentArticleInfo = getState().blogContentMainContent.articleInfo;
         if (deleteType === 'article') {
             const url = `https://localhost:7219/api/articles/${articleId}/hide`
             // hide article
@@ -195,6 +197,11 @@ const deleteOperation = (deleteType, articleId) => {
                             fileId: articleId
                         }
                     ))
+                    let newArticleInfo = produce(currentArticleInfo, draft => {
+                        draft.articleId = null;
+                    })
+                    dispatch(editShowTextArea(false))
+                    dispatch(editArticleInfo(newArticleInfo))
                 },
                 (error) => {
                     dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))

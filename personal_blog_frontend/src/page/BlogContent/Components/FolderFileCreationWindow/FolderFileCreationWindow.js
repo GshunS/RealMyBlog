@@ -111,6 +111,7 @@ const FolderFileCreationWindow = () => {
         const Data = {
             title: data.content,
             content: "",
+            json_content: '{ "type": "doc", "content": [ { "type": "paragraph" } ] }',
             category_id: category_id
         }
         const url = "https://localhost:7219/api/articles"
@@ -126,7 +127,7 @@ const FolderFileCreationWindow = () => {
                 });
                 dispatch(editFileCreatedObj(tempFileCreatedObj));
                 dispatch(getArticleInfo(res));
-                
+
             },
             (error) => {
                 dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }));

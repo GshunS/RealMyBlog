@@ -18,15 +18,15 @@ import ImageClipboardHandler from "./TipTapCustomExtensions/ImageClipboardHandle
 import { fetchData } from '../../../../utils/apiService'
 import { useSelector, useDispatch } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
-import { editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
+import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import './TipTapTextArea.css'
 import { produce } from 'immer'
-import { useEffect, useRef } from 'react'
-
+import { useEffect } from 'react'
+import _ from 'lodash'
 
 const TiptapTextArea = () => {
     const lowlight = createLowlight();
-    lowlight.register({csharp})
+    lowlight.register({ csharp })
     // console.log(lowlight.listLanguages())
     const dispatch = useDispatch();
     const {
@@ -57,11 +57,10 @@ const TiptapTextArea = () => {
         // editable: false,
         onUpdate: ({ editor }) => {
             // console.log(editor)
-            resetAutoSubmit();
+            dispatch(editArticleSaveStatus('unsave'))
+            handleSubmit();
         },
         onCreate: (event) => {
-            // const lastPos = editor.state.doc.content.size;
-            // editor.commands.insertContentAt(lastPos, '<p></p>');
             editor.commands.focus();
         },
 
@@ -119,81 +118,73 @@ const TiptapTextArea = () => {
         }
     }
 
-    const timerRef = useRef(null);
 
-    const handleSubmit = async () => {
-        if (!editor) {
-            return;
-        }
+    const handleSubmit = React.useMemo(() =>
+        _.debounce(async () => {
 
-        const json = editor.getJSON();
-        const text = editor.getText();
-        const images = [];
-
-        const traverse = (node) => {
-            if (node.type === 'image') {
-                images.push(node.attrs.src);
+            if (!editor || !articleInfo.articleId) {
+                return;
             }
-            if (node.content) {
-                node.content.forEach(traverse);
+            dispatch(editArticleSaveStatus('saving'))
+            const json = editor.getJSON();
+            // console.log(json)
+            const text = editor.getText();
+            const images = [];
+
+            const traverse = (node) => {
+                if (node.type === 'image') {
+                    images.push(node.attrs.src);
+                }
+                if (node.content) {
+                    node.content.forEach(traverse);
+                }
+            };
+
+            traverse(json);
+
+
+            const formData = new FormData();
+            formData.append('TextContent', text)
+            formData.append('JsonContent', JSON.stringify(json))
+
+            let index = 0;
+            for (const src of images) {
+                const response = await fetch(src);
+                const blob = await response.blob();
+
+                const extension = getExtensionFromDataURL(src);
+                const fileName = `image${index}.${extension}`;
+                formData.append('Images', blob, fileName);
+                index++;
             }
-        };
 
-        traverse(json);
+            // console.log(json);
 
-
-        const formData = new FormData();
-        formData.append('TextContent', text)
-        formData.append('JsonContent', JSON.stringify(json))
-
-        let index = 0;
-        for (const src of images) {
-            const response = await fetch(src);
-            const blob = await response.blob();
-
-            const extension = getExtensionFromDataURL(src);
-            const fileName = `image${index}.${extension}`;
-            formData.append('Images', blob, fileName);
-            index++;
-        }
-
-        // console.log(json);
-
-        const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
-        await fetchData(
-            url,
-            "POST",
-            formData,
-            (data) => {
-                // let newArticleInfo = produce(articleInfo, draft => {
-                //     draft.articleUpdatedTime = data
-                // });
-                // dispatch(editArticleInfo(newArticleInfo))
-                dispatch(editErrorMsg({ type: 'INFO', msg: "Saved!" }))
-            },
-            (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
-            }
-        )
-    };
-
-    const resetAutoSubmit = () => {
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-        }
-
-        timerRef.current = setTimeout(() => {
-            handleSubmit();
-        }, 5000);
-    };
+            const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
+            await fetchData(
+                url,
+                "POST",
+                formData,
+                (data) => {
+                    let tempArticleInfo = produce(articleInfo, draft => {
+                        draft.articleUpdatedTime = data
+                    })
+                    dispatch(editArticleSaveStatus('saved'))
+                    dispatch(editArticleInfo(tempArticleInfo))
+                },
+                (error) => {
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                }
+            )
+        }, 3000),
+        [articleInfo, dispatch, editor]
+    );
 
     useEffect(() => {
         return () => {
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
+            handleSubmit.cancel();
         };
-    }, []);
+    }, [handleSubmit]);
 
 
     return (

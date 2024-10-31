@@ -11,7 +11,7 @@ public interface IArticleService: IBaseService<Article>
     // Task<bool> UpdateCommon(ArticleUpdateDTO articleUpdateDTO);
     // Task<bool> UpdateSingleArticleAsync(int id);
 
-    Task<bool> UpdateArticleContentAsync(int id, string textContent, JObject jsonContent, List<IFormFile> images);
+    Task<DateTime> UpdateArticleContentAsync(int id, string textContent, JObject jsonContent, List<IFormFile> images);
 
     // full text search
     Task<List<ArticleDisplayDTO>> FullTextSearchAsync(string searchStr);
