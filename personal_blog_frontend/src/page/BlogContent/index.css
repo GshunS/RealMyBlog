@@ -1,13 +1,23 @@
 * {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+    font-family: var(--font-family);
 }
+
+@font-face {
+    font-family: 'Wotfard';
+    src: url('../../assets/fonts/wotfard-regular-webfont.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
 
 :root {
     --background-z-index: -100;
     --msgPopup-z-index: 100;
     --filePopup-z-index: 90;
     --regular-z-index: 50;
-    --plusRegular-z-index: 60
+    --plusRegular-z-index: 60;
+    --font-family: "Wotfard", sans-serif;
 }
 
 body {
@@ -27,6 +37,7 @@ body {
     display: flex;
     justify-content: space-between;
     height: 100%;
+    gap: 0.5rem;
     /* background-color: #f9f9f9; */
 
 }

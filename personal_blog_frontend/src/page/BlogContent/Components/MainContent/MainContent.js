@@ -5,12 +5,19 @@ import { ReactComponent as View } from '../../../../assets/images/view_count.svg
 import { ReactComponent as Upvote } from '../../../../assets/images/upvote.svg'
 
 import TiptapTextArea from './TipTapTextArea'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { updateAttrs } from '../../../../store/modules/blogContentMainContentStore'
+import { editAllCategories } from '../../../../store/modules/blogContentNavBarStore'
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+import { produce } from 'immer'
 
 const MainContent = () => {
-
+    const dispatch = useDispatch();
     const {
-        canRender
+        canRender,
+        allCategories,
+        currentAncestorNames
     } = useSelector(state => state.blogContentNavbar)
 
     const {
@@ -37,6 +44,78 @@ const MainContent = () => {
         setDotCount(0);
     }, [articleSaveStatus])
 
+    //#region title update
+
+    const [readOnly, setReadOnly] = useState(false);
+    const [title, setTitle] = useState("");
+    const [oldTitle, setOldTitle] = useState("")
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (articleInfo.articleId !== null) {
+            setTitle(articleInfo.articleTitle)
+            setOldTitle(articleInfo.articleTitle)
+        }
+    }, [articleInfo])
+
+    const handleTitleClick = () => {
+        setReadOnly(false);
+    };
+
+    const handleInputBlur = () => {
+        if (!readOnly) {
+            setReadOnly(true);
+            submitTitleUpdate();
+        }
+    };
+
+    const handleInputChange = (e) => {
+        setTitle(e.target.value);
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            inputRef.current.blur();
+        }
+    };
+
+    const submitTitleUpdate = async () => {
+        const cleanTitle = title.trim();
+        if (oldTitle === cleanTitle) return;
+        if (cleanTitle === '') {
+            dispatch(editErrorMsg({ type: 'WARNING', msg: 'invalid title' }))
+            setTitle(oldTitle);
+            return;
+        }
+        const patchData = [
+            {
+                "operationType": 2,
+                "path": "/title",
+                "op": "replace",
+                "from": "",
+                "value": cleanTitle
+            }
+        ]
+        const res = await dispatch(updateAttrs(patchData))
+        if (res) {
+            setOldTitle(cleanTitle)
+            let tempAllCategories = produce(allCategories, draft => {
+                let current = draft;
+                currentAncestorNames.forEach((ele, index) => {
+                    if (index === currentAncestorNames.length - 1) {
+                        current[ele]['articles'][articleInfo.articleId] = title.trim()
+                    } else {
+                        current = current[ele]['subCategories']
+                    }
+
+                })
+            })
+            dispatch(editAllCategories(tempAllCategories))
+        }
+    };
+    //#endregion
+
     if (!canRender) return <div></div>;
 
     return (
@@ -44,9 +123,18 @@ const MainContent = () => {
             {showTextArea ? (
                 <>
                     <div className="main-content__info">
-                        <div className="main-content__title">
-                            <span>{articleInfo.articleTitle}</span>
-                        </div>
+                        <form>
+                            <div className="main-content__title" onClick={handleTitleClick}>
+                                <input
+                                    ref={inputRef}
+                                    value={title}
+                                    onBlur={handleInputBlur}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleKeyDown}
+                                    readOnly={readOnly}
+                                />
+                            </div>
+                        </form>
                         <div className="main-content__otherInfo">
                             <div className="main-content__path">{articleInfo.articlePath}</div>
                             <div className="main-content__stats">
@@ -68,19 +156,19 @@ const MainContent = () => {
                         </div>
                     </div>
                     <div className="main-content__footer">
-                            <div className="main-content__footer-left">
-                                <span className={`main-content__status main-content__status--${articleSaveStatus}`}>
-                                    {saveMsg}
-                                    <span className="dots">{'.'.repeat(dotCount)}</span>
-                                </span>
-                            </div>
-                            <div className="main-content__footer-right">
-                                {/* <span className="main-content__wordCount">Words: {200}</span>
-                                <span className="main-content__cursorPosition">Line: {14}, Col: {56}</span> */}
-                                <span className="main-content__createdAt">Created: {articleInfo.articleCreatedTime}</span>
-                                <span className="main-content__updatedAt">Updated: {articleInfo.articleUpdatedTime}</span>
-                            </div>
+                        <div className="main-content__footer-left">
+                            <span className={`main-content__status main-content__status--${articleSaveStatus}`}>
+                                {saveMsg}
+                                <span className="dots">{'.'.repeat(dotCount)}</span>
+                            </span>
                         </div>
+                        <div className="main-content__footer-right">
+                            {/* <span className="main-content__wordCount">Words: {200}</span>
+                                <span className="main-content__cursorPosition">Line: {14}, Col: {56}</span> */}
+                            <span className="main-content__createdAt">Created: {articleInfo.articleCreatedTime}</span>
+                            <span className="main-content__updatedAt">Updated: {articleInfo.articleUpdatedTime}</span>
+                        </div>
+                    </div>
                 </>
             ) : null}
         </div>

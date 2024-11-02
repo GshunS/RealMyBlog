@@ -6,6 +6,7 @@ import './Header.css';
 import { editStatus } from '../../../../store/modules/mainHeaderStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+import { getArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import _ from 'lodash'
 
 // header js
@@ -133,7 +134,7 @@ const Header = () => {
                     // Set the hasData state to false
                     setHasData(false);
                     // Display a message indicating no articles were found
-                    dispatch(editErrorMsg({type: 'WARNING', msg: `No articles found for ${term}`}))
+                    dispatch(editErrorMsg({ type: 'WARNING', msg: `No articles found for ${term}` }))
                     // setDisplayArticles([`No articles found for ${term}`]);
                 } else {
                     // Initialize an array to hold the articles
@@ -158,7 +159,7 @@ const Header = () => {
             },
             (error) => { // Error callback function
                 // Display the error message
-                dispatch(editErrorMsg({type: 'ERROR', msg: error}))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         );
     }, [dispatch])
@@ -185,7 +186,8 @@ const Header = () => {
 
 
     const onClickArticle = (article_id, category_id) => {
-        console.log(`Article ID: ${article_id}, Category ID: ${category_id}`)
+        // console.log(`Article ID: ${article_id}, Category ID: ${category_id}`)
+        dispatch(getArticleInfo(article_id))
         inputRef.current.value = ''
         onInput({ target: { value: '' } })
     }

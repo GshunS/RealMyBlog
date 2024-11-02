@@ -43,8 +43,8 @@ const ErrorPopUp = () => {
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 100 100"
                         className='ErrorPopUp__WARNING'>
-                        <circle cx="50" cy="50" r="45" stroke="#f39c11" stroke-width="10"  />
-                        <line x1="50" y1="20" x2="50" y2="60" stroke="#f39c11" stroke-width="10" />
+                        <circle cx="50" cy="50" r="45" stroke="#f39c11" strokeWidth="10"  />
+                        <line x1="50" y1="20" x2="50" y2="60" stroke="#f39c11" strokeWidth="10" />
                         <circle cx="50" cy="75" r="5" fill="#f39c11" />
                     </svg>
                 )}

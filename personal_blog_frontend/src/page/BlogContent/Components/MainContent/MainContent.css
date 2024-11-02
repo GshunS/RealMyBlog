@@ -1,11 +1,11 @@
 /* Reset some basic styles */
 
 .main-content {
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    width: 80%;
+    /* width: 80%; */
     margin-top: 1rem;
-    margin-left: 1rem;
     padding: 15px 20px 0 20px;
     background-color: #FFF;
     border-radius: 12px;
@@ -21,16 +21,35 @@
 }
 
 .main-content__title {
+    display: flex; 
+}
+
+.main-content__title input {
+    width: 100%;
+    border: 1px transparent ; 
+    border-radius: 5px; 
     font-size: 2rem;
     font-weight: bold;
-    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+.main-content__title input:hover,
+.main-content__title input:focus {
+    outline: none;
+    border-color: #bcbcbc; 
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+}
+
 
 .main-content__otherInfo {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    margin-top: 5px;
     font-size: 0.9rem;
     color: #666;
 }

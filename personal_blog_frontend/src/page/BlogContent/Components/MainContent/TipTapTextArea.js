@@ -10,11 +10,14 @@ import BulletList from '@tiptap/extension-bullet-list'
 // import Image from '@tiptap/extension-image';
 // import CodeBlock from '@tiptap/extension-code-block'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import History from '@tiptap/extension-history'
 import csharp from 'highlight.js/lib/languages/csharp'
 import { createLowlight } from 'lowlight'
+
 import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemplate';
 import IndentHandler from "./TipTapCustomExtensions/IndentHandler";
 import ImageClipboardHandler from "./TipTapCustomExtensions/ImageClipboardHandler";
+
 import { fetchData } from '../../../../utils/apiService'
 import { useSelector, useDispatch } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
@@ -47,6 +50,7 @@ const TiptapTextArea = () => {
             CodeBlockLowlight.configure({
                 lowlight,
             }),
+            History,
             BulletList, OrderedList, ListItem,
             ResizableImageExtension,
             IndentHandler,
@@ -168,6 +172,7 @@ const TiptapTextArea = () => {
                 (data) => {
                     let tempArticleInfo = produce(articleInfo, draft => {
                         draft.articleUpdatedTime = data
+                        draft.articleJsonContent = JSON.stringify(json)
                     })
                     dispatch(editArticleSaveStatus('saved'))
                     dispatch(editArticleInfo(tempArticleInfo))

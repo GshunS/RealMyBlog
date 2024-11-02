@@ -1,11 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { fetchData } from '../../utils/apiService'
-import { produce } from 'immer'
+// import { produce } from 'immer'
 import { editErrorMsg } from './blogContentErrorPopUpStore'
 
 
-
-const blogContentMainContent = createSlice({
+const blogContentMainContentStore = createSlice({
     name: "mainContent",
     initialState: {
         showTextArea: false,
@@ -52,8 +51,6 @@ const replaceSrcInJson = (jsonContent, srcMap) => {
     replaceSrc(parsedContent);
     return JSON.stringify(parsedContent);
 };
-
-
 
 const getArticleInfo = (articleId) => {
     return async (dispatch, getState) => {
@@ -130,7 +127,7 @@ const updateAttrs = (patchData) => {
     return async (dispatch, getState) => {
         const articleInfo = getState().blogContentMainContent.articleInfo
         const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}`;
-        await fetchData(
+        return await fetchData(
             url,
             "PATCH",
             patchData,
@@ -152,7 +149,7 @@ const {
     editShowTextArea,
     editArticleInfo,
     editArticleSaveStatus
-} = blogContentMainContent.actions
+} = blogContentMainContentStore.actions
 
 
 export {
@@ -166,6 +163,6 @@ export {
     updateAttrs
 }
 
-const reducer = blogContentMainContent.reducer
+const reducer = blogContentMainContentStore.reducer
 
 export default reducer

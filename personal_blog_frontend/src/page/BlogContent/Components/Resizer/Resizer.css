@@ -1,0 +1,12 @@
+.resizer {
+    width: 8px;
+    background: linear-gradient(to bottom, #e0e0e0, #ffffff); 
+    cursor: ew-resize; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    border-radius: 4px;
+    transition: background 0.3s ease; 
+}
+
+.resizer:hover {
+    background: linear-gradient(to bottom, #c0c0c0, #f0f0f0); 
+}
