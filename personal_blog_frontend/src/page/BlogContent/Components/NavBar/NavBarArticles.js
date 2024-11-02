@@ -54,7 +54,7 @@ const NavBarArticles = React.memo((props) => {
                                     </svg>
 
                                     {/* title of the article */}
-                                    <span>{title}</span>
+                                    <span title={title}>{title}</span>
 
                                 </div>
                                 <div className={classNames("nav-bar__category_img")}>

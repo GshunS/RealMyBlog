@@ -1,4 +1,5 @@
 .resizer {
+    margin-top: 1rem;
     width: 8px;
     background: linear-gradient(to bottom, #e0e0e0, #ffffff); 
     cursor: ew-resize; 

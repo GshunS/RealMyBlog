@@ -47,7 +47,7 @@ const NavBarCategories = React.memo((props) => {
                 }
 
                 {/* level 4 category name */}
-                <span>{categoryName}</span>
+                <span title={categoryName}>{categoryName}</span>
 
             </div>
             {/* add folder and add image icon */}
