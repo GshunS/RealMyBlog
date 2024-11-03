@@ -30,7 +30,7 @@
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 0.5rem;
-    background-color: #fff;
+    background-color: var(--background-color);
     color: #333;
     font-family: Arial, sans-serif;
 
