@@ -1,0 +1,120 @@
+.login-container {
+    position: absolute;
+    width: 100%;
+    height: 10rem;
+    overflow: hidden;
+    right: 0;
+    top: 3.5rem;
+    background-color: var(--background-color);
+    border-radius: 5px;
+}
+
+.login-container:hover {
+    border-left: 2px solid #7772b1;
+    border-top: 2px solid #5875c4;
+    border-right: 2px solid #90adbf;
+    border-bottom: 2px solid #eba789;
+}
+
+.login-container:hover .top:before,
+.login-container:hover .top:after,
+.login-container:hover .bottom:before,
+.login-container:hover .bottom:after,
+.login-container:active .top:before,
+.login-container:active .top:after,
+.login-container:active .bottom:before,
+.login-container:active .bottom:after {
+    margin-left: 200px;
+    transform-origin: -200px 50%;
+    transition-delay: 0s;
+}
+
+.login-container:hover .center,
+.login-container:active .center {
+    opacity: 1;
+    transition-delay: 0.1s;
+}
+
+.top:before,
+.top:after,
+.bottom:before,
+.bottom:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 50%;
+    left: 50%;
+    margin-top: -50vh;
+    transform-origin: 0 50%;
+    transition: all 0.5s cubic-bezier(0.445, 0.05, 0, 1);
+    z-index: 10;
+    opacity: 0.65;
+    transition-delay: 0.2s;
+}
+
+.top:before {
+    transform: rotate(45deg);
+    background: #e46569;
+}
+
+.top:after {
+    transform: rotate(135deg);
+    background: #ecaf81;
+}
+
+.bottom:before {
+    transform: rotate(-45deg);
+    background: #60b8d4;
+}
+
+.bottom:after {
+    transform: rotate(-135deg);
+    background: #3745b5;
+}
+
+.center {
+    position: absolute;
+    width: 16rem;
+    height: 10vh;
+    top: 40%;
+    left: 50%;
+    margin-left: -8rem;
+    margin-top: -5vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.445, 0.05, 0, 1);
+    transition-delay: 0s;
+    color: #333;
+    gap: 5px;
+}
+
+.center input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 0.3rem;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    height: 1.8rem;
+}
+
+.login-button {
+    width: 100%;
+    height: 2rem;
+    border: 1px solid #ccc;
+    border-radius: 0.3rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.login-button:hover {
+    background-color: #f1f1f1;
+    border-color: #bbb;
+}

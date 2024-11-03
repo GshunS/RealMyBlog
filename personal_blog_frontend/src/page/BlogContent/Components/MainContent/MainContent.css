@@ -103,7 +103,8 @@
     padding: 10px;
     font-size: 0.7rem;
     color: #666;
-    background-color: #FFF;
+    background-color: var(--background-color);
+
 }
 
 .main-content__footer-left,

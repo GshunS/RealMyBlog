@@ -1,7 +1,7 @@
-
+import Login from "../BlogContent/Components/Login/Login"
 const NotFound = () => {
     return (
-        <div>1a</div>
+        <Login/>
     )
 }
 

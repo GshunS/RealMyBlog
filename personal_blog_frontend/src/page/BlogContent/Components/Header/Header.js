@@ -9,9 +9,10 @@ import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpSto
 import { getArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import _ from 'lodash'
 
-import { ReactComponent as Login } from '../../../../assets/images/blogContentHeader/login.svg'
+import { ReactComponent as LoginIcon } from '../../../../assets/images/blogContentHeader/login.svg'
 import { ReactComponent as Sun } from '../../../../assets/images/blogContentHeader/sun.svg'
 import { ReactComponent as Moon } from '../../../../assets/images/blogContentHeader/moon.svg'
+import Login from '../Login/Login';
 
 
 // header js
@@ -289,8 +290,9 @@ const Header = () => {
 
                 {/* Login */}
                 <div className="header__login">
-                    <Login style={{ height: '2rem', width: '2rem' }}/>
+                    <LoginIcon style={{ height: '2rem', width: '2rem' }}/>
                 </div>
+                <Login />
             </div>
         </div>
     );
