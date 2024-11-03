@@ -64,7 +64,6 @@ const TiptapTextArea = ({dispatch}) => {
             handleSubmit();
         },
         onPaste(event) {
-            console.log('paste');
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
 
             let imagePasted = false;
@@ -117,13 +116,11 @@ const TiptapTextArea = ({dispatch}) => {
     const handleDragStart = (event) => {
         event.dataTransfer.setData('text/plain', 'dragging-image');
         setIsDragging(true);
-        console.log('drag start')
     };
 
     const handleDragEnd = (event) => {
         event.preventDefault();
         setIsDragging(false);
-        console.log('drag end')
         event.dataTransfer.clearData();
 
     };
@@ -135,7 +132,6 @@ const TiptapTextArea = ({dispatch}) => {
     const handleDrop = (event) => {
         event.preventDefault();
         if (!isDragging) {
-            console.log('drop')
             const files = Array.from(event.dataTransfer.files);
 
             files.forEach((file) => {

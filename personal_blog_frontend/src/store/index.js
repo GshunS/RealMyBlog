@@ -4,6 +4,8 @@ import blogContentNavbarReducer from "./modules/blogContentNavBarStore"
 import blogContentErrorPopUpReducer from "./modules/blogContentErrorPopUpStore"
 import blogContentFolderFileCreationWindowReducer from "./modules/blogContentFolderFileCreationWindow";
 import blogContentMainContentReducer from "./modules/blogContentMainContentStore"
+import blogContentLoginReducer from "./modules/blogContentLoginStore"
+
 
 const store = configureStore({
     reducer: {
@@ -11,7 +13,8 @@ const store = configureStore({
         blogContentNavbar: blogContentNavbarReducer,
         blogContentErrorPopUp: blogContentErrorPopUpReducer,
         blogContentFFCreationWindow: blogContentFolderFileCreationWindowReducer,
-        blogContentMainContent: blogContentMainContentReducer
+        blogContentMainContent: blogContentMainContentReducer,
+        blogContentLogin: blogContentLoginReducer,
     }
 })
 

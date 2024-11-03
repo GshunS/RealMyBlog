@@ -9,7 +9,7 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
         console.log(error)
         let error_msg = '';
         if (error.response) {
-            error_msg = `${error.response.data.message}`;
+            error_msg = `${error.response.data.error}`;
         } else {
             error_msg = error
         }

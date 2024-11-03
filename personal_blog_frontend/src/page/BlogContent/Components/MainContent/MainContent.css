@@ -13,6 +13,8 @@
     flex-grow: 1;
     z-index: var(--regular-z-index);
     /* backdrop-filter: blur(15px); */
+    backdrop-filter: blur(15px);
+
 }
 
 .main-content__info {

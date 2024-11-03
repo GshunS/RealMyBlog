@@ -41,12 +41,15 @@ public class AuthorController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> UserLogin(string username, string password)
+    public async Task<ActionResult> UserLogin(LoginRequestDTO loginRequestDTO)
     {
         try
         {
+            string username = loginRequestDTO.username;
+            string password = loginRequestDTO.password;
+            
             string token = await _iAuthorService.Login(username, password);
-            return Ok(token);
+            return Ok(new {token});
         }
         catch (ServiceException e)
         {
