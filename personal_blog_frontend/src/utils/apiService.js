@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const fetchData = async (url, method = 'get', data = null, successCallback, errorCallback) => {
     try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token_key');
 
         const config = {
             method,

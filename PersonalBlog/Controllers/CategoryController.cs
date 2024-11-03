@@ -54,6 +54,7 @@ public class CategoryController : ControllerBase
         return true;
     }
 
+    [Authorize]
     [HttpPost("categories")]
     public async Task<ActionResult> CreateCategory(CategoryCreateDTO categoryCreateDTO)
     {
