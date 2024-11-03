@@ -5,11 +5,12 @@ import { editErrorMsg } from "./blogContentErrorPopUpStore";
 const blogContentLoginStore = createSlice({
     name: "Login",
     initialState: {
-        token: '',
+        token: localStorage.getItem('token_key') || '',
     },
     reducers: {
         editToken(state, action) {
             state.token = action.payload;
+            localStorage.setItem('token_key', action.payload)
         }
     }
 
@@ -31,7 +32,7 @@ const fectchLoginToken = (username, password) => {
             'POST',
             postData,
             (data) => {
-                dispatch(editToken(data))
+                dispatch(editToken(data.token))
                 dispatch(editErrorMsg({ type: 'INFO', msg: "login successfully" }))
             },
             (error) => {

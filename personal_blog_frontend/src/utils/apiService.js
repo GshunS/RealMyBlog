@@ -2,7 +2,18 @@ import axios from 'axios';
 
 export const fetchData = async (url, method = 'get', data = null, successCallback, errorCallback) => {
     try {
-        const response = await axios({ method, url, data });
+        const token = localStorage.getItem('token');
+
+        const config = {
+            method,
+            url,
+            data,
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            }
+        };
+        const response = await axios(config);
         successCallback(response.data);
         return true;
     } catch (error) {
