@@ -30,10 +30,10 @@ const Login = () => {
         return true;
     }
 
-    const handleLoginSubmit = _.debounce(() => {
+    const handleLoginSubmit = _.debounce(async() => {
         const res = validateLoginField(username, password);
         if (res) { 
-            dispatch(fectchLoginToken(username, password))
+            await dispatch(fectchLoginToken(username, password))
         }
 
     }, [300]);
