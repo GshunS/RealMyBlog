@@ -88,8 +88,7 @@ const FolderFileCreationWindow = () => {
                 dispatch(editFolderCreated(true))
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
-                console.log(error)
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         )
     }

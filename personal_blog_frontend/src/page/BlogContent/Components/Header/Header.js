@@ -9,6 +9,11 @@ import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpSto
 import { getArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import _ from 'lodash'
 
+import { ReactComponent as Login } from '../../../../assets/images/blogContentHeader/login.svg'
+import { ReactComponent as Sun } from '../../../../assets/images/blogContentHeader/sun.svg'
+import { ReactComponent as Moon } from '../../../../assets/images/blogContentHeader/moon.svg'
+
+
 // header js
 const Header = () => {
     // editable is a state that is used to control the dropdown menu
@@ -244,7 +249,7 @@ const Header = () => {
             {/* header attributes - right side*/}
             <div className="header__attrs">
                 {/* view or edit button*/}
-                <div className="header__view">
+                {/* <div className="header__view">
                     <div className="header__view_button" onClick={() => viewExp()} ref={buttonRef}>
                         <span>{dropDownValue}</span>
                         <svg
@@ -257,7 +262,6 @@ const Header = () => {
 
 
                     </div>
-                    {/* dropdown menu*/}
                     <div
                         className={classNames("header__view_dropdown", { dropdown_expand: editable })}
                         onClick={() => selectDropdown()}
@@ -274,29 +278,18 @@ const Header = () => {
 
                     </div>
 
-                </div>
+                </div> */}
+
                 {/* Theme */}
                 <div className="header__theme">
-                    Theme
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 320 512"
-                        className={classNames('header__theme_icon')}
-                    >
-                        <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                    </svg>
+                    <Sun 
+                        style={{ height: '2rem', width: '2rem' }}
+                    />
                 </div>
 
                 {/* Login */}
                 <div className="header__login">
-                    Login
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 320 512"
-                        className={classNames('header__login_icon')}
-                    >
-                        <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                    </svg>
+                    <Login style={{ height: '2rem', width: '2rem' }}/>
                 </div>
             </div>
         </div>

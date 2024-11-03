@@ -45,7 +45,6 @@ public class AuthorController : ControllerBase
     {
         try
         {
-
             string token = await _iAuthorService.Login(username, password);
             return Ok(token);
         }

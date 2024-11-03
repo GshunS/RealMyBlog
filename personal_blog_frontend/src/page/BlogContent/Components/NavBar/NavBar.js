@@ -306,7 +306,7 @@ const NavBar = () => {
             <div className="nav-bar">
                 {/* navigation title */}
                 <div className="nav-bar__name">
-                    <span>Blog Navigation</span>
+                    <span>Index</span>
                 </div>
 
                 <div className="nav-bar__categories">
