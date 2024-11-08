@@ -3,6 +3,7 @@
 This web application is designed to provide a platform for creating, managing, and sharing blog posts. The application leverages modern technologies for both the frontend and backend to ensure a robust, scalable, and user-friendly experience.
 
 ## Page 
+![image](https://github.com/user-attachments/assets/a0a05e94-3867-44c3-80d5-fb366326d316)
 
 
 ## Tech Stack
