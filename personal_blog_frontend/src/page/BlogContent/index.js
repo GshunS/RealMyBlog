@@ -7,7 +7,6 @@ import Resizer from "./Components/Resizer/Resizer"
 import ErrorPopUp from "./Components/ErrorPopUp/ErrorPopUp"
 import FolderFileCreationWindow from "./Components/FolderFileCreationWindow/FolderFileCreationWindow"
 import ParticleBackground from './Components/ParticleBackground/ParticleBackground';
-import { useRef } from 'react';
 
 
 const BlogContent = () => {
@@ -24,7 +23,7 @@ const BlogContent = () => {
                 <MainContent />
             </div>
 
-        </div>
+        </div >
     )
 }
 

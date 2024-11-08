@@ -9,7 +9,6 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
             url,
             data,
             headers: {
-                'Content-Type': 'application/json',
                 ...(token && { 'Authorization': `Bearer ${token}` })
             }
         };

@@ -10,7 +10,6 @@ const ImageClipboardHandler = Extension.create({
                 props: {
                     handleDOMEvents: {
                         copy: (view, event) => {
-                            console.log('copy')
                             const { state, dispatch } = view;
                             const { selection } = state;
                             const node = selection.node;

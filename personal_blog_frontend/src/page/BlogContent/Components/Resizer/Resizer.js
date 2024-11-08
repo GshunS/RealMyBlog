@@ -1,9 +1,14 @@
 // Resizer.js
 import './Resizer.css';
 import { useRef, useCallback } from 'react';
+import { useSelector } from 'react-redux'
+
 
 const Resizer = () => {
     const resizerRef = useRef(null);
+    const {
+        canRender,
+    } = useSelector(state => state.blogContentNavbar)
 
     const getNavbarWidth = () => document.getElementsByClassName('nav-bar')[0].getBoundingClientRect().width;
 
@@ -89,6 +94,7 @@ const Resizer = () => {
         mainContent.style.removeProperty('pointer-events');
     };
 
+    if (!canRender) return <div></div>;
     return (
         <div
             className="resizer"

@@ -1,25 +1,34 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+
+import DragHandle from '@tiptap-pro/extension-drag-handle-react'
+import FileHandler from '@tiptap-pro/extension-file-handler'
+import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemplate';
+import IndentHandler from './TipTapCustomExtensions/IndentHandler';
+import ImageClipboardHandler from './TipTapCustomExtensions/ImageClipboardHandler';
+import TableContextMenu from './TableContextMenu';
+
 import Document from '@tiptap/extension-document'
 import Link from '@tiptap/extension-link'
 import Paragraph from '@tiptap/extension-paragraph'
+import Heading from '@tiptap/extension-heading'
 import Text from '@tiptap/extension-text'
 import ListItem from '@tiptap/extension-list-item'
 import OrderedList from '@tiptap/extension-ordered-list'
 import BulletList from '@tiptap/extension-bullet-list'
 import Dropcursor from '@tiptap/extension-dropcursor'
-// import CodeBlock from '@tiptap/extension-code-block'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Gapcursor from '@tiptap/extension-gapcursor'
 import History from '@tiptap/extension-history'
 import csharp from 'highlight.js/lib/languages/csharp'
 import { createLowlight } from 'lowlight'
 
-import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemplate';
-import IndentHandler from "./TipTapCustomExtensions/IndentHandler";
-import ImageClipboardHandler from "./TipTapCustomExtensions/ImageClipboardHandler";
-
 import { fetchData } from '../../../../utils/apiService'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import './TipTapTextArea.css'
@@ -27,7 +36,8 @@ import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 import _ from 'lodash'
 
-const TiptapTextArea = ({dispatch}) => {
+const TiptapTextArea = ({ dispatch }) => {
+    const [contextMenu, setContextMenu] = useState(null);
     const lowlight = createLowlight();
     lowlight.register({ csharp })
     const {
@@ -41,6 +51,8 @@ const TiptapTextArea = ({dispatch}) => {
             Paragraph,
             Text,
             Dropcursor,
+            Gapcursor,
+            Heading,
             Link.configure({
                 openOnClick: false,
                 autolink: true,
@@ -54,7 +66,48 @@ const TiptapTextArea = ({dispatch}) => {
             ResizableImageExtension,
             IndentHandler,
             ImageClipboardHandler,
+            Table.configure({
+                resizable: true,
+            }),
+            TableRow,
+            TableHeader,
+            TableCell,
+            FileHandler.configure({
+                allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+                onDrop: (currentEditor, files, pos) => {
+                    console.log('drop')
+                    files.forEach(file => {
+                        const fileReader = new FileReader()
+
+                        fileReader.readAsDataURL(file)
+                        fileReader.onload = () => {
+                            currentEditor.chain().insertContentAt(pos, {
+                                type: 'image',
+                                attrs: {
+                                    src: fileReader.result,
+                                    width: 200,
+                                    height: 200
+                                },
+                            }).focus().run()
+                        }
+                    })
+                },
+            }),
         ],
+        editorProps: {
+            handleDOMEvents: {
+                contextmenu: (view, event) => {
+                    const target = event.target;
+                    if (target.closest("td") || target.closest("th")) {
+                        event.preventDefault();
+                        const { clientX: x, clientY: y } = event;
+                        setContextMenu({ x, y });
+                        return true; 
+                    }
+                    return false;
+                },
+            },
+        },
         content: '',
 
         // editable: false,
@@ -71,13 +124,19 @@ const TiptapTextArea = ({dispatch}) => {
             for (const item of items) {
                 if (item.type.indexOf("image") === 0) {
                     const file = item.getAsFile();
-                    const reader = new FileReader();
+                    const fileReader = new FileReader();
 
-                    reader.onload = (e) => {
-                        editor.chain().focus().setImage({ src: reader.result, width: 200, height: 200 }).run();
-                    };
-
-                    reader.readAsDataURL(file);
+                    fileReader.readAsDataURL(file)
+                    fileReader.onload = () => {
+                        editor.chain().insertContentAt(editor.state.selection.anchor, {
+                            type: 'image',
+                            attrs: {
+                                src: fileReader.result,
+                                width: 200,
+                                height: 200
+                            },
+                        }).focus().run()
+                    }
                     event.preventDefault();
                     imagePasted = true;
                 }
@@ -102,53 +161,11 @@ const TiptapTextArea = ({dispatch}) => {
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
-            // console.log(JSON.parse(articleInfo.articleJsonContent))
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
         }
-    }, [articleInfo, editor])
+    }, [editor, articleInfo])
 
-    const handleClick = () => {
-        // console.log(editor.isFocused)
-    }
 
-    const [isDragging, setIsDragging] = useState(false);
-
-    const handleDragStart = (event) => {
-        event.dataTransfer.setData('text/plain', 'dragging-image');
-        setIsDragging(true);
-    };
-
-    const handleDragEnd = (event) => {
-        event.preventDefault();
-        setIsDragging(false);
-        event.dataTransfer.clearData();
-
-    };
-
-    const handleDragOver = (event) => {
-        event.preventDefault();
-    };
-
-    const handleDrop = (event) => {
-        event.preventDefault();
-        if (!isDragging) {
-            const files = Array.from(event.dataTransfer.files);
-
-            files.forEach((file) => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        editor
-                            .chain()
-                            .focus()
-                            .setImage({ src: reader.result, width: 200, height: 200 })
-                            .run();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    }
 
     function getExtensionFromDataURL(dataURL) {
         const mimeType = dataURL.split(',')[0].split(':')[1].split(';')[0];
@@ -179,7 +196,6 @@ const TiptapTextArea = ({dispatch}) => {
             }
             dispatch(editArticleSaveStatus('saving'))
             const json = editor.getJSON();
-            // console.log(json)
             const text = editor.getText();
             const images = [];
 
@@ -210,8 +226,6 @@ const TiptapTextArea = ({dispatch}) => {
                 index++;
             }
 
-            // console.log(json);
-
             const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
             await fetchData(
                 url,
@@ -224,8 +238,10 @@ const TiptapTextArea = ({dispatch}) => {
                     })
                     dispatch(editArticleSaveStatus('saved'))
                     dispatch(editArticleInfo(tempArticleInfo))
+
                 },
                 (error) => {
+                    dispatch(editArticleSaveStatus('unsave'))
                     dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                 }
             )
@@ -238,19 +254,24 @@ const TiptapTextArea = ({dispatch}) => {
             handleSubmit.cancel();
         };
     }, [handleSubmit]);
-
+    const handleCloseMenu = () => setContextMenu(null);
 
     return (
-        <div
-            className="tiptap-editor"
-            onClick={handleClick}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-        >
+        <>
+            <DragHandle editor={editor}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+                </svg>
+            </DragHandle>
             <EditorContent editor={editor} />
-        </div>
+            {contextMenu && editor && (
+                <TableContextMenu
+                    editor={editor}
+                    position={contextMenu}
+                    onClose={handleCloseMenu}
+                />
+            )}
+        </>
     );
 };
 

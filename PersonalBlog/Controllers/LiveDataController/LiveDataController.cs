@@ -58,9 +58,10 @@ public class LiveDataController : ControllerBase
     public async Task<ActionResult> GetStreamAddr()
     {
         string url = "https://api.live.bilibili.com/xlive/web-room/v1/playUrl/playUrl?cid=8604981&platform=web";
+        string updatedUrl = "https://api.live.bilibili.com/room/v1/Room/playUrl?quality=4&cid=8604981";
         try
         {
-            var request = this.CreateRequest(HttpMethod.Get, url);
+            var request = this.CreateRequest(HttpMethod.Get, updatedUrl);
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();

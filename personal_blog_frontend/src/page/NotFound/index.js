@@ -1,7 +1,14 @@
-import Login from "../BlogContent/Components/Login/Login"
+
+import React from 'react'
+
+
 const NotFound = () => {
+
+
     return (
-        <Login/>
+        <>
+            
+        </>
     )
 }
 
