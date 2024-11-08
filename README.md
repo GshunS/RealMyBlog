@@ -1,6 +1,9 @@
-# My Blog Website (Currently working on it, not completed yet!)
+# My Blog Website (Currently working on it)
 
 This web application is designed to provide a platform for creating, managing, and sharing blog posts. The application leverages modern technologies for both the frontend and backend to ensure a robust, scalable, and user-friendly experience.
+
+## Page 
+
 
 ## Tech Stack
 
@@ -9,8 +12,9 @@ This web application is designed to provide a platform for creating, managing, a
 - **HTML**: The backbone of the website's structure, used for defining the content and layout of the web pages.
 - **CSS**: Used for styling the web pages, ensuring a visually appealing and responsive design.
 - **JavaScript**: Provides interactive features and enhances user experience on the client side.
+- **Tiptap Rich Text editor**
 
-- **Node.js**: A JavaScript runtime used for managing development tools and dependencies.
+- **Node.js**: 
 - **React 18**: The latest version of React, a popular JavaScript library for building user interfaces. React 18 introduces features like concurrent rendering for better performance and user experience.
 - **Redux**: A state management library used with React to manage and centralize application state, making it easier to manage and debug.
 
