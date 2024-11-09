@@ -212,6 +212,7 @@
                 margin-bottom: 0;
             }
         }
+
         p {
             margin: 0;
         }
@@ -257,5 +258,42 @@
     &.resize-cursor {
         cursor: ew-resize;
         cursor: col-resize;
+    }
+}
+
+.bubble-menu {
+    background-color: var(--white);
+    border: 1px solid var(--gray-1);
+    border-radius: 0.7rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    padding: 0.2rem;
+
+    button {
+        background: var(--gray-2);
+        border-radius: .5rem;
+        border: none;
+        color: var(--black);
+        font-family: inherit;
+        font-size: .875rem;
+        font-weight: 500;
+        line-height: 1.15;
+        margin: none;
+        padding: .375rem .625rem;
+        transition: all .2s cubic-bezier(.65, .05, .36, 1);
+
+        &:hover {
+            background-color: var(--gray-3);
+        }
+
+        &.is-active {
+            background-color: var(--purple);
+            color: var(--white);
+
+            &:hover {
+                background-color: var(--purple-contrast);
+                color: var(--white);
+            }
+        }
     }
 }

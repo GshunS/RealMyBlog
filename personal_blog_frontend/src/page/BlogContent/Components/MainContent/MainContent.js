@@ -152,7 +152,7 @@ const MainContent = () => {
                     </div>
                     <div className="main-content__textBody">
                         <div className="main-content__textContent">
-                            <TiptapTextArea dispatch={dispatch}/>
+                            <TiptapTextArea/>
                         </div>
                     </div>
                     <div className="main-content__footer">

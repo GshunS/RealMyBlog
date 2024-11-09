@@ -1,7 +1,7 @@
 import React from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { BubbleMenu, useEditor, EditorContent } from '@tiptap/react';
 
-import DragHandle from '@tiptap-pro/extension-drag-handle-react'
+// import DragHandle from '@tiptap-pro/extension-drag-handle-react'
 import FileHandler from '@tiptap-pro/extension-file-handler'
 import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemplate';
 import IndentHandler from './TipTapCustomExtensions/IndentHandler';
@@ -22,13 +22,16 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import TaskItem from '@tiptap/extension-task-item'
+import HorizontalRule from '@tiptap/extension-horizontal-rule'
+import TaskList from '@tiptap/extension-task-list'
 import Gapcursor from '@tiptap/extension-gapcursor'
-import History from '@tiptap/extension-history'
+import Strike from '@tiptap/extension-strike'
 import csharp from 'highlight.js/lib/languages/csharp'
 import { createLowlight } from 'lowlight'
 
 import { fetchData } from '../../../../utils/apiService'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import './TipTapTextArea.css'
@@ -36,8 +39,9 @@ import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 import _ from 'lodash'
 
-const TiptapTextArea = ({ dispatch }) => {
+const TiptapTextArea = () => {
     const [contextMenu, setContextMenu] = useState(null);
+    const [cursorPos, setCursorPos] = useState(0);
     const lowlight = createLowlight();
     lowlight.register({ csharp })
     const {
@@ -45,23 +49,29 @@ const TiptapTextArea = ({ dispatch }) => {
     } = useSelector(state => state.blogContentMainContent)
 
 
+    const dispatch = useDispatch();
     const editor = useEditor({
         extensions: [
             Document,
             Paragraph,
+            HorizontalRule,
             Text,
+            Strike,
             Dropcursor,
             Gapcursor,
             Heading,
+            TaskList,
+            TaskItem.configure({
+                nested: true,
+            }),
             Link.configure({
-                openOnClick: false,
+                openOnClick: true,
                 autolink: true,
                 defaultProtocol: 'https',
             }),
             CodeBlockLowlight.configure({
                 lowlight,
             }),
-            History,
             BulletList, OrderedList, ListItem,
             ResizableImageExtension,
             IndentHandler,
@@ -101,8 +111,10 @@ const TiptapTextArea = ({ dispatch }) => {
                     if (target.closest("td") || target.closest("th")) {
                         event.preventDefault();
                         const { clientX: x, clientY: y } = event;
-                        setContextMenu({ x, y });
-                        return true; 
+                        Promise.resolve().then(() => {
+                            setContextMenu({ x, y });
+                        });
+                        return true;
                     }
                     return false;
                 },
@@ -112,9 +124,19 @@ const TiptapTextArea = ({ dispatch }) => {
 
         // editable: false,
         onUpdate: ({ editor }) => {
-            // console.log(editor)
-            dispatch(editArticleSaveStatus('unsave'))
-            handleSubmit();
+            const { from, to } = editor.view.state.selection;
+            setCursorPos(editor.state.selection.$anchor.pos);
+            const startDOM = editor.view.domAtPos(from).node;
+            if (startDOM && startDOM instanceof HTMLElement) {
+                startDOM.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }
+            Promise.resolve().then(() => {
+                dispatch(editArticleSaveStatus('unsave'));
+                handleSubmit();
+            });
         },
         onPaste(event) {
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
@@ -162,7 +184,14 @@ const TiptapTextArea = ({ dispatch }) => {
     useEffect(() => {
         if (editor && articleInfo.articleId) {
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
+            editor.commands.focus(cursorPos);
         }
+        return () => {
+            if (editor) {
+                editor.destroy();
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editor, articleInfo])
 
 
@@ -245,7 +274,7 @@ const TiptapTextArea = ({ dispatch }) => {
                     dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
                 }
             )
-        }, 3000),
+        }, 2000),
         [articleInfo, dispatch, editor]
     );
 
@@ -254,15 +283,26 @@ const TiptapTextArea = ({ dispatch }) => {
             handleSubmit.cancel();
         };
     }, [handleSubmit]);
-    const handleCloseMenu = () => setContextMenu(null);
+
+    const handleCloseMenu = () => {
+        Promise.resolve().then(() => {
+            setContextMenu(null);
+        });
+    };
 
     return (
         <>
-            <DragHandle editor={editor}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
-                </svg>
-            </DragHandle>
+            {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+                <div className="bubble-menu">
+                    <button
+                        onClick={() => editor.chain().focus().toggleStrike().run()}
+                        className={editor.isActive('strike') ? 'is-active' : ''}
+                    >
+                        Strike
+                    </button>
+
+                </div>
+            </BubbleMenu>}
             <EditorContent editor={editor} />
             {contextMenu && editor && (
                 <TableContextMenu
