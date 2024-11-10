@@ -1,5 +1,6 @@
 import './Login.css'
 import { useEffect, useState, forwardRef } from 'react';
+import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore';
 import { fectchLoginToken } from '../../../../store/modules/blogContentLoginStore';
@@ -7,6 +8,7 @@ import _ from 'lodash'
 
 const Login = forwardRef(({ setShowLogin, loginIconRef }, loginRef) => {
     const dispatch = useDispatch();
+    const { token } = useSelector(state => state.blogContentLogin);
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -33,18 +35,9 @@ const Login = forwardRef(({ setShowLogin, loginIconRef }, loginRef) => {
     const handleLoginSubmit = _.debounce(async () => {
         const res = validateLoginField(username, password);
         if (res) {
-            const success = await dispatch(fectchLoginToken(username, password))
-            if (success && loginIconRef.current) {
-                // Find the first path element inside the SVG
-                const paths = loginIconRef.current.querySelectorAll('path');
-
-                paths[0].setAttribute('fill', 'green')
-                paths[1].setAttribute('fill', 'green')
-                paths[2].setAttribute('fill', 'yellow')
-            }
+            await dispatch(fectchLoginToken(username, password))
         }
         setShowLogin(false);
-
     }, [300]);
 
     const handleSubmit = (event) => {
@@ -55,6 +48,8 @@ const Login = forwardRef(({ setShowLogin, loginIconRef }, loginRef) => {
     useEffect(() => {
         return () => handleLoginSubmit.cancel();
     }, [handleLoginSubmit])
+
+
 
     return (
         <div className="login-container" ref={loginRef}>

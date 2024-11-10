@@ -305,10 +305,9 @@ const NavBar = () => {
         return (
             <div className="nav-bar">
                 {/* navigation title */}
-                <div className="nav-bar__name">
+                {/* <div className="nav-bar__name">
                     <span>Index</span>
-                </div>
-
+                </div> */}
                 <div className="nav-bar__categories">
                     {/* first category */}
                     <ul className="nav-bar__first-category" ref={heightRef}>

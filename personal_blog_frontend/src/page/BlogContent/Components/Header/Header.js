@@ -92,6 +92,7 @@ const Header = () => {
     }, [loginRef, loginIconRef]);
 
 
+
     useEffect(() => {
 
         if (hasData) {
@@ -230,6 +231,22 @@ const Header = () => {
             console.log('log out')
         }
     }
+
+    useEffect(() => {
+        if (token !== null && token !== "" && loginIconRef.current) {
+            // Find the first path element inside the SVG
+            const paths = loginIconRef.current.querySelectorAll('path');
+            paths[0].setAttribute('fill', 'green')
+            paths[1].setAttribute('fill', 'green')
+            paths[2].setAttribute('fill', 'yellow')
+        } else {
+            const paths = loginIconRef.current.querySelectorAll('path');
+            paths[0].setAttribute('fill', 'black')
+            paths[1].setAttribute('fill', 'black')
+            paths[2].setAttribute('fill', 'white')
+        }
+
+    }, [token, loginIconRef])
 
     return (
         // header html
