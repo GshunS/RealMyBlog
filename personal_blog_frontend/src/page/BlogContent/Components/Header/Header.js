@@ -242,19 +242,30 @@ const Header = () => {
 
     useEffect(() => {
         if (token !== null && token !== "" && loginIconRef.current) {
-            // Find the first path element inside the SVG
             const paths = loginIconRef.current.querySelectorAll('path');
             paths[0].setAttribute('fill', 'green')
             paths[1].setAttribute('fill', 'green')
             paths[2].setAttribute('fill', 'yellow')
+
+            loginIconRef.current.classList.add('hover');
+            const timeoutId = setTimeout(() => {
+                loginIconRef.current.classList.remove('hover');
+            }, 1000);
+
+            return () => {
+                clearTimeout(timeoutId);
+                loginIconRef.current.classList.remove('hover');
+            };
         } else {
             const paths = loginIconRef.current.querySelectorAll('path');
-            paths[0].setAttribute('fill', 'black')
-            paths[1].setAttribute('fill', 'black')
-            paths[2].setAttribute('fill', 'white')
+            paths[0].setAttribute('fill', 'none')
+            paths[1].setAttribute('fill', 'none')
+            paths[2].setAttribute('fill', 'red')
         }
 
     }, [token, loginIconRef])
+
+
 
     return (
         // header html
@@ -349,7 +360,11 @@ const Header = () => {
                 {/* Login */}
                 <div className="header__login" ref={loginIconRef}>
                     <LoginIcon
-                        style={{ height: '2rem', width: '2rem' }}
+                        style={{
+                            height: '2rem',
+                            width: '2rem',
+                        }}
+                        title = 'login'
                         onClick={clickLoginIcon}
                     />
                 </div>

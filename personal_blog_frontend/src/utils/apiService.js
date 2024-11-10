@@ -29,9 +29,14 @@ axiosInstance.interceptors.response.use(
 
         if (error.response) {
             if (error.response.status === 401 || error.response.status === 403) {
-                // Token is expired or invalid, remove it
-                store.dispatch(logout());
-                errMsg = 'Unauthorized or Forbidden';
+                if (error.response.data && error.response.data.message) {
+                    errMsg = error.response.data.message;
+                } else {
+                    // Token is expired or invalid, remove it
+                    store.dispatch(logout());
+                    errMsg = 'Unauthorized or Forbidden';
+                }
+
             } else {
                 // Handle other status codes (e.g., 500, 404, etc.)
                 errMsg = error.response.data.message || 'Server error';
