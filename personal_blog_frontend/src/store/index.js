@@ -5,7 +5,7 @@ import blogContentErrorPopUpReducer from "./modules/blogContentErrorPopUpStore"
 import blogContentFolderFileCreationWindowReducer from "./modules/blogContentFolderFileCreationWindow";
 import blogContentMainContentReducer from "./modules/blogContentMainContentStore"
 import blogContentLoginReducer from "./modules/blogContentLoginStore"
-
+import blogContentDialogRecucer from "./modules/blogContentDialogStore"
 
 const store = configureStore({
     reducer: {
@@ -15,6 +15,7 @@ const store = configureStore({
         blogContentFFCreationWindow: blogContentFolderFileCreationWindowReducer,
         blogContentMainContent: blogContentMainContentReducer,
         blogContentLogin: blogContentLoginReducer,
+        blogContentDialog: blogContentDialogRecucer
     }
 })
 

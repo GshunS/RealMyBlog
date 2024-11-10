@@ -1,11 +1,14 @@
 import './NavBarElementOperations.css'
 import React from 'react'
 import classNames from 'classnames'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { fetchNextCategory, editCurrentAncestorNames, setExpandedCategories } from '../../../../store/modules/blogContentNavBarStore';
 import NavBarDeleteOperation from './NavBarDeleteOperation';
 // import axios from 'axios'
 import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
+import { ReactComponent as Rename } from '../../../../assets/images/blogContentNavBar/rename.svg'
+import { editFormDialog } from '../../../../store/modules/blogContentDialogStore';
+import produce from 'immer'
 
 const NavBarElementOperation = React.memo((props) => {
     const dispatch = useDispatch()
@@ -13,6 +16,8 @@ const NavBarElementOperation = React.memo((props) => {
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const categories = props.categories;
     const ancestorCategoryNames = props.ancestorCategoryNames
+    const categorySpanRef = props.categorySpanRef;
+    const { formDialog } = useSelector(state => state.blogContentDialog)
 
 
     // function findMatchedAncestorCategories(element, targetClassName) {
@@ -106,9 +111,28 @@ const NavBarElementOperation = React.memo((props) => {
         dispatch(editAddType('file'))
         dispatch(editCurrentAncestorNames(ancestorCategoryNames))
     }
+
+    const handleRenameClick = async () => {
+        let tempFormDialog = produce(formDialog, draft => {
+            draft.open = true;
+            draft.dialogTitle = 'Rename';
+            draft.dialogText = '';
+            draft.dialogLabel = 'New Category Name';
+            draft.defaultValue = categorySpanRef.current.innerHTML;
+            draft.dest = 'UpdateCategoryName';
+            draft.postData = {id: categoryValue.categoryId, ancestorCategoryNames: ancestorCategoryNames}
+        })
+        dispatch(editFormDialog(tempFormDialog))
+    }
+
     return (
         // operation for a folder
         <div className={classNames("nav-bar__category_img")}>
+            <Rename
+                className='nav-bar__rename-folder'
+                title='rename'
+                onClick={handleRenameClick}
+            />
             {/* create a subfolder */}
             <svg
                 xmlns="http://www.w3.org/2000/svg"

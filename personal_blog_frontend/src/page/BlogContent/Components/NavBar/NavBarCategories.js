@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import './NavBarCategories.css'
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { fetchNextCategory, setExpandedCategories } from '../../../../store/modules/blogContentNavBarStore';
 import { useDispatch } from 'react-redux'
 import NavBarElementOperation from './NavBarElementOperations'
@@ -10,12 +10,13 @@ const NavBarCategories = React.memo((props) => {
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const categories = props.categories;
     const ancestorCategoryNames = props.ancestorCategoryNames
+    const categorySpanRef = useRef('null')
 
     const dispatch = useDispatch()
     const handleExpandClick = async () => {
         await dispatch(fetchNextCategory(true, ...categories))
         dispatch(setExpandedCategories(...categories))
-    }
+    };
 
     return (
         <div className="nav-bar__category_div">
@@ -47,7 +48,8 @@ const NavBarCategories = React.memo((props) => {
                 }
 
                 {/* level 4 category name */}
-                <span title={categoryName}>{categoryName}</span>
+                <span ref={categorySpanRef}>{categoryName}</span>
+                
 
             </div>
             {/* add folder and add image icon */}
@@ -55,7 +57,8 @@ const NavBarCategories = React.memo((props) => {
                 ancestorCategoryNames={ancestorCategoryNames}
                 expandedCategories={expandedCategories}
                 expandedCategoriesInfo={{ categoryName, categoryValue }}
-                categories={categories} />
+                categories={categories} 
+                categorySpanRef = {categorySpanRef}/>
 
         </div>
     )

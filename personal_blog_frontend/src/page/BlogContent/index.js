@@ -7,13 +7,14 @@ import Resizer from "./Components/Resizer/Resizer"
 import ErrorPopUp from "./Components/ErrorPopUp/ErrorPopUp"
 import FolderFileCreationWindow from "./Components/FolderFileCreationWindow/FolderFileCreationWindow"
 import ParticleBackground from './Components/ParticleBackground/ParticleBackground';
-
+import FormDialog from './Components/Dialog/FormDialog'
 
 const BlogContent = () => {
 
     return (
         <div className="blog-container">
             <ParticleBackground />
+            <FormDialog />
             <FolderFileCreationWindow />
             <ErrorPopUp />
             <Header />

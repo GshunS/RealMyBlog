@@ -85,7 +85,6 @@ const TiptapTextArea = () => {
             FileHandler.configure({
                 allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
                 onDrop: (currentEditor, files, pos) => {
-                    console.log('drop')
                     files.forEach(file => {
                         const fileReader = new FileReader()
 
@@ -183,7 +182,6 @@ const TiptapTextArea = () => {
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
-            console.log(articleInfo)
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
             // editor.commands.focus(cursorPos);
         }
@@ -192,7 +190,7 @@ const TiptapTextArea = () => {
                 editor.destroy();
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editor, articleInfo.articleId])
 
 
@@ -217,67 +215,65 @@ const TiptapTextArea = () => {
         }
     }
 
+    const submitArticleContent = async () => {
+        if (!editor || !articleInfo.articleId) {
+            return;
+        }
+        dispatch(editArticleSaveStatus('saving'))
+        const json = editor.getJSON();
+        const text = editor.getText();
+        const images = [];
 
-    const handleSubmit = React.useMemo(() =>
-        _.debounce(async () => {
-
-            if (!editor || !articleInfo.articleId) {
-                return;
+        const traverse = (node) => {
+            if (node.type === 'image') {
+                images.push(node.attrs.src);
             }
-            dispatch(editArticleSaveStatus('saving'))
-            const json = editor.getJSON();
-            const text = editor.getText();
-            const images = [];
-
-            const traverse = (node) => {
-                if (node.type === 'image') {
-                    images.push(node.attrs.src);
-                }
-                if (node.content) {
-                    node.content.forEach(traverse);
-                }
-            };
-
-            traverse(json);
-
-
-            const formData = new FormData();
-            formData.append('TextContent', text)
-            formData.append('JsonContent', JSON.stringify(json))
-
-            let index = 0;
-            for (const src of images) {
-                const response = await fetch(src);
-                const blob = await response.blob();
-
-                const extension = getExtensionFromDataURL(src);
-                const fileName = `image${index}.${extension}`;
-                formData.append('Images', blob, fileName);
-                index++;
+            if (node.content) {
+                node.content.forEach(traverse);
             }
+        };
 
-            const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
-            await fetchData(
-                url,
-                "POST",
-                formData,
-                (data) => {
-                    let tempArticleInfo = produce(articleInfo, draft => {
-                        draft.articleUpdatedTime = data
-                        draft.articleJsonContent = JSON.stringify(json)
-                    })
-                    dispatch(editArticleSaveStatus('saved'))
-                    dispatch(editArticleInfo(tempArticleInfo))
+        traverse(json);
 
-                },
-                (error) => {
-                    dispatch(editArticleSaveStatus('unsave'))
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
-                }
-            )
-        }, 2000),
-        [articleInfo, dispatch, editor]
-    );
+
+        const formData = new FormData();
+        formData.append('TextContent', text)
+        formData.append('JsonContent', JSON.stringify(json))
+
+        let index = 0;
+        for (const src of images) {
+            const response = await fetch(src);
+            const blob = await response.blob();
+
+            const extension = getExtensionFromDataURL(src);
+            const fileName = `image${index}.${extension}`;
+            formData.append('Images', blob, fileName);
+            index++;
+        }
+
+        const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
+        await fetchData(
+            url,
+            "POST",
+            formData,
+            (data) => {
+                let tempArticleInfo = produce(articleInfo, draft => {
+                    draft.articleUpdatedTime = data
+                    draft.articleJsonContent = JSON.stringify(json)
+                })
+                dispatch(editArticleSaveStatus('saved'))
+                dispatch(editArticleInfo(tempArticleInfo))
+
+            },
+            (error) => {
+                dispatch(editArticleSaveStatus('unsave'))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+            }
+        )
+    };
+
+    const handleSubmit = _.debounce(async () => await submitArticleContent(), 1000)
+
 
     useEffect(() => {
         return () => {

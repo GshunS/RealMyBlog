@@ -1,1 +1,61 @@
-/*  */
+.wiki-toc {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 300px;
+  }
+  
+  h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .toc-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .toc-item {
+    margin-bottom: 10px;
+  }
+  
+  .toc-title {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .toc-title:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    margin-left: 10px;
+  }
+  
+  .sub-list {
+    list-style: none;
+    padding-left: 20px;
+    margin-top: 5px;
+  }
+  
+  .sub-item {
+    font-size: 14px;
+    padding: 3px 0;
+    cursor: pointer;
+  }
+  
+  .sub-item:hover {
+    color: #007bff;
+  }
+  

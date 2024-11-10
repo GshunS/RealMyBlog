@@ -1,64 +1,69 @@
-import './notfound.css'
+import React, { useState } from "react";
+import "./notfound.css";
 
-import {
-  BubbleMenu, EditorContent, useEditor,
-} from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import React, { useEffect } from 'react'
+const WikiTableOfContents = () => {
+  const [openSections, setOpenSections] = useState({});
 
-export default () => {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-    ],
-    content: `
-      <p>
-        Hey, try to select some text here. There will popup a menu for selecting some inline styles. Remember: you have full control about content and styling of this menu.
-      </p>
-    `,
-  })
+  const toggleSection = (section) => {
+    setOpenSections((prevState) => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
+  };
 
-  const [isEditable, setIsEditable] = React.useState(true)
-
-  useEffect(() => {
-    if (editor) {
-      editor.setEditable(isEditable)
-    }
-  }, [isEditable, editor])
+  const sections = [
+    { title: "👓 前言", subItems: [] },
+    {
+      title: "🖐️ 准备篇",
+      subItems: [
+        "Stable Diffusion Webui的部署",
+        "AI绘画模型概述及使用",
+        "SD-WebUI插件安装及汉化配置",
+      ],
+    },
+    { title: "⭐ 绘图篇", subItems: [] },
+    { title: "✨ 进阶篇", subItems: [] },
+    {
+      title: "🐇 应用篇",
+      subItems: ["模型推荐", "插件推荐", "扩展应用"],
+    },
+    { title: "🚀 技巧篇", subItems: [] },
+    { title: "🧠 理论篇", subItems: [] },
+    { title: "📃 未归档", subItems: [] },
+    { title: "📚 资料推荐", subItems: [] },
+  ];
 
   return (
-    <>
+    <div className="wiki-toc">
+      <h2>Wiki table of contents</h2>
+      <ul className="toc-list">
+        {sections.map((section, index) => (
+          <li key={index} className="toc-item">
+            <div
+              className="toc-title"
+              onClick={() => toggleSection(index)}
+            >
+              <span>{section.title}</span>
+              {section.subItems.length > 0 && (
+                <button className="toggle-button">
+                  {openSections[index] ? "▲" : "▼"}
+                </button>
+              )}
+            </div>
+            {openSections[index] && section.subItems.length > 0 && (
+              <ul className="sub-list">
+                {section.subItems.map((item, subIndex) => (
+                  <li key={subIndex} className="sub-item">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
-      <div className="control-group">
-        <label>
-          <input type="checkbox" checked={isEditable} onChange={() => setIsEditable(!isEditable)} />
-          Editable
-        </label>
-      </div>
-
-      {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-        <div className="bubble-menu">
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={editor.isActive('bold') ? 'is-active' : ''}
-          >
-            Bold
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={editor.isActive('italic') ? 'is-active' : ''}
-          >
-            Italic
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={editor.isActive('strike') ? 'is-active' : ''}
-          >
-            Strike
-          </button>
-        </div>
-      </BubbleMenu>}
-      <EditorContent editor={editor} />
-    </>
-  )
-}
+export default WikiTableOfContents;

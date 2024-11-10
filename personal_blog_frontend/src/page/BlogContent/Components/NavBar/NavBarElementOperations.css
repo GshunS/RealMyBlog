@@ -18,6 +18,10 @@
     border-radius: 4px; /* Optional: Rounded corners for a smoother look */
     padding: 0.1rem; /* Optional: Padding for better spacing */
 }
+.nav-bar__rename-folder {
+    margin-right: 0.5rem;
+    fill: #2196F3;
+}
 
 /* #region create a subfolder*/
 .nav-bar__add-folder {
