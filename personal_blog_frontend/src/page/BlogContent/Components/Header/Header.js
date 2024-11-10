@@ -7,19 +7,22 @@ import { editStatus } from '../../../../store/modules/mainHeaderStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { getArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
+import { editAlertDialog } from '../../../../store/modules/blogContentDialogStore';
 import _ from 'lodash'
 
 import { ReactComponent as LoginIcon } from '../../../../assets/images/blogContentHeader/login.svg'
 import { ReactComponent as Sun } from '../../../../assets/images/blogContentHeader/sun.svg'
 import { ReactComponent as Moon } from '../../../../assets/images/blogContentHeader/moon.svg'
 import Login from '../Login/Login';
-
+import produce from 'immer'
 
 // header js
 const Header = () => {
     // editable is a state that is used to control the dropdown menu
     const { editable } = useSelector(state => state.mainHeader);
     const { token } = useSelector(state => state.blogContentLogin);
+    const { alertDialog } = useSelector(state => state.blogContentDialog);
+
 
     const [showLogin, setShowLogin] = useState(false);
     // dropDownValue is a state {view or edit} that is used to control the dropdown menu
@@ -227,8 +230,13 @@ const Header = () => {
         if (token === '' || token === null) {
             setShowLogin(prev => !prev);
         } else {
-            
-            console.log('log out')
+            let uptAlertDialog = produce(alertDialog, draft => {
+                draft.open = true;
+                draft.dialogTitle = 'Log Out?';
+                draft.dialogText = 'Are you sure to log out';
+                draft.dest = 'LogOutConfirm';
+            })
+            dispatch(editAlertDialog(uptAlertDialog))
         }
     }
 
@@ -345,7 +353,7 @@ const Header = () => {
                         onClick={clickLoginIcon}
                     />
                 </div>
-                {showLogin && <Login ref={loginRef} setShowLogin={setShowLogin} loginIconRef={loginIconRef}/>}
+                {showLogin && <Login ref={loginRef} setShowLogin={setShowLogin} loginIconRef={loginIconRef} />}
             </div>
         </div>
     );

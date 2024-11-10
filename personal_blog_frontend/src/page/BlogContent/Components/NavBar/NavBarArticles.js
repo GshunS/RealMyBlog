@@ -16,7 +16,6 @@ const NavBarArticles = React.memo((props) => {
     const { categoryName, categoryValue } = props.expandedCategoriesInfo;
     const ancestorCategoryNames = props.ancestorCategoryNames
 
-    
     const dispatch = useDispatch()
     const handleArticleClick = (id) => {
         dispatch(editCurrentAncestorNames(ancestorCategoryNames));
@@ -33,8 +32,8 @@ const NavBarArticles = React.memo((props) => {
                     Object.entries(categoryValue['articles']).map(([id, title]) => (
                         <li className={classNames("nav-bar__second-category-items")}
                             key={`article-${id}`}>
-                            <div className="nav-bar__category_div" onClick={() => handleArticleClick(id)}>
-                                <div className="nav-bar__category_name">
+                            <div className="nav-bar__category_div" >
+                                <div className="nav-bar__category_name" onClick={() => handleArticleClick(id)}>
                                     {/* arrow icon - always hide for articles */}
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"

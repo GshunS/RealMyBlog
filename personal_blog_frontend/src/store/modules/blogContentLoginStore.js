@@ -11,13 +11,18 @@ const blogContentLoginStore = createSlice({
         editToken(state, action) {
             state.token = action.payload;
             localStorage.setItem('token_key', action.payload)
+        },
+        logout(state) {
+            state.token = '';
+            localStorage.removeItem('token_key')
         }
     }
 
 })
 
 const {
-    editToken
+    editToken,
+    logout
 } = blogContentLoginStore.actions
 
 const fectchLoginToken = (username, password) => {
@@ -43,7 +48,8 @@ const fectchLoginToken = (username, password) => {
 }
 
 export {
-    editToken
+    editToken,
+    logout
 }
 
 export {

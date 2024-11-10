@@ -8,6 +8,7 @@ import ErrorPopUp from "./Components/ErrorPopUp/ErrorPopUp"
 import FolderFileCreationWindow from "./Components/FolderFileCreationWindow/FolderFileCreationWindow"
 import ParticleBackground from './Components/ParticleBackground/ParticleBackground';
 import FormDialog from './Components/Dialog/FormDialog'
+import AlertDialog from './Components/Dialog/AlertDialog'
 
 const BlogContent = () => {
 
@@ -15,6 +16,7 @@ const BlogContent = () => {
         <div className="blog-container">
             <ParticleBackground />
             <FormDialog />
+            <AlertDialog />
             <FolderFileCreationWindow />
             <ErrorPopUp />
             <Header />

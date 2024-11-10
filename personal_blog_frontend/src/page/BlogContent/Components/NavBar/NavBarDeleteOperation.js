@@ -1,16 +1,32 @@
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import {deleteOperation, editCurrentAncestorNames} from '../../../../store/modules/blogContentNavBarStore'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { deleteOperation, editCurrentAncestorNames } from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
+import produce from 'immer'
+import { editAlertDialog } from '../../../../store/modules/blogContentDialogStore';
+
 const NavBarDeleteOperation = React.memo((props) => {
     const dispatch = useDispatch()
-    const {deleteType, articleId, categoryNames} = props
+    const { deleteType, articleId, categoryNames } = props
+    const { alertDialog } = useSelector(state => state.blogContentDialog)
+
     // if deleteType is article, hide the article
     // if deleteType is folder, delete the folder
-    const handleDeleteFileOrFolder = _.debounce(() => { 
-        dispatch(editCurrentAncestorNames(categoryNames))
-        dispatch(deleteOperation(deleteType, articleId, categoryNames))
+    const handleDeleteFileOrFolder = _.debounce(() => {
+        let uptAlertDialog = produce(alertDialog, draft => {
+            draft.open = true;
+            draft.dialogTitle = 'Delete Confirmtion';
+            draft.dialogText = 'The data may not be recovered. Are you sure to delete it?';
+            draft.dest = 'DeleteFFConfirm';
+            draft.postData = {
+                categoryNames: categoryNames,
+                deleteType: deleteType, 
+                articleId: articleId
+            }
+        })
+        dispatch(editAlertDialog(uptAlertDialog))
     }, 300)
+
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
