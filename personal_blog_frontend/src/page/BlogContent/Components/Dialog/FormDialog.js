@@ -105,7 +105,7 @@ export default function FormDialog() {
 
             },
             (error) => {
-                dispatch(editErrorMsg({ type: "ERROR", msg: error.data }))
+                dispatch(editErrorMsg({ type: "ERROR", msg: error }))
             }
         )
     }

@@ -85,7 +85,7 @@ const getArticleInfo = (articleId) => {
                 }, {});
             },
             (error => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             })
         )
 
@@ -116,7 +116,7 @@ const getArticleInfo = (articleId) => {
                 dispatch(editShowTextArea(true));
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         )
     }
@@ -139,7 +139,7 @@ const updateAttrs = (patchData) => {
                 dispatch(editErrorMsg({ type: 'INFO', msg: "Saved!" }))
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         )
     }

@@ -267,7 +267,7 @@ const TiptapTextArea = () => {
             },
             (error) => {
                 dispatch(editArticleSaveStatus('unsave'))
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         )
     };

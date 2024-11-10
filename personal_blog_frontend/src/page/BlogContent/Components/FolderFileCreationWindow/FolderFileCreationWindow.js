@@ -129,7 +129,7 @@ const FolderFileCreationWindow = () => {
 
             },
             (error) => {
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }));
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }));
             }
         )
     }

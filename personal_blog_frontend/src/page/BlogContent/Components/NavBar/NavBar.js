@@ -168,8 +168,7 @@ const NavBar = () => {
 
                 },
                 (error) => {
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
-                    console.log('An error occurred:', error)
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                 }
             );
         }
@@ -191,7 +190,7 @@ const NavBar = () => {
                 },
                 (error) => {
                     dispatch(editCanRender(false))
-                    dispatch(editErrorMsg({ type: 'ERROR', msg: error.message }))
+                    dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
                     console.log('An error occurred:', error)
                 }
             );
@@ -296,9 +295,13 @@ const NavBar = () => {
     }, [fileHidObj, dispatch, allCategories, currentAncestorNames])
 
     const callCreationWindow = (type) => {
-        // dispatch(editExpandedCategories({}))
-        dispatch(editAddType(type))
-        dispatch(editCurrentAncestorNames([]))
+        if (localStorage.getItem('token_key') !== null || localStorage.getItem('token_key') !== "") {
+            dispatch(editAddType(type))
+            dispatch(editCurrentAncestorNames([]))
+        } else {
+            dispatch(editErrorMsg({type: "INFO", msg: "Unauthorized"}))
+        }
+
     }
 
     if (canRender) {

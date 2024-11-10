@@ -12,8 +12,8 @@ public class Article: BaseModel
     public int view_count { get; set; }
     public int upvote_count { get; set; }
     public bool is_hide { get; set; }
-    public DateTime? created_time { get; set; }
-    public DateTime? update_time { get; set; }
+    public DateTime created_time { get; set; }
+    public DateTime update_time { get; set; }
 
     public int category_id { get; set; }
     public Category category { get; set; } = null!;

@@ -9,6 +9,7 @@ using PersonalBlog.DTO.Create;
 using PersonalBlog.DTO.Display;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
+using PersonalBlog.MyUtils;
 using PersonalBlog.Service.PersonalBlog.IService;
 
 namespace PersonalBlog.Controllers;
@@ -25,7 +26,7 @@ public class ArticleController : ControllerBase
         this._iMapper = iMapper;
     }
 
-
+    [Authorize]
     [HttpPost("articles")]
     public async Task<ActionResult> CreateArticles(ArticleCreateDTO articleCreateDTO)
     {
@@ -35,18 +36,19 @@ public class ArticleController : ControllerBase
             // article.author_id = Convert.ToInt32(this.User.FindFirst("Id").Value);
             article.author_id = 3;
             await _iArticleService.CreateOneAsync(article);
-            return Ok(article.id);
+            return Ok(ApiResponse<int>.Success(article.id));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
+    [Authorize]
     [HttpPost("articles/id/{id}/content")]
     public async Task<ActionResult> UpdateArticleContent(int id)
     {
@@ -60,45 +62,50 @@ public class ArticleController : ControllerBase
 
             List<IFormFile> images = Request.Form.Files.ToList();
             DateTime updatedTime = await _iArticleService.UpdateArticleContentAsync(id, cleanTextContent, jsonData, images);
-            return Ok(updatedTime);
+            return Ok(ApiResponse<DateTime>.Success(updatedTime));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
-    // [Authorize]
+    [Authorize]
     [HttpPatch("articles/id/{id}")]
     public async Task<ActionResult> UpdateArticle(int id, [FromBody] JsonPatchDocument<ArticleUpdateDTO> patchDoc)
     {
         try
         {
-            if (patchDoc == null) return BadRequest();
+            if (patchDoc == null)
+            {
+                return BadRequest(ApiResponse<object>.Error(400, "Invalid patch document."));
+            }
+
             var article = await _iArticleService.QueryOneByIdAsync(id);
             var articleUpdateDTO = _iMapper.Map<ArticleUpdateDTO>(article);
 
             patchDoc.ApplyTo(articleUpdateDTO, ModelState);
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<object>.Error(400, "Invalid patch data."));
             }
             _iMapper.Map(articleUpdateDTO, article);
             await _iArticleService.UpdateOneAsync(article);
 
-            return Ok(article.update_time);
+
+            return Ok(ApiResponse<DateTime>.Success(article.update_time));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -108,15 +115,15 @@ public class ArticleController : ControllerBase
         try
         {
             var articles = await _iArticleService.QueryMultipleByConditionAsync(c => c.is_hide == false);
-            return Ok(articles);
+            return Ok(ApiResponse<List<Article>>.Success(articles));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -126,15 +133,15 @@ public class ArticleController : ControllerBase
         try
         {
             var article = await _iArticleService.QueryOneByConditionAsync(a => a.id == id && !a.is_hide);
-            return Ok(article);
+            return Ok(ApiResponse<Article>.Success(article));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -145,19 +152,20 @@ public class ArticleController : ControllerBase
         try
         {
             var articles = await _iArticleService.QueryMultipleByConditionAsync(c => c.is_hide == true);
-            return Ok(articles);
+            return Ok(ApiResponse<List<Article>>.Success(articles));
+
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
-
+    [Authorize]
     [HttpPatch("articles/{id}/hide")]
     public async Task<ActionResult> UpdateArticleHideStatus([FromRoute] int id)
     {
@@ -166,15 +174,15 @@ public class ArticleController : ControllerBase
             Article art = await _iArticleService.QueryOneByIdAsync(id);
             art.is_hide = !art.is_hide;
             await _iArticleService.UpdateOneAsync(art);
-            return Ok();
+            return Ok(ApiResponse<object>.Success());
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -188,15 +196,15 @@ public class ArticleController : ControllerBase
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
         catch (Exception)
         {
-            return StatusCode(500, "something wrong happened");
+            return StatusCode(500, ApiResponse<object>.Error(500, "something wrong happened"));
         }
     }
 

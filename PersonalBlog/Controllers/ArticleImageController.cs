@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PersonalBlog.CustomException;
 using PersonalBlog.DTO.Display;
+using PersonalBlog.MyUtils;
 using PersonalBlog.Service.PersonalBlog.IService;
 using PersonalBlog.Service.PersonalBlog.Service;
 
@@ -32,11 +33,11 @@ public class ArticleImageController : ControllerBase
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 }

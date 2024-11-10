@@ -6,6 +6,7 @@ using PersonalBlog.DTO.Create;
 using PersonalBlog.DTO.Delete;
 using PersonalBlog.DTO.Update;
 using PersonalBlog.Models.Entities;
+using PersonalBlog.MyUtils;
 using PersonalBlog.Service.PersonalBlog.IService;
 
 namespace PersonalBlog.Controllers;
@@ -36,7 +37,7 @@ public class CategoryController : ControllerBase
         {
             return false;
         }
-        
+
         if (category.second_category != null && category.second_category.Length == 0)
         {
             return false;
@@ -64,18 +65,18 @@ public class CategoryController : ControllerBase
             Category trimedCategory = TrimCategoryNames(category);
             if (!ValidateCategoryNames(trimedCategory))
             {
-                return BadRequest(new { message = "invalid category name" });
+                return BadRequest(ApiResponse<object>.Error(400, "invalid category name"));
             }
             await _iCategoryService.AddCategory(trimedCategory);
-            return Ok();
+            return Ok(ApiResponse<object>.Success());
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -89,18 +90,18 @@ public class CategoryController : ControllerBase
             Category trimedCategory = TrimCategoryNames(category);
             if (!ValidateCategoryNames(trimedCategory))
             {
-                return BadRequest(new { message = "invalid category name" });
+                return BadRequest(ApiResponse<object>.Error(400, "invalid category name"));
             }
             await _iCategoryService.UpdateCategory(trimedCategory);
-            return Ok(category);
+            return Ok(ApiResponse<Category>.Success(category));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -111,15 +112,15 @@ public class CategoryController : ControllerBase
         try
         {
             var data = await _iCategoryService.QueryAllAsync();
-            return Ok(data);
+            return Ok(ApiResponse<List<Category>>.Success(data));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -130,15 +131,15 @@ public class CategoryController : ControllerBase
         try
         {
             var data = await _iCategoryService.GetFirstCategory();
-            return Ok(data);
+            return Ok(ApiResponse<Dictionary<string, DTO.Display.CategoryChildrenDisplayDTO>>.Success(data));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -149,15 +150,15 @@ public class CategoryController : ControllerBase
         {
             first_category = first_category.Trim();
             var data = await _iCategoryService.GetSecondCategory(first_category);
-            return Ok(data);
+            return Ok(ApiResponse<Dictionary<string, DTO.Display.CategoryChildrenDisplayDTO>>.Success(data));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -169,15 +170,15 @@ public class CategoryController : ControllerBase
             first_category = first_category.Trim();
             second_category = second_category.Trim();
             var data = await _iCategoryService.GetThirdCategory(first_category, second_category);
-            return Ok(data);
+            return Ok(ApiResponse<Dictionary<string, DTO.Display.CategoryChildrenDisplayDTO>>.Success(data));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -191,15 +192,15 @@ public class CategoryController : ControllerBase
             second_category = second_category.Trim();
             third_category = third_category.Trim();
             var data = await _iCategoryService.GetFourthCategory(first_category, second_category, third_category);
-            return Ok(data);
+            return Ok(ApiResponse<Dictionary<string, DTO.Display.CategoryChildrenDisplayDTO>>.Success(data));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -209,15 +210,15 @@ public class CategoryController : ControllerBase
         try
         {
             var data = await _iCategoryService.QueryOneByIdAsync(id);
-            return Ok(data);
+            return Ok(ApiResponse<Category>.Success(data));
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
@@ -228,33 +229,34 @@ public class CategoryController : ControllerBase
         try
         {
             await _iCategoryService.DeleteOneByIdAsync(id);
-            return Ok();
+            return Ok(ApiResponse<object>.Success());
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 
+    [Authorize]
     [HttpDelete("categories")]
     public async Task<ActionResult> DeleteMultipleCategories(CategoryDeleteMultipleDTO categoryDeleteMultipleDTO)
     {
         try
         {
             await _iCategoryService.DeleteMultipleCategoriesByConditionAsync(categoryDeleteMultipleDTO);
-            return Ok();
+            return Ok(ApiResponse<object>.Success());
         }
         catch (ServiceException e)
         {
-            return BadRequest(new { message = e.Message });
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {
-            return StatusCode(500, e.Message);
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
         }
     }
 

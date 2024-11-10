@@ -13,19 +13,25 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
             }
         };
         const response = await axios(config);
-        successCallback(response.data);
+        successCallback(response.data.data);
         return true;
     } catch (error) {
         console.log(error)
-        let error_msg = '';
+        let errMsg = 'Unknown Error, Check console'
         if (error.response) {
-            error_msg = `${error.response.data.error}`;
+            if (error.response.status === 401 || error.response.status === 403) {
+                errMsg = 'Unauthorized or Forbidden';
+            } else {
+                errMsg = error.response.data.message;
+            }
+        } else if (error.request) {
+            errMsg = 'Network error';
         } else {
-            error_msg = error
+            errMsg = `Unknown Error: ${error.message}`;
         }
 
         if (errorCallback) {
-            errorCallback(error_msg);
+            errorCallback(errMsg);
         }
         return false;
     }
