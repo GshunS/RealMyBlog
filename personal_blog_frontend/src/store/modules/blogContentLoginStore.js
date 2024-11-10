@@ -37,7 +37,7 @@ const fectchLoginToken = (username, password) => {
             'POST',
             postData,
             (data) => {
-                dispatch(editToken(data.token))
+                dispatch(editToken(data))
                 dispatch(editErrorMsg({ type: 'INFO', msg: "login successfully" }))
             },
             (error) => {

@@ -20,7 +20,7 @@ public class AuthorController : ControllerBase
         _iAuthorService = iAuthorService;
         _iMapper = iMapper;
     }
-    
+
     [Authorize]
     [HttpPost("authors")]
     public async Task<ActionResult> CreateAuthor(AuthorCreateDTO authorCreateDTO)
@@ -48,9 +48,9 @@ public class AuthorController : ControllerBase
         {
             string username = loginRequestDTO.username;
             string password = loginRequestDTO.password;
-            
+
             string token = await _iAuthorService.Login(username, password);
-            return Ok(ApiResponse<string>.Success(token));
+            return Ok(ApiResponse<string>.Success(data: token));
         }
         catch (ServiceException e)
         {
