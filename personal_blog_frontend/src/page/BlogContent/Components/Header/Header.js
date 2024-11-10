@@ -19,7 +19,9 @@ import Login from '../Login/Login';
 const Header = () => {
     // editable is a state that is used to control the dropdown menu
     const { editable } = useSelector(state => state.mainHeader);
+    const { token } = useSelector(state => state.blogContentLogin);
 
+    const [showLogin, setShowLogin] = useState(false);
     // dropDownValue is a state {view or edit} that is used to control the dropdown menu
     const [dropDownValue, setDropDownValue] = useState('View');
 
@@ -42,6 +44,8 @@ const Header = () => {
     // hideRef is a reference to the dropdown element
     const hideRef = useRef(null);
 
+    const loginRef = useRef(null);
+    const loginIconRef = useRef(null);
     const listRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -66,6 +70,26 @@ const Header = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [searchContainerRef]);
+
+
+    useEffect(() => {
+        // Event handler to check for clicks outside the search container
+        function handleClickOutside(event) {
+            // Ensure the searchContainerRef is a DOM node
+            if (loginRef.current && !loginRef.current.contains(event.target) && !loginIconRef.current.contains(event.target)) {
+                // The click was outside the search container
+                setShowLogin(false)
+            }
+        }
+
+        // Add the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // Remove the event listener on component unmount
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [loginRef, loginIconRef]);
 
 
     useEffect(() => {
@@ -198,6 +222,15 @@ const Header = () => {
         onInput({ target: { value: '' } })
     }
 
+    const clickLoginIcon = () => {
+        if (token === '' || token === null) {
+            setShowLogin(prev => !prev);
+        } else {
+            
+            console.log('log out')
+        }
+    }
+
     return (
         // header html
         <div className="header">
@@ -283,16 +316,19 @@ const Header = () => {
 
                 {/* Theme */}
                 <div className="header__theme">
-                    <Sun 
+                    <Sun
                         style={{ height: '2rem', width: '2rem' }}
                     />
                 </div>
 
                 {/* Login */}
-                <div className="header__login">
-                    <LoginIcon style={{ height: '2rem', width: '2rem' }}/>
+                <div className="header__login" ref={loginIconRef}>
+                    <LoginIcon
+                        style={{ height: '2rem', width: '2rem' }}
+                        onClick={clickLoginIcon}
+                    />
                 </div>
-                <Login />
+                {showLogin && <Login ref={loginRef} setShowLogin={setShowLogin} loginIconRef={loginIconRef}/>}
             </div>
         </div>
     );

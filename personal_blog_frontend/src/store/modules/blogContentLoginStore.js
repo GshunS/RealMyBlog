@@ -27,7 +27,7 @@ const fectchLoginToken = (username, password) => {
             "password": password
         }
         const url = `https://localhost:7219/api/login`
-        await fetchData(
+        return await fetchData(
             url,
             'POST',
             postData,

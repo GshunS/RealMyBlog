@@ -183,8 +183,9 @@ const TiptapTextArea = () => {
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
+            console.log(articleInfo)
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
-            editor.commands.focus(cursorPos);
+            // editor.commands.focus(cursorPos);
         }
         return () => {
             if (editor) {
@@ -192,7 +193,7 @@ const TiptapTextArea = () => {
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [editor, articleInfo])
+    }, [editor, articleInfo.articleId])
 
 
 
@@ -292,17 +293,6 @@ const TiptapTextArea = () => {
 
     return (
         <>
-            {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-                <div className="bubble-menu">
-                    <button
-                        onClick={() => editor.chain().focus().toggleStrike().run()}
-                        className={editor.isActive('strike') ? 'is-active' : ''}
-                    >
-                        Strike
-                    </button>
-
-                </div>
-            </BubbleMenu>}
             <EditorContent editor={editor} />
             {contextMenu && editor && (
                 <TableContextMenu
