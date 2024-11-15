@@ -32,7 +32,7 @@ const TestPage = () => {
         };
 
         if (isFetching && !timer) {
-            const newTimer = setInterval(fetchLiveData, 500);
+            const newTimer = setInterval(fetchLiveData, 1000);
             setTimer(newTimer); // Save the interval ID
         }
 
