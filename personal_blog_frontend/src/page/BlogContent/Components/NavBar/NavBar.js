@@ -116,23 +116,6 @@ const NavBar = () => {
         return () => clearTimeout(timer)
     }, [expandedCategories, getExpandedElement])
 
-    // // set height dynamically
-    // useEffect(() => {
-
-    //     const { newExpandedElement, newCollapseElement } = getExpandedElement()
-    //     if (newExpandedElement) {
-    //         setTimeout(()=>{
-    //             console.log(heightRef.current.scrollHeight)
-    //         }, 600)
-
-    //     }
-    //     if (newCollapseElement) {
-    //         setTimeout(()=>{
-    //             console.log(heightRef.current.scrollHeight)
-    //         }, 600)
-    //     }
-
-    // }, [expandedCategories, getExpandedElement])
 
     // common method
     // folderCreated || folderDeleted
