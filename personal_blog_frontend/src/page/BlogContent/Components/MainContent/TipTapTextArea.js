@@ -33,6 +33,7 @@ import csharp from 'highlight.js/lib/languages/csharp'
 import { createLowlight } from 'lowlight'
 import Bold from '@tiptap/extension-bold'
 import Italic from '@tiptap/extension-italic'
+import History from '@tiptap/extension-history'
 
 import { fetchData } from '../../../../utils/apiService'
 import { useDispatch, useSelector } from 'react-redux'
@@ -108,6 +109,9 @@ const TiptapTextArea = () => {
             }),
             Bold,
             Italic,
+            History.configure({
+                newGroupDelay: 100,
+            }),
         ],
         editorProps: {
             handleDOMEvents: {
