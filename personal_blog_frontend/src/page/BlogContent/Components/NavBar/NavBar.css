@@ -182,8 +182,14 @@
 
 
 /* #region transition */
+li>div {
+    transition: 0.3s ;
+}
+
+
 li>div:hover {
     background-color: #f0f0f0;
+    transform: scale(1.01) ; 
 }
 
 .hideFileArrow {
@@ -195,3 +201,70 @@ li>div:hover {
 }
 
 /* #endregion */
+
+
+.nav-bar__category_article .nav-bar__second-category-items{
+    margin-bottom: 0.3rem;
+}
+.Nav-bar__article-icon{
+    height: 1.2rem;
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    fill: #FF9800;
+    flex-shrink: 0;
+}
+
+.nav-bar__folder-icon {
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    height: 1.2rem;
+    fill: #4CAF50;
+    flex-shrink: 0;
+}
+/* folder operations elements */
+/* outer div */
+.nav-bar__category_img {
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.nav-bar__category_img svg {
+    height: 1rem;
+    width: 1rem;
+    transition: all 0.1s linear;
+
+}
+
+.nav-bar__category_img svg:hover {
+    /* background-color: #e0e0e0; Light grey background color on hover */
+    border-radius: 4px; /* Optional: Rounded corners for a smoother look */
+    padding: 0.1rem; /* Optional: Padding for better spacing */
+}
+.nav-bar__rename-folder {
+    margin-right: 0.5rem;
+    fill: #2196F3;
+}
+
+/* #region create a subfolder*/
+.nav-bar__add-folder {
+    margin-right: 0.5rem;
+    fill: #2196F3; /* Blue color for folder icon */
+}
+
+.nav-bar__hide-createFolder{
+    display: none;
+}
+/* #endregion */
+
+/* #region create a sub-file*/
+.nav-bar__add-file {
+    margin-right: 0.5rem;
+    fill: #FFC107; /* Yellow color for file icon */
+}
+
+.nav-bar__delete-file {
+    margin-right: 0.5rem;
+    fill: #ff4107; /* Yellow color for file icon */
+}
+/* #endregion create a sub-file*/
