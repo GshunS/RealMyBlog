@@ -13,7 +13,7 @@ const NavBarCategories = React.memo((props) => {
     const categorySpanRef = useRef('null')
 
     const dispatch = useDispatch()
-    const handleExpandClick = async () => {
+    const handleExpandClick = async (e) => {
         await dispatch(fetchNextCategory(true, ...categories))
         dispatch(setExpandedCategories(...categories))
     };
@@ -22,7 +22,7 @@ const NavBarCategories = React.memo((props) => {
         <div className="nav-bar__category_div">
             <div
                 className="nav-bar__category_name"
-                onClick={() => handleExpandClick()}
+                onClick={(e) => handleExpandClick(e)}
             >
 
                 {/* show the arrow or not */}
