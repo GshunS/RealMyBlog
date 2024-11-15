@@ -75,7 +75,6 @@ const getArticleInfo = (articleId) => {
             'get',
             null,
             (data) => {
-                // console.log(data)
                 mappedImages = data.reduce((acc, image) => {
                     const hashvalue = image.image_hashvalue;
                     const imageData = `data:${mimeTypes[image.image_ext.toLowerCase()]};base64,${image.image_data}`;

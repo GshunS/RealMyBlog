@@ -29,7 +29,7 @@ public class ArticleImageController : ControllerBase
 
             var articleImageDisplayDtos = _iMapper.Map<IEnumerable<ArticleImageDisplayDTO>>(articleImages);
             
-            return Ok(articleImageDisplayDtos);
+            return Ok(ApiResponse<IEnumerable<ArticleImageDisplayDTO>>.Success(articleImageDisplayDtos));
         }
         catch (ServiceException e)
         {
