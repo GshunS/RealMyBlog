@@ -90,7 +90,6 @@ const TableContextMenu = ({ editor, position, onClose }) => {
                 </li>
             </ul>
         </div>
-
     );
 };
 
