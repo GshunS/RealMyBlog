@@ -192,7 +192,7 @@ public class ArticleController : ControllerBase
         try
         {
             var articles = await _iArticleService.FullTextSearchAsync(word);
-            return Ok(articles);
+            return Ok(ApiResponse<List<ArticleDisplayDTO>>.Success(articles));
         }
         catch (ServiceException e)
         {
