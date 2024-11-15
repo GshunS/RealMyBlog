@@ -6,9 +6,7 @@ import { fetchData } from '../../../../utils/apiService'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import {
     fetchNextCategory,
-    setExpandedCategories,
     editAllCategories,
-    editExpandedCategories,
     editFolderCreated,
     editFileHidObj,
     editFileCreatedObj,
@@ -39,18 +37,9 @@ const NavBar = () => {
         currentAncestorNames } = useSelector(state => state.blogContentNavbar)
 
     const [expandedElements, setExpandedElements] = useState(new Set())
-    // const refMap = useRef([])
     const heightRef = useRef(0)
 
-    // set ref for each temporary folder
-    // const setRef = useCallback((element) => {
-    //     if (element) {
-    //         refMap.current.push(element);
-    //     } else {
-    //         // Handle cleanup when the component is unmounted or the element is removed
-    //         refMap.current = refMap.current.filter(ref => ref !== element);
-    //     }
-    // }, []);
+
 
     const getExpandedElement = useCallback(() => {
         const nodelist = document.querySelectorAll('.expanded')
@@ -60,33 +49,6 @@ const NavBar = () => {
 
     }, [expandedElements])
 
-    //(deprecated)
-    // click outside the temp folder, cancel the creation of the temp folder
-    // useEffect(() => {
-    //     const handleClickOutside = (event) => {
-    //         // console.log(tempFolderCreated)
-    //         if (tempFolderCreated) {
-    //             dispatch(editTempFolderCreated(false))
-    //             return
-    //         }
-    //         let isOutside = true
-    //         Object.values(refMap.current).forEach((ref) => {
-    //             if (ref && ref.contains(event.target)) {
-    //                 isOutside = false
-    //             }
-    //         })
-    //         const folderElement = document.querySelector(".showFolder")
-    //         if (isOutside && folderElement) {
-    //             clearTempElements('.showFolder')
-    //         }
-    //     }
-
-    //     document.addEventListener('click', handleClickOutside)
-
-    //     return () => {
-    //         document.removeEventListener('click', handleClickOutside)
-    //     }
-    // }, [dispatch, tempFolderCreated])
 
     // scroll to the expanded category
     useEffect(() => {
