@@ -76,7 +76,7 @@ const TableContextMenu = ({ editor, position, onClose }) => {
                 <li onClick={() => handleMenuClick(() => editor.chain().focus().toggleHeaderRow().run())}>
                     Toggle header row
                 </li>
-                <li onClick={() => handleMenuClick(() => editor.chain().focus().mergeCells().run())}>
+                <li onClick={() => handleMenuClick(() => editor.chain().focus().mergeOrSplit().run())}>
                     Merge or split
                 </li>
                 <li onClick={() => handleMenuClick(() => editor.chain().focus().deleteColumn().run())}>

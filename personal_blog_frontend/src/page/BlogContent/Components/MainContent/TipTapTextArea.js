@@ -1,5 +1,7 @@
 import React from 'react';
-import { BubbleMenu, useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable } from '@fortawesome/free-solid-svg-icons';
 
 // import DragHandle from '@tiptap-pro/extension-drag-handle-react'
 import FileHandler from '@tiptap-pro/extension-file-handler'
@@ -29,6 +31,8 @@ import Gapcursor from '@tiptap/extension-gapcursor'
 import Strike from '@tiptap/extension-strike'
 import csharp from 'highlight.js/lib/languages/csharp'
 import { createLowlight } from 'lowlight'
+import Bold from '@tiptap/extension-bold'
+import Italic from '@tiptap/extension-italic'
 
 import { fetchData } from '../../../../utils/apiService'
 import { useDispatch, useSelector } from 'react-redux'
@@ -102,6 +106,8 @@ const TiptapTextArea = () => {
                     })
                 },
             }),
+            Bold,
+            Italic,
         ],
         editorProps: {
             handleDOMEvents: {
@@ -287,8 +293,108 @@ const TiptapTextArea = () => {
         });
     };
 
+    const handleCreateCodeBlock = () => {
+        if (editor) {
+            editor.chain().focus().toggleCodeBlock().run();
+        }
+    };
+
+    const handleCreateBulletList = () => {
+        if (editor) {
+            editor.chain().focus().toggleBulletList().run();
+        }
+    };
+
+    const handleCreateOrderedList = () => {
+        if (editor) {
+            editor.chain().focus().toggleOrderedList().run();
+        }
+    };
+
+    const handleToggleBold = () => {
+        if (editor) {
+            editor.chain().focus().toggleBold().run();
+        }
+    };
+
+    const handleToggleItalic = () => {
+        if (editor) {
+            editor.chain().focus().toggleItalic().run();
+        }
+    };
+
+    const handleToggleStrike = () => {
+        if (editor) {
+            editor.chain().focus().toggleStrike().run();
+        }
+    };
+
+    const handleInsertHorizontalRule = () => {
+        if (editor) {
+            editor.chain().focus().setHorizontalRule().run();
+        }
+    };
+
+    const handleInsertLink = () => {
+        const url = prompt("Enter the URL");
+        if (editor && url) {
+            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+        }
+    };
+
+    const handleInsertHeading = (level) => {
+        if (editor) {
+            editor.chain().focus().toggleHeading({ level }).run();
+        }
+    };
+
+    const handleInsertTable = () => {
+        if (editor) {
+            editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+        }
+    };
+
     return (
         <>
+            <div className="toolbar">
+                <button onClick={handleCreateCodeBlock} title="Ctrl+Alt+C">
+                    <FontAwesomeIcon icon={faCode} />
+                </button>
+                <button onClick={handleCreateBulletList} title="Ctrl+Shift+8">
+                    <FontAwesomeIcon icon={faListUl} />
+                </button>
+                <button onClick={handleCreateOrderedList} title="Ctrl+Shift+7">
+                    <FontAwesomeIcon icon={faListOl} />
+                </button>
+                <button onClick={handleToggleBold} title="Ctrl+B">
+                    <FontAwesomeIcon icon={faBold} />
+                </button>
+                <button onClick={handleToggleItalic} title="Ctrl+I">
+                    <FontAwesomeIcon icon={faItalic} />
+                </button>
+                <button onClick={handleToggleStrike} title="Ctrl+Shift+S">
+                    <FontAwesomeIcon icon={faStrikethrough} />
+                </button>
+                <button onClick={handleInsertHorizontalRule} title="---">
+                    <FontAwesomeIcon icon={faMinus} />
+                </button>
+                <button onClick={handleInsertLink} title="Ctrl+K">
+                    <FontAwesomeIcon icon={faLink} />
+                </button>
+                <button onClick={() => handleInsertHeading(1)} title="Ctrl+Alt+1">
+                    <FontAwesomeIcon icon={faHeading} />1
+                </button>
+                <button onClick={() => handleInsertHeading(2)} title="Ctrl+Alt+2">
+                    <FontAwesomeIcon icon={faHeading} />2
+                </button>
+                <button onClick={() => handleInsertHeading(3)} title="Ctrl+Alt+3">
+                    <FontAwesomeIcon icon={faHeading} />3
+                </button>
+                <button onClick={handleInsertTable} title="Table">
+                    <FontAwesomeIcon icon={faTable} />
+                </button>
+                {/* Add more buttons as needed */}
+            </div>
             <EditorContent editor={editor} />
             {contextMenu && editor && (
                 <TableContextMenu
