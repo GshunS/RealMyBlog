@@ -194,9 +194,6 @@ const Header = () => {
         
     }
 
-    useEffect(() => {
-        throw new Error('Theme error');
-    }, [])
 
     // Effect to update login icon color based on token validation
     useEffect(() => {

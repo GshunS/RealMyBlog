@@ -27,8 +27,6 @@ const BlogContent = () => {
     }, [token, dispatch])
 
 
-
-
     return (
         <ErrorBoundary
             FallbackComponent={ErrorFallback}
