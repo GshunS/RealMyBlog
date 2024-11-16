@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable } from '@fortawesome/free-solid-svg-icons';
@@ -123,9 +123,7 @@ const TiptapTextArea = () => {
                     if (target.closest("td") || target.closest("th")) {
                         event.preventDefault();
                         const { clientX: x, clientY: y } = event;
-                        Promise.resolve().then(() => {
-                            setContextMenu({ x, y });
-                        });
+                        setContextMenu({ x, y });
                         return true;
                     }
                     return false;
@@ -147,10 +145,9 @@ const TiptapTextArea = () => {
                     block: 'center',
                 });
             }
-            Promise.resolve().then(() => {
-                dispatch(editArticleSaveStatus('unsave'));
-                handleSubmit();
-            });
+
+            dispatch(editArticleSaveStatus('unsave'));
+            handleSubmit();
         },
         onPaste(event) {
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
@@ -234,7 +231,7 @@ const TiptapTextArea = () => {
         }
     }
 
-    const submitArticleContent = async () => {
+    const submitArticleContent = useCallback(async () => {
         if (!editor || !articleInfo.articleId) {
             return;
         }
@@ -289,21 +286,22 @@ const TiptapTextArea = () => {
                 dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         )
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [articleInfo.articleId, editor, dispatch]);
 
-    const handleSubmit = _.debounce(async () => await submitArticleContent(), 1000)
+    const handleSubmit = useMemo(() => _.debounce(async () => {
+        await submitArticleContent()
+    }, 2000), [submitArticleContent]);
 
 
-    useEffect(() => {
-        return () => {
-            handleSubmit.cancel();
-        };
-    }, [handleSubmit]);
+    // useEffect(() => {
+    //     return () => {
+    //         handleSubmit.cancel();
+    //     };
+    // }, [handleSubmit]);
 
     const handleCloseMenu = () => {
-        Promise.resolve().then(() => {
-            setContextMenu(null);
-        });
+        setContextMenu(null);
     };
 
     const handleEditorAction = (action, level) => {
@@ -350,6 +348,22 @@ const TiptapTextArea = () => {
         }
     };
 
+    // useEffect(() => {
+    //     if (!editor) return;
+    //     const handleKeyDown = (event) => {
+    //         if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+    //             event.preventDefault();
+    //             console.log('save')
+    //             handleSubmit(); // Call the save function
+    //         }
+    //     };
+
+    //     window.addEventListener('keydown', handleKeyDown);
+
+    //     return () => {
+    //         window.removeEventListener('keydown', handleKeyDown);
+    //     };
+    // }, [handleSubmit, editor]);
 
     return (
         <>

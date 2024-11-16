@@ -11,7 +11,6 @@ import { updateAttrs } from '../../../../store/modules/blogContentMainContentSto
 import { editAllCategories } from '../../../../store/modules/blogContentNavBarStore'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { produce } from 'immer'
-import { JwtValidation } from '../../../../store/modules/blogContentLoginStore';
 const MainContent = () => {
     const dispatch = useDispatch();
     const {
