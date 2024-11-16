@@ -62,6 +62,13 @@ public class AuthorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpGet("validation")]
+    public ActionResult JwtValidation()
+    {
+        return Ok(ApiResponse<string>.Success());
+    }
+
     // [Authorize]
     // [HttpPatch("authors/nickname")]
     // public async Task<ActionResult> UpdateNickname(string nickname)

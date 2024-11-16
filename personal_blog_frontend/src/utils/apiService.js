@@ -60,7 +60,7 @@ axiosInstance.interceptors.response.use(
 );
 
 // Fetch data using the axios instance
-export const fetchData = async (url, method = 'get', data = null, successCallback, errorCallback) => {
+export const fetchData = async (url, method = 'get', data = null, successCallback = () => { }, errorCallback = () => { }) => {
     try {
         // Attach the errorCallback to the request config so it can be accessed in the response interceptor
         const config = {
@@ -73,7 +73,9 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
         // Make the request using the axios instance
         const response = await axiosInstance(config);
         // Call the success callback with the response data
-        successCallback(response.data.data);
+        if (typeof successCallback === 'function') {
+            successCallback(response.data.data);
+        }
         return true;
     } catch (error) {
         // The error will be handled by the response interceptor, so this block may not be needed

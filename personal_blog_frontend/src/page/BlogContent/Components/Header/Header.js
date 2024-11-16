@@ -16,93 +16,67 @@ import { ReactComponent as Moon } from '../../../../assets/images/blogContentHea
 import Login from '../Login/Login';
 import produce from 'immer'
 
-// header js
+// Header component
 const Header = () => {
-    // editable is a state that is used to control the dropdown menu
-    const { editable } = useSelector(state => state.mainHeader);
+    // Redux state selectors
+    // const { editable } = useSelector(state => state.mainHeader);
     const { token } = useSelector(state => state.blogContentLogin);
     const { alertDialog } = useSelector(state => state.blogContentDialog);
 
-
+    // Local state management
     const [showLogin, setShowLogin] = useState(false);
-    // dropDownValue is a state {view or edit} that is used to control the dropdown menu
-    const [dropDownValue, setDropDownValue] = useState('View');
-
-    // inputValue is a state that is used to store the input value
+    // const [dropDownValue, setDropDownValue] = useState('View');
     const [inputValue, setInputValue] = useState('');
-
-    // displayArticles is a state that is used to store the articles that are found
     const [displayArticles, setDisplayArticles] = useState([]);
-
-    // hasData is a state that is used to control the display of the articles
     const [hasData, setHasData] = useState(false);
 
     const dispatch = useDispatch();
 
-    // buttonRef is a reference to the button element (view/edit)
-    const buttonRef = useRef(null);
-
+    // Refs for DOM elements
+    // const buttonRef = useRef(null);
     const searchContainerRef = useRef(null);
-
-    // hideRef is a reference to the dropdown element
-    const hideRef = useRef(null);
-
+    // const hideRef = useRef(null);
     const loginRef = useRef(null);
     const loginIconRef = useRef(null);
     const listRef = useRef(null);
     const inputRef = useRef(null);
 
+    // Effect to handle clicks outside the search container
     useEffect(() => {
-        // Event handler to check for clicks outside the search container
         function handleClickOutside(event) {
-            // Ensure the searchContainerRef is a DOM node
             if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-                // The click was outside the search container
                 setDisplayArticles([]);
                 setHasData(false);
-                inputRef.current.value = ''
-                onInput({ target: { value: '' } })
+                inputRef.current.value = '';
+                onInput({ target: { value: '' } });
             }
         }
-
-        // Add the event listener
         document.addEventListener('mousedown', handleClickOutside);
-
-        // Remove the event listener on component unmount
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [searchContainerRef]);
 
-
+    // Effect to handle clicks outside the login container
     useEffect(() => {
-        // Event handler to check for clicks outside the search container
         function handleClickOutside(event) {
-            // Ensure the searchContainerRef is a DOM node
             if (loginRef.current && !loginRef.current.contains(event.target) && !loginIconRef.current.contains(event.target)) {
-                // The click was outside the search container
-                setShowLogin(false)
+                setShowLogin(false);
             }
         }
-
-        // Add the event listener
         document.addEventListener('mousedown', handleClickOutside);
-
-        // Remove the event listener on component unmount
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [loginRef, loginIconRef]);
 
-
-
+    // Effect to highlight search terms in articles
     useEffect(() => {
-
         if (hasData) {
-            let allText = []
+            let allText = [];
             let wordsToHighlight = inputValue.split(' ');
             Array.from(listRef.current.children).forEach(child => {
-                allText.push(child.children[0].textContent)
+                allText.push(child.children[0].textContent);
             });
 
             wordsToHighlight.forEach(word => {
@@ -110,122 +84,99 @@ const Header = () => {
                     const regex = new RegExp(`\\b${word.trim()}\\b`, 'gi');
                     allText[i] = allText[i].replace(regex, match => `<span class="header__highlight">${match}</span>`);
                 }
-            })
+            });
 
             Array.from(listRef.current.children).forEach(child => {
-                child.children[0].innerHTML = allText.shift()
+                child.children[0].innerHTML = allText.shift();
             });
         }
+    }, [hasData, inputValue]);
 
-    }, [hasData, inputValue])
+    // Toggle view/edit mode
+    // const viewExp = () => {
+    //     dispatch(editStatus());
+    //     if (!editable)
+    //         buttonRef.current.style.backgroundColor = '#E8E8E8';
+    //     else
+    //         buttonRef.current.style.backgroundColor = 'white';
+    // };
 
+    // // Handle dropdown selection
+    // function selectDropdown() {
+    //     dispatch(editStatus());
+    //     setDropDownValue('Edit' === dropDownValue ? 'View' : 'Edit');
+    //     buttonRef.current.style.backgroundColor = 'white';
+    // }
 
-
-    const viewExp = () => {
-        dispatch(editStatus())
-        if (!editable)
-            buttonRef.current.style.backgroundColor = '#E8E8E8';
-        else
-            buttonRef.current.style.backgroundColor = 'white';
-    }
-
-    function selectDropdown() {
-        dispatch(editStatus())
-        setDropDownValue('Edit' === dropDownValue ? 'View' : 'Edit');
-        buttonRef.current.style.backgroundColor = 'white';
-    }
-
+    // Handle input changes in the search bar
     const onInput = async (e) => {
-        var term = e.target.value
+        var term = e.target.value;
         if (term.trim() === '') {
-            setInputValue('')
-            setDisplayArticles([])
-            return
+            setInputValue('');
+            setDisplayArticles([]);
+            return;
         }
-        setInputValue(term.trim())
-        // if (inputValue === term.trim()) return
-        // setInputValue(term)
-    }
+        setInputValue(term.trim());
+    };
 
+    // Fetch articles based on search term
     const getArticles = useCallback(async (term) => {
-        // Check if there are any articles currently displayed
-        // Clear the displayed articles
         setDisplayArticles([]);
-        // Set the hasData state to false
         setHasData(false);
 
-        // Construct the URL for the API request
         var url = `https://localhost:7219/api/articles/${term}`;
 
-        // Fetch data from the API
         fetchData(
-            url, // The URL to fetch data from
-            'get', // The HTTP method to use
-            null, // No body data for GET request
-            (data) => { // Success callback function
-                // Check if the returned data is empty
+            url,
+            'get',
+            null,
+            (data) => {
                 if (data.length === 0) {
-                    // Set the hasData state to false
                     setHasData(false);
-                    // Display a message indicating no articles were found
-                    dispatch(editErrorMsg({ type: 'WARNING', msg: `No articles found for ${term}` }))
-                    // setDisplayArticles([`No articles found for ${term}`]);
+                    dispatch(editErrorMsg({ type: 'WARNING', msg: `No articles found for ${term}` }));
                 } else {
-                    // Initialize an array to hold the articles
                     var articleArray = [];
-                    // Iterate over the returned data and populate the articleArray
                     data.forEach((article) => {
                         articleArray.push({
-                            id: article.id, // Article ID
-                            content: article.part_content, // Article content
-                            category: article.category, // Article category
-                            category_id: article.category_id // Article category ID
+                            id: article.id,
+                            content: article.part_content,
+                            category: article.category,
+                            category_id: article.category_id
                         });
                     });
 
-                    // Update the displayed articles with the fetched data
                     setDisplayArticles(articleArray);
-                    // Set the hasData state to true
                     setHasData(true);
-                    // Update the input value with the search term
                     setInputValue(term);
                 }
             },
-            (error) => { // Error callback function
-                // Display the error message
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+            (error) => {
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }));
             }
         );
-    }, [dispatch])
+    }, [dispatch]);
 
-    // detect when user stops typing
-    // Define a debounced function using lodash's debounce
+    // Debounce fetching articles to optimize performance
     useEffect(() => {
         const debouncedFetchArticles = _.debounce(async () => {
             if (inputValue) {
                 await getArticles(inputValue);
             }
-        }, 700); // Wait for 700 milliseconds
-        debouncedFetchArticles()
+        }, 700);
+        debouncedFetchArticles();
         return () => {
             debouncedFetchArticles.cancel();
         };
     }, [getArticles, inputValue]);
 
-    // getArticles is a function that is used to get the articles by full text search from the backend
-    /**
-     * Asynchronous function to fetch articles based on a search term.
-     * @param {string} term - The search term to fetch articles for.
-     */
-
-
+    // Handle article click
     const onClickArticle = (article_id, category_id) => {
-        // console.log(`Article ID: ${article_id}, Category ID: ${category_id}`)
-        dispatch(getArticleInfo(article_id))
-        inputRef.current.value = ''
-        onInput({ target: { value: '' } })
-    }
+        dispatch(getArticleInfo(article_id));
+        inputRef.current.value = '';
+        onInput({ target: { value: '' } });
+    };
 
+    // Handle login icon click
     const clickLoginIcon = () => {
         if (token === '' || token === null) {
             setShowLogin(prev => !prev);
@@ -235,46 +186,57 @@ const Header = () => {
                 draft.dialogTitle = 'Log Out?';
                 draft.dialogText = 'Are you sure to log out';
                 draft.dest = 'LogOutConfirm';
-            })
-            dispatch(editAlertDialog(uptAlertDialog))
+            });
+            dispatch(editAlertDialog(uptAlertDialog));
         }
-    }
+    };
 
+    // Effect to update login icon color based on token validation
     useEffect(() => {
-        if (token !== null && token !== "" && loginIconRef.current) {
-            const paths = loginIconRef.current.querySelectorAll('path');
-            paths[0].setAttribute('fill', 'green')
-            paths[1].setAttribute('fill', 'green')
-            paths[2].setAttribute('fill', 'yellow')
+        const loginIconNode = loginIconRef.current;
+        const updateIconColor = (color1, color2, color3) => {
+            if (!loginIconNode) return;
+            const paths = loginIconNode.querySelectorAll('path');
+            if (paths.length >= 3) {
+                paths[0].setAttribute('fill', color1);
+                paths[1].setAttribute('fill', color2);
+                paths[2].setAttribute('fill', color3);
+            }
+        };
 
-            loginIconRef.current.classList.add('hover');
-            const timeoutId = setTimeout(() => {
-                loginIconRef.current.classList.remove('hover');
-            }, 1000);
+        if (token && loginIconNode) {
+            const JwtValidation = async () => {
+                const response = await fetchData('https://localhost:7219/api/validation', 'get', null);
 
-            return () => {
-                clearTimeout(timeoutId);
-                loginIconRef.current.classList.remove('hover');
+                if (response) {
+                    updateIconColor('green', 'green', 'yellow');
+
+                    loginIconNode.classList.add('hover');
+                    const timeoutId = setTimeout(() => {
+                        loginIconNode.classList.remove('hover');
+                    }, 1000);
+
+                    return () => {
+                        clearTimeout(timeoutId);
+                        loginIconNode.classList.remove('hover');
+                    };
+                }
             };
-        } else {
-            const paths = loginIconRef.current.querySelectorAll('path');
-            paths[0].setAttribute('fill', 'none')
-            paths[1].setAttribute('fill', 'none')
-            paths[2].setAttribute('fill', 'red')
+
+            JwtValidation();
+        } else if (loginIconNode) {
+            updateIconColor('none', 'none', 'red');
         }
-
-    }, [token, loginIconRef])
-
-
+    }, [token, loginIconRef]);
 
     return (
-        // header html
+        // Header HTML structure
         <div className="header">
-            {/* avater */}
+            {/* Avatar */}
             <div className="header__avatar">
                 <img src={avatar} alt='avatar' />
             </div>
-            {/* search bar */}
+            {/* Search bar */}
             <div className="header__search_bar" ref={searchContainerRef}>
                 <input
                     type="text"
@@ -283,8 +245,7 @@ const Header = () => {
                     onChange={(e) => onInput(e)}
                     ref={inputRef}
                 />
-                {/* display articles */}
-
+                {/* Display articles */}
                 <ul className="header__display" ref={listRef}>
                     {hasData ? (
                         displayArticles.map(item => (
@@ -294,7 +255,7 @@ const Header = () => {
                                 onClick={() => onClickArticle(item.id, item.category_id)}
                             >
                                 <span>...&nbsp;{item.content}&nbsp;...</span>
-                                {/* show categories */}
+                                {/* Show categories */}
                                 <div className="header__categories">
                                     <span>
                                         {item.category.first_category}
@@ -309,47 +270,14 @@ const Header = () => {
                                         &nbsp;--&nbsp;{item.category.fourth_category}
                                     </span>
                                 </div>
-
                             </li>
                         ))
                     ) : <li key={-1}><span>{displayArticles}</span></li>}
                 </ul>
             </div>
 
-            {/* header attributes - right side*/}
+            {/* Header attributes - right side */}
             <div className="header__attrs">
-                {/* view or edit button*/}
-                {/* <div className="header__view">
-                    <div className="header__view_button" onClick={() => viewExp()} ref={buttonRef}>
-                        <span>{dropDownValue}</span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            className={classNames('header__view_arrow', { arrow_expand: editable })}
-                        >
-                            <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                        </svg>
-
-
-                    </div>
-                    <div
-                        className={classNames("header__view_dropdown", { dropdown_expand: editable })}
-                        onClick={() => selectDropdown()}
-                        ref={hideRef}>
-                        <span>{'Edit' === dropDownValue ? 'View' : 'Edit'}</span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            className={classNames('header__view_arrow')}
-                            style={{ opacity: 0 }}
-                        >
-                            <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" /></svg>
-
-
-                    </div>
-
-                </div> */}
-
                 {/* Theme */}
                 <div className="header__theme">
                     <Sun
@@ -364,7 +292,7 @@ const Header = () => {
                             height: '2rem',
                             width: '2rem',
                         }}
-                        title = 'login'
+                        title='login'
                         onClick={clickLoginIcon}
                     />
                 </div>
