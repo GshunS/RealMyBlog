@@ -6,11 +6,15 @@ const blogContentLoginStore = createSlice({
     name: "Login",
     initialState: {
         token: localStorage.getItem('token_key') || '',
+        tokenValid: false
     },
     reducers: {
         editToken(state, action) {
             state.token = action.payload;
             localStorage.setItem('token_key', action.payload)
+        },
+        editTokenValid(state, action) {
+            state.tokenValid = action.payload;
         },
         logout(state) {
             state.token = '';
@@ -22,6 +26,7 @@ const blogContentLoginStore = createSlice({
 
 const {
     editToken,
+    editTokenValid,
     logout
 } = blogContentLoginStore.actions
 
@@ -47,13 +52,27 @@ const fectchLoginToken = (username, password) => {
     }
 }
 
+const JwtValidation = () => {
+    return async (dispatch) => {
+        const url = `https://localhost:7219/api/validation`
+        const res = await fetchData(
+            url,
+            'GET',
+            null,
+        )
+        dispatch(editTokenValid(res))
+    }
+}
+
 export {
     editToken,
+    editTokenValid,
     logout
 }
 
 export {
-    fectchLoginToken
+    fectchLoginToken,
+    JwtValidation
 }
 
 const reducer = blogContentLoginStore.reducer

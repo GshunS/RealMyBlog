@@ -11,7 +11,7 @@ import { updateAttrs } from '../../../../store/modules/blogContentMainContentSto
 import { editAllCategories } from '../../../../store/modules/blogContentNavBarStore'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { produce } from 'immer'
-
+import { JwtValidation } from '../../../../store/modules/blogContentLoginStore';
 const MainContent = () => {
     const dispatch = useDispatch();
     const {
@@ -47,9 +47,11 @@ const MainContent = () => {
     //#region title update
 
     const [readOnly, setReadOnly] = useState(false);
+
     const [title, setTitle] = useState("");
     const [oldTitle, setOldTitle] = useState("")
     const inputRef = useRef(null);
+    const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     useEffect(() => {
         if (articleInfo.articleId !== null) {
@@ -59,7 +61,9 @@ const MainContent = () => {
     }, [articleInfo])
 
     const handleTitleClick = () => {
-        setReadOnly(false);
+        if (tokenValid) {
+            setReadOnly(false);
+        }
     };
 
     const handleInputBlur = () => {
@@ -70,7 +74,9 @@ const MainContent = () => {
     };
 
     const handleInputChange = (e) => {
-        setTitle(e.target.value);
+        if (tokenValid) {
+            setTitle(e.target.value);
+        }
     }
 
     const handleKeyDown = (e) => {
@@ -152,7 +158,7 @@ const MainContent = () => {
                     </div>
                     <div className="main-content__textBody">
                         <div className="main-content__textContent">
-                            <TiptapTextArea/>
+                            <TiptapTextArea />
                         </div>
                     </div>
                     <div className="main-content__footer">

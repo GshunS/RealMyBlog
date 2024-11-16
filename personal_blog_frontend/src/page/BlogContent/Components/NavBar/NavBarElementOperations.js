@@ -18,81 +18,8 @@ const NavBarElementOperation = React.memo((props) => {
     const ancestorCategoryNames = props.ancestorCategoryNames
     const categorySpanRef = props.categorySpanRef;
     const { formDialog } = useSelector(state => state.blogContentDialog)
-
-
-    // function findMatchedAncestorCategories(element, targetClassName) {
-    //     let currentElement = element; // Initialize current element to the starting element
-    //     let ancestorIndex = ancestorCategoryNames.length - 1 // Initialize the index to the last ancestor category name
-
-    //     // Traverse up the DOM tree until an <li> element is found
-    //     while (currentElement && currentElement.tagName !== 'LI') {
-    //         currentElement = currentElement.parentElement;
-    //     }
-
-    //     // Continue traversing as long as the element is an <li>
-    //     while (currentElement && currentElement.tagName === 'LI') {
-    //         // Get the text content of the current <li> element, split by newline, and take the first part
-    //         let text = currentElement.innerText.split('\n')[0]
-
-    //         // Check if the text matches the current ancestor category name
-    //         if (text === ancestorCategoryNames[ancestorIndex]) {
-    //             ancestorIndex-- // Move to the previous ancestor category name
-    //         } else {
-    //             return false // If the text does not match, return false
-    //         }
-
-    //         // If all ancestor categories have been matched, return true
-    //         if (ancestorIndex < 0) {
-    //             return true
-    //         }
-
-    //         // Move to the parent <li> element
-    //         currentElement = currentElement.parentElement;
-
-    //         // Continue moving up until the next parent <li> is found
-    //         while (currentElement && currentElement.tagName !== 'LI') {
-    //             currentElement = currentElement.parentElement;
-    //         }
-    //     }
-
-    //     // If the loop completes without matching all ancestor categories, return false
-    //     return false
-    // }
-
-    // when user click the create folder icon (Deprecated)
-    // const createFolder = () => {
-    //     // hide all existing temp folders
-    //     const children = document.querySelectorAll('.showFolder')
-    //     children.forEach(child => {
-    //         child.style.display = "none"
-    //     })
-
-
-    //     document.querySelectorAll('.nav-bar__category_div_temp').forEach((element) => {
-
-    //         if (findMatchedAncestorCategories(element, "nav-bar__first-category-items")) {
-    //             let emptyFolder = element.parentElement.parentElement
-
-    //             if (emptyFolder.classList.contains('nav-bar__has-child')) {
-    //                 setTimeout(() => {
-    //                     emptyFolder.classList.remove("nav-bar__has-child")
-
-    //                 }, 100);
-    //             }
-    //             element.style.display = 'flex'
-    //             element.classList.add('showFolder')
-    //         }
-
-    //     })
-
-    //     if (!expandedCategories.hasOwnProperty(categoryName)) {
-    //         dispatch(fetchNextCategory(categoryValue, ...categories))
-    //     }
-
-    //     dispatch(editTempFolderCreated(true))
-    //     dispatch(editCurrentAncestorNames(ancestorCategoryNames))
-    // }
-
+    const { tokenValid } = useSelector(state => state.blogContentLogin)
+    
 
     const createFolderInNewWindow = async () => {
         if (!expandedCategories.hasOwnProperty(categoryName)) {
@@ -126,8 +53,9 @@ const NavBarElementOperation = React.memo((props) => {
     }
 
     return (
-        // operation for a folder
-        <div className={classNames("nav-bar__category_img")}>
+        tokenValid && (
+            // operation for a folder
+            <div className={classNames("nav-bar__category_img")}>
             <Rename
                 className='nav-bar__rename-folder'
                 title='rename'
@@ -154,7 +82,8 @@ const NavBarElementOperation = React.memo((props) => {
                 deleteType={'folder'}
                 articleId={null}
                 categoryNames={ancestorCategoryNames} />
-        </div>
+            </div>
+        )
     )
 })
 

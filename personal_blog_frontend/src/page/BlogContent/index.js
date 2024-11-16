@@ -1,5 +1,8 @@
 import '../styles/reset.css'
 import './index.css'
+import { useSelector, useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { JwtValidation, editTokenValid } from '../../store/modules/blogContentLoginStore'
 import Header from "./Components/Header/Header"
 import NavBar from './Components/NavBar/NavBar'
 import MainContent from './Components/MainContent/MainContent'
@@ -11,6 +14,17 @@ import FormDialog from './Components/Dialog/FormDialog'
 import AlertDialog from './Components/Dialog/AlertDialog'
 
 const BlogContent = () => {
+    const { token } = useSelector(state => state.blogContentLogin);
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (token) {
+            dispatch(JwtValidation())
+        } else {
+            dispatch(editTokenValid(false))
+        }
+    }, [token, dispatch])
+
 
     return (
         <div className="blog-container">

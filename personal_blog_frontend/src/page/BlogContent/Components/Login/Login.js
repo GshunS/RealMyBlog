@@ -35,7 +35,7 @@ const Login = forwardRef(({ setShowLogin, loginIconRef }, loginRef) => {
     const handleLoginSubmit = _.debounce(async () => {
         const res = validateLoginField(username, password);
         if (res) {
-            await dispatch(fectchLoginToken(username, password))
+            dispatch(fectchLoginToken(username, password))
         }
         setShowLogin(false);
     }, [300]);

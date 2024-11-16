@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { getArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import { editAlertDialog } from '../../../../store/modules/blogContentDialogStore';
+import { JwtValidation } from '../../../../store/modules/blogContentLoginStore';
 import _ from 'lodash'
 
 import { ReactComponent as LoginIcon } from '../../../../assets/images/blogContentHeader/login.svg'
@@ -20,7 +21,7 @@ import produce from 'immer'
 const Header = () => {
     // Redux state selectors
     // const { editable } = useSelector(state => state.mainHeader);
-    const { token } = useSelector(state => state.blogContentLogin);
+    const { token, tokenValid } = useSelector(state => state.blogContentLogin);
     const { alertDialog } = useSelector(state => state.blogContentDialog);
 
     // Local state management
@@ -204,30 +205,22 @@ const Header = () => {
             }
         };
 
-        if (token && loginIconNode) {
-            const JwtValidation = async () => {
-                const response = await fetchData('https://localhost:7219/api/validation', 'get', null);
+        if (tokenValid) {
+            updateIconColor('green', 'green', 'yellow');
 
-                if (response) {
-                    updateIconColor('green', 'green', 'yellow');
+            loginIconNode.classList.add('hover');
+            const timeoutId = setTimeout(() => {
+                loginIconNode.classList.remove('hover');
+            }, 1000);
 
-                    loginIconNode.classList.add('hover');
-                    const timeoutId = setTimeout(() => {
-                        loginIconNode.classList.remove('hover');
-                    }, 1000);
-
-                    return () => {
-                        clearTimeout(timeoutId);
-                        loginIconNode.classList.remove('hover');
-                    };
-                }
+            return () => {
+                clearTimeout(timeoutId);
+                loginIconNode.classList.remove('hover');
             };
-
-            JwtValidation();
-        } else if (loginIconNode) {
+        } else {
             updateIconColor('none', 'none', 'red');
         }
-    }, [token, loginIconRef]);
+    }, [loginIconRef, tokenValid]);
 
     return (
         // Header HTML structure

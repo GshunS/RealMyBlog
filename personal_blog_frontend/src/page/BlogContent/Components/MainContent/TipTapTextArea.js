@@ -39,6 +39,8 @@ import { fetchData } from '../../../../utils/apiService'
 import { useDispatch, useSelector } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
+import { JwtValidation } from '../../../../store/modules/blogContentLoginStore';
+
 import './TipTapTextArea.css'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
@@ -46,7 +48,8 @@ import _ from 'lodash'
 
 const TiptapTextArea = () => {
     const [contextMenu, setContextMenu] = useState(null);
-    const [cursorPos, setCursorPos] = useState(0);
+    const { tokenValid } = useSelector(state => state.blogContentLogin);
+
     const lowlight = createLowlight();
     lowlight.register({ csharp })
     const {
@@ -133,8 +136,10 @@ const TiptapTextArea = () => {
 
         // editable: false,
         onUpdate: ({ editor }) => {
+            if (!editor.isEditable) {
+                return;
+            }
             const { from, to } = editor.view.state.selection;
-            setCursorPos(editor.state.selection.$anchor.pos);
             const startDOM = editor.view.domAtPos(from).node;
             if (startDOM && startDOM instanceof HTMLElement) {
                 startDOM.scrollIntoView({
@@ -189,6 +194,10 @@ const TiptapTextArea = () => {
         }
 
     });
+
+    useEffect(() => {
+        editor.setEditable(tokenValid)
+    }, [dispatch, editor, tokenValid]);
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
@@ -297,108 +306,93 @@ const TiptapTextArea = () => {
         });
     };
 
-    const handleCreateCodeBlock = () => {
-        if (editor) {
-            editor.chain().focus().toggleCodeBlock().run();
+    const handleEditorAction = (action, level) => {
+        if (editor && editor.isEditable) {  // Ensure the editor is editable
+            switch (action) {
+                case 'codeBlock':
+                    editor.chain().focus().toggleCodeBlock().run();
+                    break;
+                case 'bulletList':
+                    editor.chain().focus().toggleBulletList().run();
+                    break;
+                case 'orderedList':
+                    editor.chain().focus().toggleOrderedList().run();
+                    break;
+                case 'bold':
+                    editor.chain().focus().toggleBold().run();
+                    break;
+                case 'italic':
+                    editor.chain().focus().toggleItalic().run();
+                    break;
+                case 'strike':
+                    editor.chain().focus().toggleStrike().run();
+                    break;
+                case 'horizontalRule':
+                    editor.chain().focus().setHorizontalRule().run();
+                    break;
+                case 'link':
+                    const url = prompt("Enter the URL");
+                    if (url) {
+                        editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+                    }
+                    break;
+                case 'heading':
+                    if (level) {
+                        editor.chain().focus().toggleHeading({ level }).run();
+                    }
+                    break;
+                case 'table':
+                    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
-    const handleCreateBulletList = () => {
-        if (editor) {
-            editor.chain().focus().toggleBulletList().run();
-        }
-    };
-
-    const handleCreateOrderedList = () => {
-        if (editor) {
-            editor.chain().focus().toggleOrderedList().run();
-        }
-    };
-
-    const handleToggleBold = () => {
-        if (editor) {
-            editor.chain().focus().toggleBold().run();
-        }
-    };
-
-    const handleToggleItalic = () => {
-        if (editor) {
-            editor.chain().focus().toggleItalic().run();
-        }
-    };
-
-    const handleToggleStrike = () => {
-        if (editor) {
-            editor.chain().focus().toggleStrike().run();
-        }
-    };
-
-    const handleInsertHorizontalRule = () => {
-        if (editor) {
-            editor.chain().focus().setHorizontalRule().run();
-        }
-    };
-
-    const handleInsertLink = () => {
-        const url = prompt("Enter the URL");
-        if (editor && url) {
-            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-        }
-    };
-
-    const handleInsertHeading = (level) => {
-        if (editor) {
-            editor.chain().focus().toggleHeading({ level }).run();
-        }
-    };
-
-    const handleInsertTable = () => {
-        if (editor) {
-            editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-        }
-    };
 
     return (
         <>
             <div className="toolbar">
-                <button onClick={handleCreateCodeBlock} title="Ctrl+Alt+C">
+                <button onClick={() => handleEditorAction('codeBlock')} title="Ctrl+Alt+C">
                     <FontAwesomeIcon icon={faCode} />
                 </button>
-                <button onClick={handleCreateBulletList} title="Ctrl+Shift+8">
+                <button onClick={() => handleEditorAction('bulletList')} title="Ctrl+Shift+8">
                     <FontAwesomeIcon icon={faListUl} />
                 </button>
-                <button onClick={handleCreateOrderedList} title="Ctrl+Shift+7">
+                <button onClick={() => handleEditorAction('orderedList')} title="Ctrl+Shift+7">
                     <FontAwesomeIcon icon={faListOl} />
                 </button>
-                <button onClick={handleToggleBold} title="Ctrl+B">
+                <button onClick={() => handleEditorAction('bold')} title="Ctrl+B">
                     <FontAwesomeIcon icon={faBold} />
                 </button>
-                <button onClick={handleToggleItalic} title="Ctrl+I">
+                <button onClick={() => handleEditorAction('italic')} title="Ctrl+I">
                     <FontAwesomeIcon icon={faItalic} />
                 </button>
-                <button onClick={handleToggleStrike} title="Ctrl+Shift+S">
+                <button onClick={() => handleEditorAction('strike')} title="Ctrl+Shift+S">
                     <FontAwesomeIcon icon={faStrikethrough} />
                 </button>
-                <button onClick={handleInsertHorizontalRule} title="---">
+                <button onClick={() => handleEditorAction('horizontalRule')} title="---">
                     <FontAwesomeIcon icon={faMinus} />
                 </button>
-                <button onClick={handleInsertLink} title="Ctrl+K">
+                <button onClick={() => handleEditorAction('link')} title="Ctrl+K">
                     <FontAwesomeIcon icon={faLink} />
                 </button>
-                <button onClick={() => handleInsertHeading(1)} title="Ctrl+Alt+1">
+                <button onClick={() => handleEditorAction('heading', 1)} title="Ctrl+Alt+1">
                     <FontAwesomeIcon icon={faHeading} />1
                 </button>
-                <button onClick={() => handleInsertHeading(2)} title="Ctrl+Alt+2">
+                <button onClick={() => handleEditorAction('heading', 2)} title="Ctrl+Alt+2">
                     <FontAwesomeIcon icon={faHeading} />2
                 </button>
-                <button onClick={() => handleInsertHeading(3)} title="Ctrl+Alt+3">
+                <button onClick={() => handleEditorAction('heading', 3)} title="Ctrl+Alt+3">
                     <FontAwesomeIcon icon={faHeading} />3
                 </button>
-                <button onClick={handleInsertTable} title="Table">
+                <button onClick={() => handleEditorAction('table')} title="Table">
                     <FontAwesomeIcon icon={faTable} />
                 </button>
                 {/* Add more buttons as needed */}
             </div>
+
             <EditorContent editor={editor} />
             {contextMenu && editor && (
                 <TableContextMenu
