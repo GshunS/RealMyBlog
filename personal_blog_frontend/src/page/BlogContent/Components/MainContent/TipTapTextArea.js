@@ -39,7 +39,6 @@ import { fetchData } from '../../../../utils/apiService'
 import { useDispatch, useSelector } from 'react-redux'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
-import { JwtValidation } from '../../../../store/modules/blogContentLoginStore';
 
 import './TipTapTextArea.css'
 import { produce } from 'immer'
@@ -137,7 +136,7 @@ const TiptapTextArea = () => {
             if (!editor.isEditable) {
                 return;
             }
-            const { from, to } = editor.view.state.selection;
+            const { from } = editor.view.state.selection;
             const startDOM = editor.view.domAtPos(from).node;
             if (startDOM && startDOM instanceof HTMLElement) {
                 startDOM.scrollIntoView({
