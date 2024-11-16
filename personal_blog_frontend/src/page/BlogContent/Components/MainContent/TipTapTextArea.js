@@ -286,12 +286,12 @@ const TiptapTextArea = () => {
                 dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
             }
         )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [articleInfo.articleId, dispatch, editor]);
 
     const handleSubmit = useMemo(() => _.debounce(async () => {
         await submitArticleContent()
-    }, 2000), [submitArticleContent]);
+    }, 1000), [submitArticleContent]);
 
 
     useEffect(() => {
@@ -348,22 +348,28 @@ const TiptapTextArea = () => {
         }
     };
 
-    // useEffect(() => {
-    //     if (!editor) return;
-    //     const handleKeyDown = (event) => {
-    //         if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-    //             event.preventDefault();
-    //             console.log('save')
-    //             handleSubmit(); // Call the save function
-    //         }
-    //     };
+    useEffect(() => {
+        if (!editor) return;
 
-    //     window.addEventListener('keydown', handleKeyDown);
+        // Define the async function to handle the saving logic
+        const handleKeyDown = async (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+                event.preventDefault();
+                console.log('save');
+                await submitArticleContent(); // Call the save function
+                if (handleSubmit) {
+                    handleSubmit.cancel();
+                }
+            }
+        };
 
-    //     return () => {
-    //         window.removeEventListener('keydown', handleKeyDown);
-    //     };
-    // }, [handleSubmit, editor]);
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [submitArticleContent, editor, handleSubmit]);
+
 
     return (
         <>
