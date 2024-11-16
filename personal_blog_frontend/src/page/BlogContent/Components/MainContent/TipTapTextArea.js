@@ -136,6 +136,7 @@ const TiptapTextArea = () => {
             if (!editor.isEditable) {
                 return;
             }
+
             const { from } = editor.view.state.selection;
             const startDOM = editor.view.domAtPos(from).node;
             if (startDOM && startDOM instanceof HTMLElement) {
@@ -286,18 +287,18 @@ const TiptapTextArea = () => {
             }
         )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [articleInfo.articleId, editor, dispatch]);
+    }, [articleInfo.articleId, dispatch, editor]);
 
     const handleSubmit = useMemo(() => _.debounce(async () => {
         await submitArticleContent()
     }, 2000), [submitArticleContent]);
 
 
-    // useEffect(() => {
-    //     return () => {
-    //         handleSubmit.cancel();
-    //     };
-    // }, [handleSubmit]);
+    useEffect(() => {
+        return () => {
+            handleSubmit.cancel();
+        };
+    }, [handleSubmit]);
 
     const handleCloseMenu = () => {
         setContextMenu(null);
