@@ -39,6 +39,7 @@
     }
 }
 
+
 .tiptap {
     outline: none;
     min-height: 63vh;
@@ -330,4 +331,11 @@
 
 .toolbar button:active {
     background-color: #c0c0c0;
+}
+
+
+.ProseMirror.disable-selection ::selection {
+    -webkit-user-drag: none;
+    background-color: transparent; 
+    color: inherit; 
 }

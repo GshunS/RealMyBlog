@@ -1,60 +1,63 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette } from '@fortawesome/free-solid-svg-icons';
+import { HexColorPicker } from 'react-colorful';
 
-// import DragHandle from '@tiptap-pro/extension-drag-handle-react'
-import FileHandler from '@tiptap-pro/extension-file-handler'
+import FileHandler from '@tiptap-pro/extension-file-handler';
 import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemplate';
 import IndentHandler from './TipTapCustomExtensions/IndentHandler';
 import ImageClipboardHandler from './TipTapCustomExtensions/ImageClipboardHandler';
 import TableContextMenu from './TableContextMenu';
 
-import Document from '@tiptap/extension-document'
-import Link from '@tiptap/extension-link'
-import Paragraph from '@tiptap/extension-paragraph'
-import Heading from '@tiptap/extension-heading'
-import Text from '@tiptap/extension-text'
-import ListItem from '@tiptap/extension-list-item'
-import OrderedList from '@tiptap/extension-ordered-list'
-import BulletList from '@tiptap/extension-bullet-list'
-import Dropcursor from '@tiptap/extension-dropcursor'
-import Table from '@tiptap/extension-table'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import TaskItem from '@tiptap/extension-task-item'
-import HorizontalRule from '@tiptap/extension-horizontal-rule'
-import TaskList from '@tiptap/extension-task-list'
-import Gapcursor from '@tiptap/extension-gapcursor'
-import Strike from '@tiptap/extension-strike'
-import csharp from 'highlight.js/lib/languages/csharp'
-import { createLowlight } from 'lowlight'
-import Bold from '@tiptap/extension-bold'
-import Italic from '@tiptap/extension-italic'
-import History from '@tiptap/extension-history'
+import Document from '@tiptap/extension-document';
+import Link from '@tiptap/extension-link';
+import Paragraph from '@tiptap/extension-paragraph';
+import Heading from '@tiptap/extension-heading';
+import Text from '@tiptap/extension-text';
+import ListItem from '@tiptap/extension-list-item';
+import OrderedList from '@tiptap/extension-ordered-list';
+import BulletList from '@tiptap/extension-bullet-list';
+import Dropcursor from '@tiptap/extension-dropcursor';
+import Table from '@tiptap/extension-table';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TableRow from '@tiptap/extension-table-row';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import TaskItem from '@tiptap/extension-task-item';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
+import TaskList from '@tiptap/extension-task-list';
+import Gapcursor from '@tiptap/extension-gapcursor';
+import Strike from '@tiptap/extension-strike';
+import csharp from 'highlight.js/lib/languages/csharp';
+import { createLowlight } from 'lowlight';
+import Bold from '@tiptap/extension-bold';
+import Italic from '@tiptap/extension-italic';
+import History from '@tiptap/extension-history';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
 
-import { fetchData } from '../../../../utils/apiService'
-import { useDispatch, useSelector } from 'react-redux'
-import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
-import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
+import { fetchData } from '../../../../utils/apiService';
+import { useDispatch, useSelector } from 'react-redux';
+import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore';
+import { editArticleSaveStatus, editArticleInfo } from '../../../../store/modules/blogContentMainContentStore';
 
-import './TipTapTextArea.css'
-import { produce } from 'immer'
-import { useEffect, useState } from 'react'
-import _ from 'lodash'
+import './TipTapTextArea.css';
+import { produce } from 'immer';
+import _ from 'lodash';
 
 const TiptapTextArea = () => {
     const [contextMenu, setContextMenu] = useState(null);
+    const [showColorPicker, setShowColorPicker] = useState(false);
+    const [color, setColor] = useState('#000000');
     const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     const lowlight = createLowlight();
-    lowlight.register({ csharp })
-    const {
-        articleInfo
-    } = useSelector(state => state.blogContentMainContent)
+    const colorPickerRef = useRef(null);
+    const colorPickerButtonRef = useRef(null);
 
+    lowlight.register({ csharp });
+    const { articleInfo } = useSelector(state => state.blogContentMainContent);
 
     const dispatch = useDispatch();
     const editor = useEditor({
@@ -93,9 +96,9 @@ const TiptapTextArea = () => {
                 allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
                 onDrop: (currentEditor, files, pos) => {
                     files.forEach(file => {
-                        const fileReader = new FileReader()
+                        const fileReader = new FileReader();
 
-                        fileReader.readAsDataURL(file)
+                        fileReader.readAsDataURL(file);
                         fileReader.onload = () => {
                             currentEditor.chain().insertContentAt(pos, {
                                 type: 'image',
@@ -104,9 +107,9 @@ const TiptapTextArea = () => {
                                     width: 200,
                                     height: 200
                                 },
-                            }).focus().run()
-                        }
-                    })
+                            }).focus().run();
+                        };
+                    });
                 },
             }),
             Bold,
@@ -114,6 +117,8 @@ const TiptapTextArea = () => {
             History.configure({
                 newGroupDelay: 100,
             }),
+            TextStyle,
+            Color,
         ],
         editorProps: {
             handleDOMEvents: {
@@ -131,7 +136,6 @@ const TiptapTextArea = () => {
         },
         content: '',
 
-        // editable: false,
         onUpdate: ({ editor }) => {
             if (!editor.isEditable) {
                 return;
@@ -159,7 +163,7 @@ const TiptapTextArea = () => {
                     const file = item.getAsFile();
                     const fileReader = new FileReader();
 
-                    fileReader.readAsDataURL(file)
+                    fileReader.readAsDataURL(file);
                     fileReader.onload = () => {
                         editor.chain().insertContentAt(editor.state.selection.anchor, {
                             type: 'image',
@@ -168,8 +172,8 @@ const TiptapTextArea = () => {
                                 width: 200,
                                 height: 200
                             },
-                        }).focus().run()
-                    }
+                        }).focus().run();
+                    };
                     event.preventDefault();
                     imagePasted = true;
                 }
@@ -189,17 +193,15 @@ const TiptapTextArea = () => {
                 }
             }
         }
-
     });
 
     useEffect(() => {
-        editor.setEditable(tokenValid)
+        editor.setEditable(tokenValid);
     }, [dispatch, editor, tokenValid]);
 
     useEffect(() => {
         if (editor && articleInfo.articleId) {
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
-            // editor.commands.focus(cursorPos);
         }
         return () => {
             if (editor) {
@@ -207,9 +209,7 @@ const TiptapTextArea = () => {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [editor, articleInfo.articleId])
-
-
+    }, [editor, articleInfo.articleId]);
 
     function getExtensionFromDataURL(dataURL) {
         const mimeType = dataURL.split(',')[0].split(':')[1].split(';')[0];
@@ -235,7 +235,7 @@ const TiptapTextArea = () => {
         if (!editor || !articleInfo.articleId) {
             return;
         }
-        dispatch(editArticleSaveStatus('saving'))
+        dispatch(editArticleSaveStatus('saving'));
         const json = editor.getJSON();
         const text = editor.getText();
         const images = [];
@@ -251,10 +251,9 @@ const TiptapTextArea = () => {
 
         traverse(json);
 
-
         const formData = new FormData();
-        formData.append('TextContent', text)
-        formData.append('JsonContent', JSON.stringify(json))
+        formData.append('TextContent', text);
+        formData.append('JsonContent', JSON.stringify(json));
 
         let index = 0;
         for (const src of images) {
@@ -274,25 +273,23 @@ const TiptapTextArea = () => {
             formData,
             (data) => {
                 let tempArticleInfo = produce(articleInfo, draft => {
-                    draft.articleUpdatedTime = data
-                    draft.articleJsonContent = JSON.stringify(json)
-                })
-                dispatch(editArticleSaveStatus('saved'))
-                dispatch(editArticleInfo(tempArticleInfo))
-
+                    draft.articleUpdatedTime = data;
+                    draft.articleJsonContent = JSON.stringify(json);
+                });
+                dispatch(editArticleSaveStatus('saved'));
+                dispatch(editArticleInfo(tempArticleInfo));
             },
             (error) => {
-                dispatch(editArticleSaveStatus('unsave'))
-                dispatch(editErrorMsg({ type: 'ERROR', msg: error }))
+                dispatch(editArticleSaveStatus('unsave'));
+                dispatch(editErrorMsg({ type: 'ERROR', msg: error }));
             }
-        )
+        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [articleInfo.articleId, dispatch, editor]);
 
     const handleSubmit = useMemo(() => _.debounce(async () => {
-        await submitArticleContent()
+        await submitArticleContent();
     }, 1000), [submitArticleContent]);
-
 
     useEffect(() => {
         return () => {
@@ -304,8 +301,35 @@ const TiptapTextArea = () => {
         setContextMenu(null);
     };
 
+    useEffect(() => {
+        const editorElement = document.querySelector('.ProseMirror');
+        if (!showColorPicker) {
+            editorElement.classList.remove('disable-selection');
+            return
+        };
+        editorElement.classList.add('disable-selection');
+        const handleClickOutside = (event) => {
+            if (showColorPicker && !colorPickerRef.current.contains(event.target) && !colorPickerButtonRef.current.contains(event.target)) {
+                setShowColorPicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            editorElement.classList.remove('disable-selection');
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showColorPicker]);
+
+    const handleColorChange = (color) => {
+        setColor(color);
+        if (editor && editor.isEditable) {
+            editor.chain().focus().setColor(color).run();
+        }
+    };
+
     const handleEditorAction = (action, level) => {
-        if (editor && editor.isEditable) {  // Ensure the editor is editable
+        if (editor && editor.isEditable) {
             switch (action) {
                 case 'codeBlock':
                     editor.chain().focus().toggleCodeBlock().run();
@@ -342,6 +366,9 @@ const TiptapTextArea = () => {
                 case 'table':
                     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
                     break;
+                case 'color':
+                    setShowColorPicker(!showColorPicker);
+                    break;
                 default:
                     break;
             }
@@ -351,12 +378,10 @@ const TiptapTextArea = () => {
     useEffect(() => {
         if (!editor) return;
 
-        // Define the async function to handle the saving logic
         const handleKeyDown = async (event) => {
             if ((event.ctrlKey || event.metaKey) && event.key === 's') {
                 event.preventDefault();
-                console.log('save');
-                await submitArticleContent(); // Call the save function
+                await submitArticleContent();
                 if (handleSubmit) {
                     handleSubmit.cancel();
                 }
@@ -369,7 +394,6 @@ const TiptapTextArea = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [submitArticleContent, editor, handleSubmit]);
-
 
     return (
         <>
@@ -410,7 +434,14 @@ const TiptapTextArea = () => {
                 <button onClick={() => handleEditorAction('table')} title="Table">
                     <FontAwesomeIcon icon={faTable} />
                 </button>
-                {/* Add more buttons as needed */}
+                <button onClick={() => handleEditorAction('color')} title="Text Color" ref={colorPickerButtonRef}>
+                    <FontAwesomeIcon icon={faPalette} />
+                </button>
+                {showColorPicker && (
+                    <div className="color-picker" ref={colorPickerRef} style={{ position: 'absolute', zIndex: 2, right: '2rem' }}>
+                        <HexColorPicker color={color} onChange={handleColorChange} />
+                    </div>
+                )}
             </div>
 
             <EditorContent editor={editor} />
