@@ -2,23 +2,23 @@
 import './ErrorFallBack.scss';
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
     return (
-        <div class="scene">
-            <div class="planet">
-                <div class="crater"></div>
-                <div class="crater"></div>
-                <div class="crater"></div>
-                <div class="crater"></div>
-                <div class="crater"></div>
-                <div class="rover">
-                    <div class="body"></div>
-                    <div class="wheels"></div>
-                    <div class="trace"></div>
+        <div className="scene">
+            <div className="planet">
+                <div className="crater"></div>
+                <div className="crater"></div>
+                <div className="crater"></div>
+                <div className="crater"></div>
+                <div className="crater"></div>
+                <div className="rover">
+                    <div className="body"></div>
+                    <div className="wheels"></div>
+                    <div className="trace"></div>
                 </div>
-                <div class="flag">
+                <div className="flag">
                     error
                 </div>
             </div>
-            <div class="message">
+            <div className="message">
                 <p>
                     There is no life, try to find <span onClick={resetErrorBoundary}>something else</span>
                 </p>

@@ -14,6 +14,7 @@ import { ReactComponent as Sun } from '../../../../assets/images/blogContentHead
 import { ReactComponent as Moon } from '../../../../assets/images/blogContentHeader/moon.svg'
 import Login from '../Login/Login';
 import produce from 'immer'
+import { fetchNextCategory, setExpandedCategoriesForHeader } from '../../../../store/modules/blogContentNavBarStore';
 
 // Header component
 const Header = () => {
@@ -21,7 +22,6 @@ const Header = () => {
     // const { editable } = useSelector(state => state.mainHeader);
     const { token, tokenValid } = useSelector(state => state.blogContentLogin);
     const { alertDialog } = useSelector(state => state.blogContentDialog);
-
     // Local state management
     const [showLogin, setShowLogin] = useState(false);
     // const [dropDownValue, setDropDownValue] = useState('View');
@@ -169,8 +169,16 @@ const Header = () => {
     }, [getArticles, inputValue]);
 
     // Handle article click
-    const onClickArticle = (article_id, category_id) => {
-        dispatch(getArticleInfo(article_id));
+    const onClickArticle = async(article_id, category) => {
+        const categoryNames = Object.values(category).filter(value => value !== null);
+
+        dispatch(getArticleInfo(article_id, categoryNames));
+
+        for (let i = 0; i < categoryNames.length; i++) {
+            await dispatch(fetchNextCategory(false, ...categoryNames.slice(0, i + 1)));
+            dispatch(setExpandedCategoriesForHeader(categoryNames.slice(0, i + 1)));
+        }
+        
         inputRef.current.value = '';
         onInput({ target: { value: '' } });
     };
@@ -191,7 +199,7 @@ const Header = () => {
     };
 
     const editTheme = () => {
-        
+
     }
 
 
@@ -248,7 +256,7 @@ const Header = () => {
                             <li
                                 key={item.id}
                                 className={classNames('header__display_item')}
-                                onClick={() => onClickArticle(item.id, item.category_id)}
+                                onClick={() => onClickArticle(item.id, item.category)}
                             >
                                 <span>...&nbsp;{item.content}&nbsp;...</span>
                                 {/* Show categories */}

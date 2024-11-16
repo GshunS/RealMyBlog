@@ -181,6 +181,26 @@ const setExpandedCategories = (...categories) => {
     }
 }
 
+const setExpandedCategoriesForHeader = (categories) => {
+    return (dispatch, getState) => {
+        const expandedCategories = getState().blogContentNavbar.expandedCategories;
+        let updatedExpandedCategories = produce(expandedCategories, draft => {
+            let currentExpandedLevel = draft;
+            categories.forEach((category, index) => {
+                if (index === categories.length - 1) {
+                    if (!currentExpandedLevel.hasOwnProperty(category)) {
+                        currentExpandedLevel[category] = {};
+                    }
+                } else {
+                    currentExpandedLevel = currentExpandedLevel[category];
+                }
+            });
+        });
+
+        dispatch(editExpandedCategories(updatedExpandedCategories));
+    }
+}
+
 // delete operation(either delete an article or a folder)
 const deleteOperation = (deleteType, articleId) => {
     return async (dispatch, getState) => {
@@ -246,7 +266,7 @@ export {
     editCanRender
 }
 
-export { fetchNextCategory, setExpandedCategories, deleteOperation }
+export { fetchNextCategory, setExpandedCategories, deleteOperation, setExpandedCategoriesForHeader }
 
 const reducer = blogContentNavbarStore.reducer
 

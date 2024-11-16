@@ -52,10 +52,13 @@ const replaceSrcInJson = (jsonContent, srcMap) => {
     return JSON.stringify(parsedContent);
 };
 
-const getArticleInfo = (articleId) => {
+const getArticleInfo = (articleId, cateNames=null) => {
     return async (dispatch, getState) => {
         const currentAncestorNames = getState().blogContentNavbar.currentAncestorNames;
-        const articlePath = '/' + currentAncestorNames.join('/');
+        let articlePath = '/' + currentAncestorNames.join('/');
+        if (cateNames !== null) {
+            articlePath = '/' + cateNames.join('/');
+        }
         // request all images
         const mimeTypes = {
             '.jpg': 'image/jpeg',

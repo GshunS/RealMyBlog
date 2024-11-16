@@ -141,14 +141,14 @@ const TiptapTextArea = () => {
                 return;
             }
 
-            const { from } = editor.view.state.selection;
-            const startDOM = editor.view.domAtPos(from).node;
-            if (startDOM && startDOM instanceof HTMLElement) {
-                startDOM.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                });
-            }
+            // const { from } = editor.view.state.selection;
+            // const startDOM = editor.view.domAtPos(from).node;
+            // if (startDOM && startDOM instanceof HTMLElement) {
+            //     startDOM.scrollIntoView({
+            //         behavior: 'smooth',
+            //         block: 'center',
+            //     });
+            // }
 
             dispatch(editArticleSaveStatus('unsave'));
             handleSubmit();
