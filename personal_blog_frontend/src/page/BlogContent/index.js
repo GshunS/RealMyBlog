@@ -12,7 +12,8 @@ import FolderFileCreationWindow from "./Components/FolderFileCreationWindow/Fold
 import ParticleBackground from './Components/ParticleBackground/ParticleBackground';
 import FormDialog from './Components/Dialog/FormDialog'
 import AlertDialog from './Components/Dialog/AlertDialog'
-
+import ErrorFallback from './Components/ErrorFallBack/ErrorFallBack';
+import { ErrorBoundary } from 'react-error-boundary';
 const BlogContent = () => {
     const { token } = useSelector(state => state.blogContentLogin);
     const dispatch = useDispatch()
@@ -26,21 +27,31 @@ const BlogContent = () => {
     }, [token, dispatch])
 
 
-    return (
-        <div className="blog-container">
-            <ParticleBackground />
-            <FormDialog />
-            <AlertDialog />
-            <FolderFileCreationWindow />
-            <ErrorPopUp />
-            <Header />
-            <div className="body-container">
-                <NavBar />
-                <Resizer />
-                <MainContent />
-            </div>
 
-        </div >
+
+    return (
+        <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onReset={() => {
+                window.location.reload();
+            }}
+        >
+            <div className="blog-container">
+                <ParticleBackground />
+                <FormDialog />
+                <AlertDialog />
+                <FolderFileCreationWindow />
+                <ErrorPopUp />
+                <Header />
+                <div className="body-container">
+                    <NavBar />
+                    <Resizer />
+                    <MainContent />
+                </div>
+
+            </div >
+        </ErrorBoundary>
+
     )
 }
 

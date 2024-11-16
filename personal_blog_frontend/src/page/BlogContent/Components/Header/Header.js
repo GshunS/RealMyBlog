@@ -3,12 +3,10 @@ import { fetchData } from '../../../../utils/apiService'
 import classNames from 'classnames';
 import avatar from '../../../../assets/images/gz.jpg'
 import './Header.css';
-import { editStatus } from '../../../../store/modules/mainHeaderStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { getArticleInfo } from '../../../../store/modules/blogContentMainContentStore'
 import { editAlertDialog } from '../../../../store/modules/blogContentDialogStore';
-import { JwtValidation } from '../../../../store/modules/blogContentLoginStore';
 import _ from 'lodash'
 
 import { ReactComponent as LoginIcon } from '../../../../assets/images/blogContentHeader/login.svg'
@@ -192,6 +190,14 @@ const Header = () => {
         }
     };
 
+    const editTheme = () => {
+        
+    }
+
+    useEffect(() => {
+        throw new Error('Theme error');
+    }, [])
+
     // Effect to update login icon color based on token validation
     useEffect(() => {
         const loginIconNode = loginIconRef.current;
@@ -272,7 +278,9 @@ const Header = () => {
             {/* Header attributes - right side */}
             <div className="header__attrs">
                 {/* Theme */}
-                <div className="header__theme">
+                <div className="header__theme" onClick={() => {
+                    editTheme()
+                }}>
                     <Sun
                         style={{ height: '2rem', width: '2rem' }}
                     />
