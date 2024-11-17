@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { HexColorPicker } from 'react-colorful';
 
 import FileHandler from '@tiptap-pro/extension-file-handler';
@@ -371,6 +371,12 @@ const TiptapTextArea = () => {
                 case 'color':
                     setShowColorPicker(!showColorPicker);
                     break;
+                case 'undo':
+                    editor.chain().focus().undo().run();
+                    break;
+                case 'redo':
+                    editor.chain().focus().redo().run();
+                    break;
                 default:
                     break;
             }
@@ -500,7 +506,12 @@ const TiptapTextArea = () => {
                         ))}
                     </div>
                 )}
-
+                {/* <button onClick={() => handleEditorAction('undo')} title="Undo (Ctrl+Z)">
+                    <FontAwesomeIcon icon={faUndo} />
+                </button> */}
+                <button onClick={() => handleEditorAction('redo')} title="Redo (Ctrl+Y)">
+                    <FontAwesomeIcon icon={faRedo} />
+                </button>
             </div>
 
             <EditorContent editor={editor} />
