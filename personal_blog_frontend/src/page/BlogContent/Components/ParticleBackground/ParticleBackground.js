@@ -38,7 +38,7 @@ const ParticleBackground  = () => {
       interactivity: {
         events: {
           onHover: {
-            enable: true,
+            enable: false,
             mode: "repulse",
           },
         },

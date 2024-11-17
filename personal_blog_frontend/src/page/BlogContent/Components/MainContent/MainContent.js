@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { ReactComponent as Author } from '../../../../assets/images/author.svg'
 import { ReactComponent as View } from '../../../../assets/images/view_count.svg'
 import { ReactComponent as Upvote } from '../../../../assets/images/upvote.svg'
+import { ReactComponent as Pencil } from '../../../../assets/images/pencil.svg';
 
 import TiptapTextArea from './TipTapTextArea'
 import { useEffect, useState, useRef } from 'react'
@@ -24,6 +25,10 @@ const MainContent = () => {
         articleInfo,
         articleSaveStatus
     } = useSelector(state => state.blogContentMainContent)
+
+    const { tokenValid } = useSelector(state => state.blogContentLogin);
+
+
 
     const [saveMsg, setSaveMsg] = useState('');
     const [dotCount, setDotCount] = useState(0);
@@ -51,7 +56,6 @@ const MainContent = () => {
     const [title, setTitle] = useState("");
     const [oldTitle, setOldTitle] = useState("")
     const inputRef = useRef(null);
-    const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     useEffect(() => {
         if (articleInfo.articleId !== null) {
@@ -121,6 +125,23 @@ const MainContent = () => {
         }
     };
     //#endregion
+    
+    const jumpToLogin = () => {
+        dispatch(editErrorMsg({ type: 'WARNING', msg: 'Please login to edit' }));
+
+        const loginIconNode = document.getElementsByClassName('header__login')[0];
+
+        loginIconNode.classList.add('hover');
+        const timeoutId = setTimeout(() => {
+            loginIconNode?.classList.remove('hover');
+        }, 1000);
+
+        return () => {
+            clearTimeout(timeoutId);
+            loginIconNode?.classList.remove('hover');
+        };
+    };
+
 
     if (!canRender) return <div></div>;
 
@@ -139,6 +160,13 @@ const MainContent = () => {
                                     onKeyDown={handleKeyDown}
                                     readOnly={readOnly}
                                 />
+                                <div
+                                    className={`main-content__editability-icon ${!tokenValid ? 'read-only' : ''}`}
+                                    title={!tokenValid ? 'Please login to edit' : ''}
+                                    onClick={jumpToLogin}
+                                >
+                                    <Pencil />
+                                </div>
                             </div>
                         </form>
                         <div className="main-content__otherInfo">

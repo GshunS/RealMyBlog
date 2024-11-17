@@ -148,3 +148,38 @@
 .main-content__footer-right span {
     white-space: nowrap; 
 }
+
+.main-content__editability-icon {
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.main-content__editability-icon svg {
+    width: 2rem;
+    height: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.main-content__editability-icon:hover svg {
+    transform: scale(1.1);
+}
+
+.main-content__editability-icon::after {
+    content: '';
+    position: absolute;
+    top: 45%;
+    left: 20%;
+    width: 0;
+    height: 2px;
+    background-color: red;
+    transform: translateY(-50%) rotate(45deg);
+    transition: width 0.3s ease;
+    pointer-events: none;
+}
+
+.main-content__editability-icon.read-only::after {
+    width: 75%;
+}
