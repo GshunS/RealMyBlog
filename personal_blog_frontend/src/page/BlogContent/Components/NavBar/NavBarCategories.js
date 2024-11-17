@@ -48,8 +48,8 @@ const NavBarCategories = React.memo((props) => {
                 }
 
                 {/* level 4 category name */}
-                <span ref={categorySpanRef}>{categoryName}</span>
-                
+                <span ref={categorySpanRef} title={categoryName}>{categoryName}</span>
+
 
             </div>
             {/* add folder and add image icon */}
@@ -57,8 +57,8 @@ const NavBarCategories = React.memo((props) => {
                 ancestorCategoryNames={ancestorCategoryNames}
                 expandedCategories={expandedCategories}
                 expandedCategoriesInfo={{ categoryName, categoryValue }}
-                categories={categories} 
-                categorySpanRef = {categorySpanRef}/>
+                categories={categories}
+                categorySpanRef={categorySpanRef} />
 
         </div>
     )

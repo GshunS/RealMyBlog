@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import './FolderFileCreationWindow.css'
 // import './temp.css'
-// import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
+// import { editErrorMsg } from '../../../../store/moduleentErrorPopUpStore'
 import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRef } from 'react'

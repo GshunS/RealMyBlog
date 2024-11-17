@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight } from '@fortawesome/free-solid-svg-icons';
 import { HexColorPicker } from 'react-colorful';
 
 import FileHandler from '@tiptap-pro/extension-file-handler';
@@ -36,6 +36,7 @@ import Italic from '@tiptap/extension-italic';
 import History from '@tiptap/extension-history';
 import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
+import FontSize from './TipTapCustomExtensions/FontSize';
 
 import { fetchData } from '../../../../utils/apiService';
 import { useDispatch, useSelector } from 'react-redux';
@@ -118,6 +119,7 @@ const TiptapTextArea = () => {
                 newGroupDelay: 100,
             }),
             TextStyle,
+            FontSize,
             Color,
         ],
         editorProps: {
@@ -375,6 +377,46 @@ const TiptapTextArea = () => {
         }
     };
 
+    const [fontSizeDropdownPosition, setFontSizeDropdownPosition] = useState({ top: 0, left: 0 });
+    const [showFontSizeDropdown, setShowFontSizeDropdown] = useState(false);
+    const fontSizeButtonRef = useRef(null);
+    const fontSizeDropdownRef = useRef(null);
+    const toolbarRef = useRef(null);
+
+    const handleFontSizeChange = (size) => {
+        setShowFontSizeDropdown(false);
+        if (editor && editor.isEditable) {
+            editor.chain().focus().setFontSize(size + 'px').run();
+        }
+    };
+
+    useEffect(() => {
+        if (fontSizeButtonRef.current && toolbarRef.current) {
+            const top = toolbarRef.current.offsetHeight + 5;
+            const iconX = fontSizeButtonRef.current.getBoundingClientRect().x;
+            const toolbarX = toolbarRef.current.getBoundingClientRect().x;
+            const left = iconX - toolbarX;
+            setFontSizeDropdownPosition({ top, left });
+        }
+    }, [fontSizeButtonRef, toolbarRef]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                fontSizeDropdownRef.current &&
+                !fontSizeDropdownRef.current.contains(event.target) &&
+                !fontSizeButtonRef.current.contains(event.target)
+            ) {
+                setShowFontSizeDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     useEffect(() => {
         if (!editor) return;
 
@@ -397,7 +439,7 @@ const TiptapTextArea = () => {
 
     return (
         <>
-            <div className="toolbar">
+            <div className="toolbar" ref={toolbarRef}>
                 <button onClick={() => handleEditorAction('codeBlock')} title="Ctrl+Alt+C">
                     <FontAwesomeIcon icon={faCode} />
                 </button>
@@ -442,6 +484,23 @@ const TiptapTextArea = () => {
                         <HexColorPicker color={color} onChange={handleColorChange} />
                     </div>
                 )}
+                <button ref={fontSizeButtonRef} onClick={() => setShowFontSizeDropdown(!showFontSizeDropdown)} title="Font Size">
+                    <FontAwesomeIcon icon={faTextHeight} />
+                </button>
+                {showFontSizeDropdown && (
+                    <div
+                        className="font-size-dropdown"
+                        ref={fontSizeDropdownRef}
+                        style={{ top: fontSizeDropdownPosition.top, left: fontSizeDropdownPosition.left }}
+                    >
+                        {['12', '14', '16', '18', '20', '24', '28', '32'].map(size => (
+                            <div key={size} onClick={() => handleFontSizeChange(size)}>
+                                {size}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             </div>
 
             <EditorContent editor={editor} />
