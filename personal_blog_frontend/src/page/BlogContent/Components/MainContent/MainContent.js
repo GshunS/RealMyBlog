@@ -125,8 +125,9 @@ const MainContent = () => {
         }
     };
     //#endregion
-    
+
     const jumpToLogin = () => {
+        if (tokenValid) return;
         dispatch(editErrorMsg({ type: 'WARNING', msg: 'Please login to edit' }));
 
         const loginIconNode = document.getElementsByClassName('header__login')[0];

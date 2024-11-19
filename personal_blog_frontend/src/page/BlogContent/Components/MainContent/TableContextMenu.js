@@ -36,7 +36,6 @@ const TableContextMenu = ({ editor, position, onClose }) => {
                 if (y + menuHeight > maxBottom) {
                     y = maxBottom - menuHeight - 10;
                 }
-                console.log(y)
 
                 x = Math.max(x, 36);
                 y = Math.max(y, 100);

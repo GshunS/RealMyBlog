@@ -305,6 +305,7 @@ const TiptapTextArea = () => {
 
     useEffect(() => {
         const editorElement = document.querySelector('.ProseMirror');
+        if (!editorElement) return;
         if (!showColorPicker) {
             editorElement.classList.remove('disable-selection');
             return
@@ -388,9 +389,11 @@ const TiptapTextArea = () => {
     const fontSizeButtonRef = useRef(null);
     const fontSizeDropdownRef = useRef(null);
     const toolbarRef = useRef(null);
+    const [fontSize, setFontSize] = useState('16px');
 
     const handleFontSizeChange = (size) => {
         setShowFontSizeDropdown(false);
+        setFontSize(size + 'px');
         if (editor && editor.isEditable) {
             editor.chain().focus().setFontSize(size + 'px').run();
         }
@@ -422,6 +425,12 @@ const TiptapTextArea = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    useEffect(() => {
+        if (editor) {
+            editor.chain().focus().setFontSize(fontSize).run();
+        }
+    }, [editor, fontSize]);
 
     useEffect(() => {
         if (!editor) return;
