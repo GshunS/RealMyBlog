@@ -29,7 +29,9 @@ import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import TaskList from '@tiptap/extension-task-list';
 import Gapcursor from '@tiptap/extension-gapcursor';
 import Strike from '@tiptap/extension-strike';
+import sql from 'highlight.js/lib/languages/sql';
 import csharp from 'highlight.js/lib/languages/csharp';
+import xml from 'highlight.js/lib/languages/xml';
 import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import { createLowlight } from 'lowlight';
@@ -56,7 +58,7 @@ const TiptapTextArea = () => {
     const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     const lowlight = createLowlight();
-    lowlight.register({ javascript,  });
+    lowlight.register({ javascript, xml, sql, csharp });
     const colorPickerRef = useRef(null);
     const colorPickerButtonRef = useRef(null);
 
