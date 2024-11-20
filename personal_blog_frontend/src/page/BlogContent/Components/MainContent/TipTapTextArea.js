@@ -41,7 +41,6 @@ import History from '@tiptap/extension-history';
 import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import FontSize from './TipTapCustomExtensions/FontSize';
-import CodeBlockWithCodeMirror from './TipTapCustomExtensions/CodeBlockWithCodeMirror';
 
 import { fetchData } from '../../../../utils/apiService';
 import { useDispatch, useSelector } from 'react-redux';
@@ -85,10 +84,9 @@ const TiptapTextArea = () => {
                 autolink: true,
                 defaultProtocol: 'https',
             }),
-            // CodeBlockLowlight.configure({
-            //     lowlight,
-            // }),
-            CodeBlockWithCodeMirror,
+            CodeBlockLowlight.configure({
+                lowlight,
+            }),
             BulletList, OrderedList, ListItem,
             ResizableImageExtension,
             IndentHandler,
