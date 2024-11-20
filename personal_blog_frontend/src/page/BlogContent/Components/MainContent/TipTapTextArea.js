@@ -29,12 +29,14 @@ import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import TaskList from '@tiptap/extension-task-list';
 import Gapcursor from '@tiptap/extension-gapcursor';
 import Strike from '@tiptap/extension-strike';
+
 import sql from 'highlight.js/lib/languages/sql';
 import csharp from 'highlight.js/lib/languages/csharp';
 import xml from 'highlight.js/lib/languages/xml';
 import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import { createLowlight } from 'lowlight';
+
 import Bold from '@tiptap/extension-bold';
 import Italic from '@tiptap/extension-italic';
 import History from '@tiptap/extension-history';
@@ -58,7 +60,7 @@ const TiptapTextArea = () => {
     const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     const lowlight = createLowlight();
-    lowlight.register({ javascript, xml, sql, csharp });
+    lowlight.register({ javascript, xml, sql, csharp, python });
     const colorPickerRef = useRef(null);
     const colorPickerButtonRef = useRef(null);
 
@@ -339,7 +341,14 @@ const TiptapTextArea = () => {
         if (editor && editor.isEditable) {
             switch (action) {
                 case 'codeBlock':
-                    editor.chain().focus().toggleCodeBlock().run();
+                    console.log(editor.getJSON());
+
+                    const isCodeBlock = editor.state.selection.$from.parent.type.name === 'codeBlock';
+                    if (isCodeBlock) {
+                        editor.chain().focus().setParagraph().run();
+                    } else {
+                        editor.chain().focus().toggleCodeBlock().run();
+                    }
                     break;
                 case 'bulletList':
                     editor.chain().focus().toggleBulletList().run();
