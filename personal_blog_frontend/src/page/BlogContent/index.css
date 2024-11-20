@@ -1,11 +1,13 @@
-* {
-    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
-    font-family: var(--font-family);
-}
 
 @font-face {
     font-family: 'Wotfard';
     src: url('../../assets/fonts/wotfard-regular-webfont.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'FiraCode';
+    src: url('../../assets/fonts/FiraCode-Regular.ttf');
     font-weight: normal;
     font-style: normal;
 }
@@ -17,7 +19,8 @@
     --filePopup-z-index: 90;
     --regular-z-index: 50;
     --plusRegular-z-index: 60;
-    --font-family: "Wotfard", sans-serif;
+    --font-family--1: "Wotfard", sans-serif;
+    --font-family--2: "FiraCode", monospace;
     --background-color: rgb(245, 244, 244)
 }
 

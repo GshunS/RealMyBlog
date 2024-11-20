@@ -21,6 +21,7 @@
 .main-content__info {
     display: flex;
     flex-direction: column;
+    font-family: var(--font-family--1);
 }
 
 .main-content__title {
@@ -107,7 +108,7 @@
     font-size: 0.7rem;
     color: #666;
     background-color: var(--background-color);
-
+    font-family: var(--font-family--2);
 }
 
 .main-content__footer-left,

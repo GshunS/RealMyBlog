@@ -30,6 +30,8 @@ import TaskList from '@tiptap/extension-task-list';
 import Gapcursor from '@tiptap/extension-gapcursor';
 import Strike from '@tiptap/extension-strike';
 import csharp from 'highlight.js/lib/languages/csharp';
+import javascript from 'highlight.js/lib/languages/javascript';
+import python from 'highlight.js/lib/languages/python';
 import { createLowlight } from 'lowlight';
 import Bold from '@tiptap/extension-bold';
 import Italic from '@tiptap/extension-italic';
@@ -54,10 +56,10 @@ const TiptapTextArea = () => {
     const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     const lowlight = createLowlight();
+    lowlight.register({ javascript,  });
     const colorPickerRef = useRef(null);
     const colorPickerButtonRef = useRef(null);
 
-    lowlight.register({ csharp });
     const { articleInfo } = useSelector(state => state.blogContentMainContent);
 
     const dispatch = useDispatch();
