@@ -8,7 +8,7 @@ import NavBarDeleteOperation from './NavBarDeleteOperation';
 import { editAddType } from '../../../../store/modules/blogContentFolderFileCreationWindow'
 import { ReactComponent as Rename } from '../../../../assets/images/blogContentNavBar/rename.svg'
 import { editFormDialog } from '../../../../store/modules/blogContentDialogStore';
-import produce from 'immer'
+import { produce } from 'immer'
 
 const NavBarElementOperation = React.memo((props) => {
     const dispatch = useDispatch()

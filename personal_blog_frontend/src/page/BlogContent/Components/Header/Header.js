@@ -13,7 +13,7 @@ import { ReactComponent as LoginIcon } from '../../../../assets/images/blogConte
 import { ReactComponent as Sun } from '../../../../assets/images/blogContentHeader/sun.svg'
 import { ReactComponent as Moon } from '../../../../assets/images/blogContentHeader/moon.svg'
 import Login from '../Login/Login';
-import produce from 'immer'
+import {produce} from 'immer'
 import { fetchNextCategory, setExpandedCategoriesForHeader } from '../../../../store/modules/blogContentNavBarStore';
 
 // Header component

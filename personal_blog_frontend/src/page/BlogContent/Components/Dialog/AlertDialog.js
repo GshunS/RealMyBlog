@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { editAlertDialog } from '../../../../store/modules/blogContentDialogStore';
 import { editCurrentAncestorNames, deleteOperation} from '../../../../store/modules/blogContentNavBarStore'
 
-import produce from 'immer'
+import {produce} from 'immer'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { logout } from '../../../../store/modules/blogContentLoginStore'
 

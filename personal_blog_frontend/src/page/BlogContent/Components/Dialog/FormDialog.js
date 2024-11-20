@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import { editFormDialog } from '../../../../store/modules/blogContentDialogStore';
-import produce from 'immer'
+import {produce} from 'immer'
 import { fetchData } from '../../../../utils/apiService'
 import { editErrorMsg } from '../../../../store/modules/blogContentErrorPopUpStore'
 import { editAllCategories, editExpandedCategories } from '../../../../store/modules/blogContentNavBarStore';

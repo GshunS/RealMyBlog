@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteOperation, editCurrentAncestorNames } from '../../../../store/modules/blogContentNavBarStore'
 import _ from 'lodash'
-import produce from 'immer'
+import { produce } from 'immer'
 import { editAlertDialog } from '../../../../store/modules/blogContentDialogStore';
 
 const NavBarDeleteOperation = React.memo((props) => {
