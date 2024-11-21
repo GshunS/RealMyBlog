@@ -9,6 +9,7 @@ import ResizableImageExtension from './TipTapCustomExtensions/ResizableImageTemp
 import IndentHandler from './TipTapCustomExtensions/IndentHandler';
 import ImageClipboardHandler from './TipTapCustomExtensions/ImageClipboardHandler';
 import TableContextMenu from './TableContextMenu';
+import CustomCodeBlock from './TipTapCustomExtensions/CustomCodeBlock';
 
 import Document from '@tiptap/extension-document';
 import Link from '@tiptap/extension-link';
@@ -87,7 +88,7 @@ const TiptapTextArea = () => {
                 autolink: true,
                 defaultProtocol: 'https',
             }),
-            CodeBlockLowlight.configure({
+            CustomCodeBlock.configure({
                 lowlight,
             }),
             BulletList, OrderedList, ListItem,
@@ -342,8 +343,7 @@ const TiptapTextArea = () => {
         if (editor && editor.isEditable) {
             switch (action) {
                 case 'codeBlock':
-                    console.log(editor.getJSON());
-
+                    // console.log(editor.getJSON());
                     const isCodeBlock = editor.state.selection.$from.parent.type.name === 'codeBlock';
                     if (isCodeBlock) {
                         editor.chain().focus().setParagraph().run();
