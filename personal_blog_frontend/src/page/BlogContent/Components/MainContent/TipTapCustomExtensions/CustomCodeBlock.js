@@ -20,7 +20,27 @@ const CustomCodeBlock = CodeBlockLowlight.extend({
             '(': () => insertPair('()'),
             "'": () => insertPair("''"),
             '"': () => insertPair('""'),
-
+            'ArrowDown': () => {
+                if (this.editor.state.selection.$from.parent.type.name === 'codeBlock') {
+                    const { $from } = this.editor.state.selection;
+                    const end = $from.end();
+                    
+                    if ($from.pos >= end - 1) {
+                        const after = this.editor.state.doc.nodeAt($from.after());
+                        
+                        if (!after) {
+                            this.editor.chain()
+                                .insertContentAt(end + 1, { type: 'paragraph' })
+                                .focus(end + 2)
+                                .run();
+                            console.log(this.editor.getJSON());
+                            return true;
+                        }
+                        console.log(this.editor.getJSON());
+                    }
+                }
+                return false;
+            },
             'Enter': () => {
                 if (this.editor.state.selection.$from.parent.type.name === 'codeBlock') {
                     const { from } = this.editor.state.selection;
