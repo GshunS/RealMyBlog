@@ -35,6 +35,7 @@ import csharp from 'highlight.js/lib/languages/csharp';
 import xml from 'highlight.js/lib/languages/xml';
 import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
+import css from 'highlight.js/lib/languages/css';
 import { createLowlight } from 'lowlight';
 
 import Bold from '@tiptap/extension-bold';
@@ -60,7 +61,7 @@ const TiptapTextArea = () => {
     const { tokenValid } = useSelector(state => state.blogContentLogin);
 
     const lowlight = createLowlight();
-    lowlight.register({ javascript, xml, sql, csharp, python });
+    lowlight.register({ javascript, xml, sql, csharp, python, css });
     const colorPickerRef = useRef(null);
     const colorPickerButtonRef = useRef(null);
 
