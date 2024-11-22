@@ -133,7 +133,7 @@ const TiptapTextArea = () => {
             handleDOMEvents: {
                 contextmenu: (view, event) => {
                     const target = event.target;
-                    if (target.closest("td") || target.closest("th")) {
+                    if ((target.closest("td") || target.closest("th")) && editor?.isEditable) {
                         event.preventDefault();
                         const { clientX: x, clientY: y } = event;
                         setContextMenu({ x, y });
@@ -149,7 +149,6 @@ const TiptapTextArea = () => {
             if (!editor.isEditable) {
                 return;
             }
-
 
             dispatch(editArticleSaveStatus('unsave'));
             handleSubmit();
@@ -197,7 +196,7 @@ const TiptapTextArea = () => {
     });
 
     useEffect(() => {
-        editor.setEditable(tokenValid);
+        editor.setEditable(tokenValid, false);
     }, [dispatch, editor, tokenValid]);
 
     useEffect(() => {
