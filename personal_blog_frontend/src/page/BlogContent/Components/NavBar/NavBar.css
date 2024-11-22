@@ -180,12 +180,12 @@
 
 
 /* #region transition */
-li>div {
+.nav-bar li>div {
     transition: 0.3s;
 }
 
 
-li>div:hover {
+.nav-bar li>div:hover {
     background-color: #f0f0f0;
     transform: scale(1.01);
 }

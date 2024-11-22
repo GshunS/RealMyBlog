@@ -81,7 +81,7 @@ const Header = () => {
             wordsToHighlight.forEach(word => {
                 for (let i = 0; i < allText.length; i++) {
                     const regex = new RegExp(`\\b${word.trim()}\\b`, 'gi');
-                    allText[i] = allText[i].replace(regex, match => `<span class="header__highlight">${match}</span>`);
+                    allText[i] = allText[i].replace(regex, match => `<mark>${match}</mark>`);
                 }
             });
 

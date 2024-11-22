@@ -51,32 +51,32 @@ const NavBar = () => {
 
 
     // scroll to the expanded category
-    useEffect(() => {
-        const timer = setTimeout(() => {
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
 
-            const { newExpandedElement, newCollapseElement, nodelist } = getExpandedElement()
-            if (newExpandedElement) {
+    //         const { newExpandedElement, newCollapseElement, nodelist } = getExpandedElement()
+    //         if (newExpandedElement) {
 
-                let parentElement = newExpandedElement.parentElement
+    //             let parentElement = newExpandedElement.parentElement
 
-                while (parentElement && !parentElement.classList.contains('nav-bar__first-category-items')) {
-                    parentElement = parentElement.parentElement
-                }
-                const marginTop = 16
+    //             while (parentElement && !parentElement.classList.contains('nav-bar__first-category-items')) {
+    //                 parentElement = parentElement.parentElement
+    //             }
+    //             const marginTop = 16
 
-                window.scrollTo({
-                    top: parentElement.offsetTop - marginTop,
-                    behavior: 'smooth'
-                })
-            }
-            if (!(newExpandedElement === undefined && newCollapseElement === undefined)) {
-                setExpandedElements(new Set(nodelist))
-            }
-        }, 100)
+    //             window.scrollTo({
+    //                 top: parentElement.offsetTop - marginTop,
+    //                 behavior: 'smooth'
+    //             })
+    //         }
+    //         if (!(newExpandedElement === undefined && newCollapseElement === undefined)) {
+    //             setExpandedElements(new Set(nodelist))
+    //         }
+    //     }, 100)
 
 
-        return () => clearTimeout(timer)
-    }, [expandedCategories, getExpandedElement])
+    //     return () => clearTimeout(timer)
+    // }, [expandedCategories, getExpandedElement])
 
 
     // common method

@@ -24,9 +24,9 @@
     --background-color: rgb(245, 244, 244)
 }
 
-body {
+/* body {
     overflow-y: scroll;
-}
+} */
 
 .blog-container {
     position: relative;
