@@ -298,7 +298,7 @@ const Header = () => {
                             height: '2rem',
                             width: '2rem',
                         }}
-                        title='login'
+                        title={tokenValid ? 'logout' : 'login'}
                         onClick={clickLoginIcon}
                     />
                 </div>
