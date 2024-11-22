@@ -43,7 +43,6 @@ body {
     height: 100%;
     gap: 0.5rem;    
     /* background-color: #f9f9f9; */
-    min-height: 90vh;
-
-}
+    min-height: 90vh; 
+ }
 

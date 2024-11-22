@@ -60,8 +60,8 @@ const Resizer = () => {
         const containerWidth = container.getBoundingClientRect().width;
         const newNavBarWidth = ((currentLeftWidth + dx) * 100) / containerWidth;
 
-        navbar.style.width = `${Math.max(10, Math.min(newNavBarWidth, 70))}%`;
-        mainContent.style.width = `${100 - Math.max(10, Math.min(newNavBarWidth, 70))}%`;
+        navbar.style.width = `${Math.max(25, Math.min(newNavBarWidth, 70))}%`;
+        mainContent.style.width = `${98 - Math.max(25, Math.min(newNavBarWidth, 70))}%`;
     };
 
     const updateCursor = () => {
