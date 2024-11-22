@@ -202,7 +202,7 @@ const TiptapTextArea = () => {
     useEffect(() => {
         if (editor && articleInfo.articleId) {
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
-            editor.commands.focus('start', {scrollIntoView: false});
+            editor.commands.focus('start', { scrollIntoView: false });
         }
         return () => {
             if (editor) {
@@ -459,75 +459,76 @@ const TiptapTextArea = () => {
 
     return (
         <>
-            <div className="toolbar" ref={toolbarRef}>
-                <button onClick={() => handleEditorAction('codeBlock')} title="Ctrl+Alt+C">
-                    <FontAwesomeIcon icon={faCode} />
-                </button>
-                <button onClick={() => handleEditorAction('bulletList')} title="Ctrl+Shift+8">
-                    <FontAwesomeIcon icon={faListUl} />
-                </button>
-                <button onClick={() => handleEditorAction('orderedList')} title="Ctrl+Shift+7">
-                    <FontAwesomeIcon icon={faListOl} />
-                </button>
-                <button onClick={() => handleEditorAction('bold')} title="Ctrl+B">
-                    <FontAwesomeIcon icon={faBold} />
-                </button>
-                <button onClick={() => handleEditorAction('italic')} title="Ctrl+I">
-                    <FontAwesomeIcon icon={faItalic} />
-                </button>
-                <button onClick={() => handleEditorAction('strike')} title="Ctrl+Shift+S">
-                    <FontAwesomeIcon icon={faStrikethrough} />
-                </button>
-                <button onClick={() => handleEditorAction('horizontalRule')} title="---">
-                    <FontAwesomeIcon icon={faMinus} />
-                </button>
-                <button onClick={() => handleEditorAction('link')} title="Ctrl+K">
-                    <FontAwesomeIcon icon={faLink} />
-                </button>
-                <button onClick={() => handleEditorAction('heading', 1)} title="Ctrl+Alt+1">
-                    <FontAwesomeIcon icon={faHeading} />1
-                </button>
-                <button onClick={() => handleEditorAction('heading', 2)} title="Ctrl+Alt+2">
-                    <FontAwesomeIcon icon={faHeading} />2
-                </button>
-                <button onClick={() => handleEditorAction('heading', 3)} title="Ctrl+Alt+3">
-                    <FontAwesomeIcon icon={faHeading} />3
-                </button>
-                <button onClick={() => handleEditorAction('table')} title="Table">
-                    <FontAwesomeIcon icon={faTable} />
-                </button>
-                <button onClick={() => handleEditorAction('color')} title="Text Color" ref={colorPickerButtonRef}>
-                    <FontAwesomeIcon icon={faPalette} />
-                </button>
-                {showColorPicker && (
-                    <div className="color-picker" ref={colorPickerRef} style={{ position: 'absolute', zIndex: 2, right: '2rem' }}>
-                        <HexColorPicker color={color} onChange={handleColorChange} />
-                    </div>
-                )}
-                <button ref={fontSizeButtonRef} onClick={() => setShowFontSizeDropdown(!showFontSizeDropdown)} title="Font Size">
-                    <FontAwesomeIcon icon={faTextHeight} />
-                </button>
-                {showFontSizeDropdown && (
-                    <div
-                        className="font-size-dropdown"
-                        ref={fontSizeDropdownRef}
-                        style={{ top: fontSizeDropdownPosition.top, left: fontSizeDropdownPosition.left }}
-                    >
-                        {['12', '14', '16', '18', '20', '24', '28', '32'].map(size => (
-                            <div key={size} onClick={() => handleFontSizeChange(size)}>
-                                {size}
-                            </div>
-                        ))}
-                    </div>
-                )}
-                {/* <button onClick={() => handleEditorAction('undo')} title="Undo (Ctrl+Z)">
+            <div className="toolbarOuter">
+                <div className="toolbar" ref={toolbarRef}>
+                    <button onClick={() => handleEditorAction('codeBlock')} title="Ctrl+Alt+C">
+                        <FontAwesomeIcon icon={faCode} />
+                    </button>
+                    <button onClick={() => handleEditorAction('bulletList')} title="Ctrl+Shift+8">
+                        <FontAwesomeIcon icon={faListUl} />
+                    </button>
+                    <button onClick={() => handleEditorAction('orderedList')} title="Ctrl+Shift+7">
+                        <FontAwesomeIcon icon={faListOl} />
+                    </button>
+                    <button onClick={() => handleEditorAction('bold')} title="Ctrl+B">
+                        <FontAwesomeIcon icon={faBold} />
+                    </button>
+                    <button onClick={() => handleEditorAction('italic')} title="Ctrl+I">
+                        <FontAwesomeIcon icon={faItalic} />
+                    </button>
+                    <button onClick={() => handleEditorAction('strike')} title="Ctrl+Shift+S">
+                        <FontAwesomeIcon icon={faStrikethrough} />
+                    </button>
+                    <button onClick={() => handleEditorAction('horizontalRule')} title="---">
+                        <FontAwesomeIcon icon={faMinus} />
+                    </button>
+                    <button onClick={() => handleEditorAction('link')} title="Ctrl+K">
+                        <FontAwesomeIcon icon={faLink} />
+                    </button>
+                    <button onClick={() => handleEditorAction('heading', 1)} title="Ctrl+Alt+1">
+                        <FontAwesomeIcon icon={faHeading} />1
+                    </button>
+                    <button onClick={() => handleEditorAction('heading', 2)} title="Ctrl+Alt+2">
+                        <FontAwesomeIcon icon={faHeading} />2
+                    </button>
+                    <button onClick={() => handleEditorAction('heading', 3)} title="Ctrl+Alt+3">
+                        <FontAwesomeIcon icon={faHeading} />3
+                    </button>
+                    <button onClick={() => handleEditorAction('table')} title="Table">
+                        <FontAwesomeIcon icon={faTable} />
+                    </button>
+                    <button onClick={() => handleEditorAction('color')} title="Text Color" ref={colorPickerButtonRef}>
+                        <FontAwesomeIcon icon={faPalette} />
+                    </button>
+                    {showColorPicker && (
+                        <div className="color-picker" ref={colorPickerRef} style={{ position: 'absolute', zIndex: 2, right: '2rem' }}>
+                            <HexColorPicker color={color} onChange={handleColorChange} />
+                        </div>
+                    )}
+                    <button ref={fontSizeButtonRef} onClick={() => setShowFontSizeDropdown(!showFontSizeDropdown)} title="Font Size">
+                        <FontAwesomeIcon icon={faTextHeight} />
+                    </button>
+                    {showFontSizeDropdown && (
+                        <div
+                            className="font-size-dropdown"
+                            ref={fontSizeDropdownRef}
+                            style={{ top: fontSizeDropdownPosition.top, left: fontSizeDropdownPosition.left }}
+                        >
+                            {['12', '14', '16', '18', '20', '24', '28', '32'].map(size => (
+                                <div key={size} onClick={() => handleFontSizeChange(size)}>
+                                    {size}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {/* <button onClick={() => handleEditorAction('undo')} title="Undo (Ctrl+Z)">
                     <FontAwesomeIcon icon={faUndo} />
                 </button> */}
-                <button onClick={() => handleEditorAction('redo')} title="Redo (Ctrl+Y)">
-                    <FontAwesomeIcon icon={faRedo} />
-                </button>
+                    <button onClick={() => handleEditorAction('redo')} title="Redo (Ctrl+Y)">
+                        <FontAwesomeIcon icon={faRedo} />
+                    </button>
+                </div>
             </div>
-
             <EditorContent editor={editor} />
             {contextMenu && editor && (
                 <TableContextMenu
