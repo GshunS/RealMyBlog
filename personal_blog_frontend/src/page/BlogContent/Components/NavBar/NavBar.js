@@ -83,7 +83,7 @@ const NavBar = () => {
     // folderCreated || folderDeleted
     const fetchInitialData = useCallback(async () => {
         if (folderCreated || folderDeleted) {
-            const url = `https://localhost:7219/api/categories/first-category`
+            const url = `${process.env.REACT_APP_API_URL}/categories/first-category`
             // fetch the first category
             await fetchData(
                 url,
@@ -123,7 +123,7 @@ const NavBar = () => {
     useEffect(() => {
         const firstFetch = async () => {
             dispatch(editCanRender(false))
-            const url = `https://localhost:7219/api/categories/first-category`
+            const url = `${process.env.REACT_APP_API_URL}/categories/first-category`
             // fetch the first category
             await fetchData(
                 url,

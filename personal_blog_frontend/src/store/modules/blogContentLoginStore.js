@@ -37,7 +37,7 @@ const fectchLoginToken = (username, password) => {
             "username": username,
             "password": password
         }
-        const url = `https://localhost:7219/api/login`
+        const url = `${process.env.REACT_APP_API_URL}/login`
         return await fetchData(
             url,
             'POST',
@@ -56,7 +56,7 @@ const fectchLoginToken = (username, password) => {
 
 const JwtValidation = () => {
     return async (dispatch) => {
-        const url = `https://localhost:7219/api/validation`
+        const url = `${process.env.REACT_APP_API_URL}/validation`
         const res = await fetchData(
             url,
             'GET',

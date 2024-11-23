@@ -66,7 +66,7 @@ export default function FormDialog() {
             fourth_category: ancestorLength >= 4 ? uptAncestorCategoryNames[3] : null
         }
 
-        const url = `https://localhost:7219/api/categories/${id}`
+        const url = `${process.env.REACT_APP_API_URL}/categories/${id}`
 
         await fetchData(
             url,

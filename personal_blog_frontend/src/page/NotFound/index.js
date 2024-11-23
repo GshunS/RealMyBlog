@@ -11,7 +11,7 @@ const NotFound = () => {
 
   const refreshToken = async () => {
     try {
-      const response = await fetchData(`https://localhost:7219/api/authors/refreshToken?refToken=${localStorage.getItem('refreshToken_key')}`, 'POST', null,
+      const response = await fetchData(`${process.env.REACT_APP_API_URL}/authors/refreshToken?refToken=${localStorage.getItem('refreshToken_key')}`, 'POST', null,
         (data) => {
           localStorage.setItem('token_key', data.accessToken);
           localStorage.setItem('refreshToken_key', data.refreshToken);

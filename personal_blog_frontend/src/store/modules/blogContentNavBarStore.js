@@ -78,7 +78,7 @@ const fetchNextCategory = (checkExpanded, ...categories) => {
     return async (dispatch, getState) => {
         const expandedCategories = getState().blogContentNavbar.expandedCategories;
         const allCategories = getState().blogContentNavbar.allCategories;
-        let url = 'https://localhost:7219/api/categories';
+        let url = `${process.env.REACT_APP_API_URL}/categories`;
         // let categoryName = null
         const categoryLevels = ['first_category', 'second_category', 'third_category', 'fourth_category'];
         categories.forEach((category, index) => {
@@ -206,7 +206,7 @@ const deleteOperation = (deleteType, articleId) => {
     return async (dispatch, getState) => {
         const currentArticleInfo = getState().blogContentMainContent.articleInfo;
         if (deleteType === 'article') {
-            const url = `https://localhost:7219/api/articles/${articleId}/hide`
+            const url = `${process.env.REACT_APP_API_URL}/articles/${articleId}/hide`
             // hide article
             await fetchData(url, 'patch', null,
                 (data) => {
@@ -228,7 +228,7 @@ const deleteOperation = (deleteType, articleId) => {
                 })
         } else {
             // delete folder
-            const url = `https://localhost:7219/api/categories`
+            const url = `${process.env.REACT_APP_API_URL}/categories`
             const updatedAncestorNames = getState().blogContentNavbar.currentAncestorNames;
 
 

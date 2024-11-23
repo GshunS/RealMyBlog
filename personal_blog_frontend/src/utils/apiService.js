@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
                     // refresh token
                     const refreshToken = localStorage.getItem('refreshToken_key')
                     return fetchData(
-                        `https://localhost:7219/api/authors/refreshToken?refToken=${refreshToken}`,
+                        `${process.env.REACT_APP_API_URL}/authors/refreshToken?refToken=${refreshToken}`,
                         'post',
                         null,
                         (res) => {

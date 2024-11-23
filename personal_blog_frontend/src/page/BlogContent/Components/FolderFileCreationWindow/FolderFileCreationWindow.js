@@ -79,7 +79,7 @@ const FolderFileCreationWindow = () => {
         })
 
         // send the data to the backend
-        let url = 'https://localhost:7219/api/categories'
+        let url = `${process.env.REACT_APP_API_URL}/categories`
         await fetchData(
             url, 'POST', Data,
             (data) => {
@@ -113,7 +113,7 @@ const FolderFileCreationWindow = () => {
             json_content: '{ "type": "doc", "content": [ { "type": "paragraph" } ] }',
             category_id: category_id
         }
-        const url = "https://localhost:7219/api/articles"
+        const url = "${process.env.REACT_APP_API_URL}/articles"
         await fetchData(
             url, "POST", Data,
             (res) => {

@@ -267,7 +267,7 @@ const TiptapTextArea = () => {
             index++;
         }
 
-        const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}/content`;
+        const url = `${process.env.REACT_APP_API_URL}/articles/id/${articleInfo.articleId}/content`;
         await fetchData(
             url,
             "POST",

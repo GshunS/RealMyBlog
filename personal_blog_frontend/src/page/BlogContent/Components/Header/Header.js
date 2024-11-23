@@ -123,7 +123,7 @@ const Header = () => {
         setDisplayArticles([]);
         setHasData(false);
 
-        var url = `https://localhost:7219/api/articles/${term}`;
+        var url = `${process.env.REACT_APP_API_URL}/articles/${term}`;
 
         fetchData(
             url,

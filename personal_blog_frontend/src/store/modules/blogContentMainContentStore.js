@@ -72,7 +72,7 @@ const getArticleInfo = (articleId, cateNames=null) => {
             '.heif': 'image/heif',
         };
         let mappedImages = null;
-        let imageUrl = `https://localhost:7219/api/images/articles-id/${articleId}`
+        let imageUrl = `${process.env.REACT_APP_API_URL}/images/articles-id/${articleId}`
         await fetchData(
             imageUrl,
             'get',
@@ -91,7 +91,7 @@ const getArticleInfo = (articleId, cateNames=null) => {
             })
         )
 
-        let url = `https://localhost:7219/api/articles/id/${articleId}`;
+        let url = `${process.env.REACT_APP_API_URL}/articles/id/${articleId}`;
         await fetchData(
             url,
             'get',
@@ -128,7 +128,7 @@ const getArticleInfo = (articleId, cateNames=null) => {
 const updateAttrs = (patchData) => {
     return async (dispatch, getState) => {
         const articleInfo = getState().blogContentMainContent.articleInfo
-        const url = `https://localhost:7219/api/articles/id/${articleInfo.articleId}`;
+        const url = `${process.env.REACT_APP_API_URL}/articles/id/${articleInfo.articleId}`;
         return await fetchData(
             url,
             "PATCH",
