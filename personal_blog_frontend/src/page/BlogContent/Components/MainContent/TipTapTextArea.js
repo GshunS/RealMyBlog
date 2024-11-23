@@ -389,7 +389,43 @@ const TiptapTextArea = () => {
         }
     };
 
+    const getSelectionPosition = (editor) => {
+        const { state, view } = editor;
+
+        const { from, to } = state.selection;
+
+
+        const domSelection = view.domAtPos(from);
+        const node = domSelection.node;
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const range = document.createRange();
+            range.setStart(node, domSelection.offset);
+            range.setEnd(node, domSelection.offset + (to - from));
+            const rect = range.getBoundingClientRect();
+            return {
+                top: rect.top,
+                left: rect.left,
+                bottom: rect.bottom,
+                right: rect.right,
+                width: rect.width,
+                height: rect.height,
+            };
+        } else {
+            const rect = node.getBoundingClientRect();
+            return {
+                top: rect.top,
+                left: rect.left,
+                bottom: rect.bottom,
+                right: rect.right,
+                width: rect.width,
+                height: rect.height,
+            };
+        }
+    };
+
     const [fontSizeDropdownPosition, setFontSizeDropdownPosition] = useState({ top: 0, left: 0 });
+    const [colorPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });
     const [showFontSizeDropdown, setShowFontSizeDropdown] = useState(false);
     const fontSizeButtonRef = useRef(null);
     const fontSizeDropdownRef = useRef(null);
@@ -412,7 +448,20 @@ const TiptapTextArea = () => {
             const left = iconX - toolbarX;
             setFontSizeDropdownPosition({ top, left });
         }
+
     }, [fontSizeButtonRef, toolbarRef]);
+
+    useEffect(() => {
+        if (colorPickerButtonRef.current && toolbarRef.current) {
+            const top = toolbarRef.current.offsetHeight + 5;
+            const iconX = colorPickerButtonRef.current.getBoundingClientRect().x;
+            const toolbarX = toolbarRef.current.getBoundingClientRect().x;
+            const left = iconX - toolbarX;
+
+            setColorPickerPosition({ top, left });
+        }
+
+    }, [colorPickerButtonRef, toolbarRef]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -461,9 +510,17 @@ const TiptapTextArea = () => {
         const toolbarOuter = document.querySelector('.toolbarOuter');
         if (!toolbarOuter) return;
 
+        const mainContent = document.querySelector('.main-content');
+        if (!mainContent) return;
+
+        const tiptapEditor = document.querySelector('.tiptap');
+        if (!tiptapEditor) return;
+
+        const diff = tiptapEditor.getBoundingClientRect().top - mainContent.getBoundingClientRect().top;
+
         const sentinel = document.createElement('div');
         sentinel.style.position = 'absolute';
-        sentinel.style.top = '80px';
+        sentinel.style.top = `${diff}px`;
         sentinel.style.left = '0';
         sentinel.style.height = '1px';
         sentinel.style.width = '100%';
@@ -536,7 +593,16 @@ const TiptapTextArea = () => {
                         <FontAwesomeIcon icon={faPalette} />
                     </button>
                     {showColorPicker && (
-                        <div className="color-picker" ref={colorPickerRef} style={{ position: 'absolute', zIndex: 2, right: '2rem' }}>
+                        <div
+                            className="color-picker"
+                            ref={colorPickerRef}
+                            style={{
+                                position: 'absolute',
+                                top: colorPickerPosition.top,
+                                left: colorPickerPosition.left,
+                                width: '3rem',
+                                height: '3rem'
+                            }}>
                             <HexColorPicker color={color} onChange={handleColorChange} />
                         </div>
                     )}
@@ -547,7 +613,10 @@ const TiptapTextArea = () => {
                         <div
                             className="font-size-dropdown"
                             ref={fontSizeDropdownRef}
-                            style={{ top: fontSizeDropdownPosition.top, left: fontSizeDropdownPosition.left }}
+                            style={{
+                                top: fontSizeDropdownPosition.top,
+                                left: fontSizeDropdownPosition.left
+                            }}
                         >
                             {['12', '14', '16', '18', '20', '24', '28', '32'].map(size => (
                                 <div key={size} onClick={() => handleFontSizeChange(size)}>

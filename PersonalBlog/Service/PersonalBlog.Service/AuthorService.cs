@@ -92,8 +92,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
                 throw new ServiceException("Invalid username or password");
             }
 
-            // var jwtAccessToken = GenerateJwtToken(author.nickname, author.id.ToString(), author.username, DateTime.UtcNow.AddMinutes(15));
-            var jwtAccessToken = GenerateJwtToken(author.nickname, author.id.ToString(), author.username, DateTime.UtcNow.AddSeconds(2));
+            var jwtAccessToken = GenerateJwtToken(author.nickname, author.id.ToString(), author.username, DateTime.UtcNow.AddMinutes(15));
             var jwtRefreshToken = GenerateJwtToken(author.nickname, author.id.ToString(), author.username, DateTime.UtcNow.AddDays(7));
             return (jwtAccessToken, jwtRefreshToken);
 
@@ -131,8 +130,7 @@ public class AuthorService : BaseService<Author>, IAuthorService
             string username = data.Claims.First(c => c.Type == "Username").Value;
 
             
-            // var jwtAccessToken = GenerateJwtToken(nickname, id, username, DateTime.UtcNow.AddMinutes(15));
-            var jwtAccessToken = GenerateJwtToken(nickname, id, username, DateTime.UtcNow.AddSeconds(2));
+            var jwtAccessToken = GenerateJwtToken(nickname, id, username, DateTime.UtcNow.AddMinutes(15));
             var jwtRefreshToken = GenerateJwtToken(nickname, id, username, DateTime.UtcNow.AddDays(7));
             return (jwtAccessToken, jwtRefreshToken);
         }
