@@ -49,8 +49,36 @@ public class AuthorController : ControllerBase
             string username = loginRequestDTO.username;
             string password = loginRequestDTO.password;
 
-            string token = await _iAuthorService.Login(username, password);
-            return Ok(ApiResponse<string>.Success(data: token));
+            var (accessToken, refreshToken) = await _iAuthorService.LoginWithRefreshToken(username, password);
+            var data = new
+            {
+                accessToken = accessToken,
+                refreshToken = refreshToken
+            };
+            return Ok(ApiResponse<object>.Success(data));
+        }
+        catch (ServiceException e)
+        {
+            return Unauthorized(ApiResponse<object>.Error(401, e.Message));
+        }
+        catch (RepositoryException e)
+        {
+            return StatusCode(500, ApiResponse<object>.Error(500, e.Message));
+        }
+    }
+
+    [HttpPost("authors/refreshToken")]
+    public ActionResult TokenRefresh(string refToken)
+    {
+        try
+        {
+            var (accessToken, refreshToken) = _iAuthorService.RefreshToken(refToken);
+            var data = new
+            {
+                accessToken = accessToken,
+                refreshToken = refreshToken
+            };
+            return Ok(ApiResponse<object>.Success(data));
         }
         catch (ServiceException e)
         {

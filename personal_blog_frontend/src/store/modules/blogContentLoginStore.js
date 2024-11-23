@@ -19,6 +19,7 @@ const blogContentLoginStore = createSlice({
         logout(state) {
             state.token = '';
             localStorage.removeItem('token_key')
+            localStorage.removeItem('refreshToken_key')
         }
     }
 
@@ -42,7 +43,8 @@ const fectchLoginToken = (username, password) => {
             'POST',
             postData,
             (data) => {
-                dispatch(editToken(data))
+                dispatch(editToken(data.accessToken))
+                localStorage.setItem('refreshToken_key', data.refreshToken)
                 dispatch(editErrorMsg({ type: 'INFO', msg: "login successfully" }))
             },
             (error) => {

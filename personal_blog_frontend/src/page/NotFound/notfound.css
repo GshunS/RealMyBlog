@@ -1,61 +1,54 @@
-.wiki-toc {
-    font-family: Arial, sans-serif;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 300px;
-  }
-  
-  h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  
-  .toc-list {
-    list-style: none;
-    padding-left: 0;
-  }
-  
-  .toc-item {
-    margin-bottom: 10px;
-  }
-  
-  .toc-title {
+.not-found-container {
     display: flex;
-    justify-content: space-between;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 5px;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-  }
-  
-  .toc-title:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .toggle-button {
-    background: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.not-found-container h1 {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.not-found-container p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+.not-found-container button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 1rem;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
-    padding: 0;
-    margin-left: 10px;
-  }
-  
-  .sub-list {
-    list-style: none;
-    padding-left: 20px;
-    margin-top: 5px;
-  }
-  
-  .sub-item {
-    font-size: 14px;
-    padding: 3px 0;
-    cursor: pointer;
-  }
-  
-  .sub-item:hover {
-    color: #007bff;
-  }
-  
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.not-found-container button:hover {
+    background-color: #0056b3;
+}
+
+.test-token-btn {
+    margin-top: 1rem !important;
+    background-color: #28a745 !important;
+}
+
+.test-token-btn:hover {
+    background-color: #218838 !important;
+}
+
+.test-login-btn {
+    margin-top: 1rem !important;
+    background-color: #dc3545 !important;
+}
+
+.test-login-btn:hover {
+    background-color: #c82333 !important;
+}

@@ -21,22 +21,42 @@ axiosInstance.interceptors.request.use(
 // Response interceptor: Handle errors globally
 axiosInstance.interceptors.response.use(
     (response) => {
-        // If the request was successful, just return the response data
         return response;
     },
     (error) => {
         let errMsg = 'Unknown Error, Check console';
-
+        const originalRequest = error.config;
         if (error.response) {
-            if (error.response.status === 401 || error.response.status === 403) {
-                if (error.response.data && error.response.data.message) {
-                    errMsg = error.response.data.message;
+            if (error.response.status === 401) {
+                if (localStorage.getItem('refreshToken_key') && !originalRequest._retry) {
+                    originalRequest._retry = true;
+                    // refresh token
+                    const refreshToken = localStorage.getItem('refreshToken_key')
+                    return fetchData(
+                        `https://localhost:7219/api/authors/refreshToken?refToken=${refreshToken}`,
+                        'post',
+                        null,
+                        (res) => {
+                            localStorage.setItem('token_key', res.accessToken);
+                            localStorage.setItem('refreshToken_key', res.refreshToken);
+                            axios.defaults.headers.common['Authorization'] = `Bearer ${res.accessToken}`;
+                            originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
+                            console.log('refresh token success');
+                            return axiosInstance(originalRequest);
+                        },
+                        (err) => {
+                            console.log(err);
+                        }
+                    );
                 } else {
-                    // Token is expired or invalid, remove it
-                    store.dispatch(logout());
-                    errMsg = 'Unauthorized or Forbidden';
+                    if (error.response.data && error.response.data.message) {
+                        errMsg = error.response.data.message;
+                    } else {
+                        // Token is expired or invalid, remove it
+                        store.dispatch(logout());
+                        errMsg = 'Unauthorized';
+                    }
                 }
-
             } else {
                 // Handle other status codes (e.g., 500, 404, etc.)
                 errMsg = error.response.data.message || 'Server error';
@@ -74,11 +94,16 @@ export const fetchData = async (url, method = 'get', data = null, successCallbac
         const response = await axiosInstance(config);
         // Call the success callback with the response data
         if (typeof successCallback === 'function') {
-            successCallback(response.data.data);
+            if (response === true) {
+                successCallback("success");
+            } else {
+                successCallback(response.data.data);
+            }
         }
         return true;
     } catch (error) {
         // The error will be handled by the response interceptor, so this block may not be needed
+        errorCallback(error.message || error);
         return false;
     }
 };

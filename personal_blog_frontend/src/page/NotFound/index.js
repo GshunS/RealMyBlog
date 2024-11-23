@@ -1,69 +1,84 @@
-import React, { useState } from "react";
-import "./notfound.css";
+import React from 'react';
+import './notfound.css';
+import { useNavigate } from 'react-router-dom';
+import { fectchLoginToken } from '../../store/modules/blogContentLoginStore';
+import { useDispatch } from 'react-redux';
+import { fetchData } from '../../utils/apiService';
 
-const WikiTableOfContents = () => {
-  const [openSections, setOpenSections] = useState({});
+const NotFound = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const toggleSection = (section) => {
-    setOpenSections((prevState) => ({
-      ...prevState,
-      [section]: !prevState[section],
-    }));
+  const refreshToken = async () => {
+    try {
+      const response = await fetchData(`https://localhost:7219/api/authors/refreshToken?refToken=${localStorage.getItem('refreshToken_key')}`, 'POST', null,
+        (data) => {
+          localStorage.setItem('token_key', data.accessToken);
+          localStorage.setItem('refreshToken_key', data.refreshToken);
+        },
+        (error) => {
+          console.error('刷新Token失败:', error);
+          return { success: false, error };
+        }
+      );
+
+      if (response) {
+        return { success: true };
+      }
+      return { success: false };
+    } catch (error) {
+      console.error('刷新Token失败:', error);
+      return { success: false, error };
+    }
   };
 
-  const sections = [
-    { title: "👓 前言", subItems: [] },
-    {
-      title: "🖐️ 准备篇",
-      subItems: [
-        "Stable Diffusion Webui的部署",
-        "AI绘画模型概述及使用",
-        "SD-WebUI插件安装及汉化配置",
-      ],
-    },
-    { title: "⭐ 绘图篇", subItems: [] },
-    { title: "✨ 进阶篇", subItems: [] },
-    {
-      title: "🐇 应用篇",
-      subItems: ["模型推荐", "插件推荐", "扩展应用"],
-    },
-    { title: "🚀 技巧篇", subItems: [] },
-    { title: "🧠 理论篇", subItems: [] },
-    { title: "📃 未归档", subItems: [] },
-    { title: "📚 资料推荐", subItems: [] },
-  ];
+  const testTokenRefresh = async () => {
+    try {
+      const result = await refreshToken();
+      if (result.success) {
+        alert('Token刷新成功！');
+      } else {
+        alert('Token刷新失败，请重新登录');
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Token刷新错误:', error);
+      alert('发生错误，请重新登录');
+      navigate('/login');
+    }
+  };
+
+  const testLogin = async () => {
+    try {
+      const loginData = {
+        username: 'shun',  // 替换为测试用户名
+        password: 'admin123'   // 替换为测试密码
+      };
+      const result = await dispatch(fectchLoginToken(loginData.username, loginData.password));
+      if (result) {
+        alert('登录成功！');
+      } else {
+        alert('登录失败！');
+      }
+    } catch (error) {
+      console.error('登录错误:', error);
+      alert('登录发生错误');
+    }
+  };
 
   return (
-    <div className="wiki-toc">
-      <h2>Wiki table of contents</h2>
-      <ul className="toc-list">
-        {sections.map((section, index) => (
-          <li key={index} className="toc-item">
-            <div
-              className="toc-title"
-              onClick={() => toggleSection(index)}
-            >
-              <span>{section.title}</span>
-              {section.subItems.length > 0 && (
-                <button className="toggle-button">
-                  {openSections[index] ? "▲" : "▼"}
-                </button>
-              )}
-            </div>
-            {openSections[index] && section.subItems.length > 0 && (
-              <ul className="sub-list">
-                {section.subItems.map((item, subIndex) => (
-                  <li key={subIndex} className="sub-item">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
+    <div className="not-found-container">
+      <h1>404</h1>
+      <p>抱歉，您访问的页面不存在</p>
+      <button onClick={() => navigate('/')}>返回首页</button>
+      <button onClick={testTokenRefresh} className="test-token-btn">
+        测试Token刷新
+      </button>
+      <button onClick={testLogin} className="test-login-btn">
+        测试登录
+      </button>
     </div>
   );
 };
 
-export default WikiTableOfContents;
+export default NotFound;
