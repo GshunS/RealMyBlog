@@ -457,6 +457,41 @@ const TiptapTextArea = () => {
         };
     }, [submitArticleContent, editor, handleSubmit]);
 
+    useEffect(() => {
+        const toolbarOuter = document.querySelector('.toolbarOuter');
+        if (!toolbarOuter) return;
+
+        const sentinel = document.createElement('div');
+        sentinel.style.position = 'absolute';
+        sentinel.style.top = '80px';
+        sentinel.style.left = '0';
+        sentinel.style.height = '1px';
+        sentinel.style.width = '100%';
+        sentinel.style.backgroundColor = 'transparent';
+        toolbarOuter.parentElement.insertBefore(sentinel, toolbarOuter);
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) {
+                    toolbarOuter.classList.add('is-sticky');
+                } else {
+                    toolbarOuter.classList.remove('is-sticky');
+                }
+            },
+            {
+                threshold: [0],
+                rootMargin: '-1px 0px 0px 0px'
+            }
+        );
+
+        observer.observe(sentinel);
+
+        return () => {
+            observer.disconnect();
+            sentinel.remove();
+        };
+    }, []);
+
     return (
         <>
             <div className="toolbarOuter">
