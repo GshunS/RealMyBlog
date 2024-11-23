@@ -113,7 +113,7 @@ const FolderFileCreationWindow = () => {
             json_content: '{ "type": "doc", "content": [ { "type": "paragraph" } ] }',
             category_id: category_id
         }
-        const url = "${process.env.REACT_APP_API_URL}/articles"
+        const url = `${process.env.REACT_APP_API_URL}/articles`
         await fetchData(
             url, "POST", Data,
             (res) => {
