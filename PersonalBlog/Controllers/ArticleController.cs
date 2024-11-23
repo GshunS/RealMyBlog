@@ -95,9 +95,10 @@ public class ArticleController : ControllerBase
             }
             _iMapper.Map(articleUpdateDTO, article);
             await _iArticleService.UpdateOneAsync(article);
+            var articleDisplayDTO = _iMapper.Map<ArticleDisplayDTO>(article);
 
 
-            return Ok(ApiResponse<DateTime>.Success(article.update_time));
+            return Ok(ApiResponse<ArticleDisplayDTO>.Success(articleDisplayDTO));
         }
         catch (ServiceException e)
         {

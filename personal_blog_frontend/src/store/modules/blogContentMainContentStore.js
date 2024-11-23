@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { fetchData } from '../../utils/apiService'
-// import { produce } from 'immer'
+import { produce } from 'immer'
 import { editErrorMsg } from './blogContentErrorPopUpStore'
 
 
@@ -52,7 +52,7 @@ const replaceSrcInJson = (jsonContent, srcMap) => {
     return JSON.stringify(parsedContent);
 };
 
-const getArticleInfo = (articleId, cateNames=null) => {
+const getArticleInfo = (articleId, cateNames = null) => {
     return async (dispatch, getState) => {
         const currentAncestorNames = getState().blogContentNavbar.currentAncestorNames;
         let articlePath = '/' + currentAncestorNames.join('/');
@@ -134,10 +134,16 @@ const updateAttrs = (patchData) => {
             "PATCH",
             patchData,
             (data) => {
-                // let newArticleInfo = produce(articleInfo, draft => {
-                //     draft.articleUpdatedTime = data
-                // });
-                // dispatch(editArticleInfo(newArticleInfo))
+                let newArticleInfo = produce(articleInfo, draft => {
+                    draft.articleId = data.id;
+                    draft.articleTitle = data.title;
+                    // draft.articlePath = articlePath;
+                    draft.articleViewAmount = data.view_count;
+                    draft.articleUpvoteAmount = data.upvote_count;
+                    draft.articleCreatedTime = data.created_time;
+                    draft.articleUpdatedTime = data.update_time;
+                });
+                dispatch(editArticleInfo(newArticleInfo))
                 dispatch(editErrorMsg({ type: 'INFO', msg: "Saved!" }))
             },
             (error) => {
