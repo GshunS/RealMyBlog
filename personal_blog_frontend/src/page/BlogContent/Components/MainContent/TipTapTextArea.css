@@ -42,10 +42,10 @@
     align-items: center;
     gap: 5px;
     margin-bottom: 10px;
-    background-color: var(--gray-1);
-    padding: 4px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color:var(--background-color);
+    padding: 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
 
@@ -55,7 +55,9 @@
     background-color: transparent;
 
     .toolbar {
-        background-color: #e0e0e0;
+        background-color: rgba(248, 249, 250, 0.95);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
 }
 
@@ -84,21 +86,23 @@
 }
 
 .toolbar button {
-    padding: 6px;
+    padding: 8px;
     border: none;
-    border-radius: 50%;
-    background-color: var(--gray-2);
-    color: var(--black);
+    border-radius: 8px;
+    background-color: var(--background-color);
     cursor: pointer;
-    font-size: 0.8rem;
-    transition: background-color 0.2s;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .toolbar button:hover {
-    background-color: var(--gray-3);
+    background-color: #f1f3f5;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .toolbar button:active {
@@ -343,39 +347,116 @@
 }
 
 
-.bubble-menu {
-    background-color: var(--white);
-    border: 1px solid var(--gray-1);
-    border-radius: 0.7rem;
-    box-shadow: var(--shadow);
-    display: flex;
-    padding: 0.2rem;
+/* 在文件中添加以下样式 */
+.toolbar button {
+    /* 保持原有的其他样式 */
+    transition: color 0.2s ease;
+}
 
-    button {
-        background: var(--gray-2);
-        border-radius: .5rem;
-        border: none;
-        color: var(--black);
-        font-family: inherit;
-        font-size: .875rem;
-        font-weight: 500;
-        line-height: 1.15;
-        margin: none;
-        padding: .375rem .625rem;
-        transition: all .2s cubic-bezier(.65, .05, .36, 1);
+/* 代码块图标 */
+.toolbar button .fa-code {
+    color: #7c5cdb;
+}
 
-        &:hover {
-            background-color: var(--gray-3);
-        }
+/* 列表图标 */
+.toolbar button .fa-list-ul,
+.toolbar button .fa-list-ol {
+    color: #2ac885;
+}
 
-        &.is-active {
-            background-color: var(--purple);
-            color: var(--white);
+/* 文本样式图标 */
+.toolbar button .fa-bold {
+    color: #ff6b6b;
+}
 
-            &:hover {
-                background-color: var(--purple-contrast);
-                color: var(--white);
-            }
-        }
-    }
+.toolbar button .fa-italic {
+    color: #4dabf7;
+}
+
+.toolbar button .fa-strikethrough {
+    color: #f06595;
+}
+
+/* 分隔线图标 */
+.toolbar button .fa-minus {
+    color: #868e96;
+}
+
+/* 链接图标 */
+.toolbar button .fa-link {
+    color: #15aabf;
+}
+
+/* 标题图标 */
+.toolbar button .fa-heading {
+    color: #da77f2;
+}
+
+/* 表格图标 */
+.toolbar button .fa-table {
+    color: #748ffc;
+}
+
+/* 调色板图标 */
+.toolbar button .fa-palette {
+    color: #ff8787;
+}
+
+/* 字体大小图标 */
+.toolbar button .fa-text-height {
+    color: #20c997;
+}
+
+/* 重做图标 */
+.toolbar button .fa-redo {
+    color: #fcc419;
+}
+
+/* 悬停效果 */
+.toolbar button:hover .fa-code,
+.toolbar button:hover .fa-list-ul,
+.toolbar button:hover .fa-list-ol,
+.toolbar button:hover .fa-bold,
+.toolbar button:hover .fa-italic,
+.toolbar button:hover .fa-strikethrough,
+.toolbar button:hover .fa-minus,
+.toolbar button:hover .fa-link,
+.toolbar button:hover .fa-heading,
+.toolbar button:hover .fa-table,
+.toolbar button:hover .fa-palette,
+.toolbar button:hover .fa-text-height,
+.toolbar button:hover .fa-redo {
+    filter: brightness(85%);
+}
+
+/* 活跃状态的图标样式 */
+.toolbar button.is-active .fa-code,
+.toolbar button.is-active .fa-list-ul,
+.toolbar button.is-active .fa-list-ol,
+.toolbar button.is-active .fa-bold,
+.toolbar button.is-active .fa-italic,
+.toolbar button.is-active .fa-strikethrough,
+.toolbar button.is-active .fa-link,
+.toolbar button.is-active .fa-heading {
+    filter: brightness(120%);
+}
+
+/* 标题按钮样式 */
+.toolbar button .fa-heading {
+    color: #da77f2;
+}
+
+/* 确保标题按钮中的数字也使用相同颜色 */
+.toolbar button:has(.fa-heading) {
+    color: #da77f2;  /* 与图标相同的颜色 */
+}
+
+/* 悬停效果 */
+.toolbar button:hover:has(.fa-heading) {
+    filter: brightness(85%);
+}
+
+/* 活跃状态 */
+.toolbar button.is-active:has(.fa-heading) {
+    filter: brightness(120%);
 }

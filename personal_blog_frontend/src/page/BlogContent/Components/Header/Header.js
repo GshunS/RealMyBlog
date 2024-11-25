@@ -13,7 +13,7 @@ import { ReactComponent as LoginIcon } from '../../../../assets/images/blogConte
 import { ReactComponent as Sun } from '../../../../assets/images/blogContentHeader/sun.svg'
 import { ReactComponent as Moon } from '../../../../assets/images/blogContentHeader/moon.svg'
 import Login from '../Login/Login';
-import {produce} from 'immer'
+import { produce } from 'immer'
 import { fetchNextCategory, setExpandedCategoriesForHeader } from '../../../../store/modules/blogContentNavBarStore';
 
 // Header component
@@ -169,7 +169,7 @@ const Header = () => {
     }, [getArticles, inputValue]);
 
     // Handle article click
-    const onClickArticle = async(article_id, category) => {
+    const onClickArticle = async (article_id, category) => {
         const categoryNames = Object.values(category).filter(value => value !== null);
 
         dispatch(getArticleInfo(article_id, categoryNames));
@@ -178,7 +178,7 @@ const Header = () => {
             await dispatch(fetchNextCategory(false, ...categoryNames.slice(0, i + 1)));
             dispatch(setExpandedCategoriesForHeader(categoryNames.slice(0, i + 1)));
         }
-        
+
         inputRef.current.value = '';
         onInput({ target: { value: '' } });
     };
@@ -250,9 +250,9 @@ const Header = () => {
                     ref={inputRef}
                 />
                 {/* Display articles */}
-                <ul className="header__display" ref={listRef}>
-                    {hasData ? (
-                        displayArticles.map(item => (
+                {hasData && (
+                    <ul className="header__display" ref={listRef}>
+                        {displayArticles.map(item => (
                             <li
                                 key={item.id}
                                 className={classNames('header__display_item')}
@@ -275,9 +275,9 @@ const Header = () => {
                                     </span>
                                 </div>
                             </li>
-                        ))
-                    ) : <li key={-1}><span>{displayArticles}</span></li>}
-                </ul>
+                        ))}
+                    </ul>
+                )}
             </div>
 
             {/* Header attributes - right side */}
