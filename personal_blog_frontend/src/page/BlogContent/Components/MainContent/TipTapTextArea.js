@@ -154,6 +154,39 @@ const TiptapTextArea = () => {
                     return false;
                 },
             },
+            handleKeyDown: (view, event) => {
+                if ((event.ctrlKey || event.metaKey) && event.key === 'c' && !view.state.selection.empty) {
+                    return false;
+                }
+                
+                if ((event.ctrlKey || event.metaKey) && event.key === 'x' && !view.state.selection.empty) {
+                    return false;
+                }
+
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'c' || event.key === 'x')) {
+                    if (view.state.selection.empty) {
+                        const $pos = view.state.selection.$from;
+                        const node = $pos.node();
+                        
+                        if (!node) return false;
+                        
+                        const from = $pos.start();
+                        const to = $pos.end();
+                        
+                        const text = node.textContent;
+                        
+                        navigator.clipboard.writeText(text);
+                        
+                        if (event.key === 'x') {
+                            view.dispatch(view.state.tr.delete(from, to));
+                        }
+                        
+                        return true;
+                    }
+                }
+                
+                return false;
+            },
         },
         content: '',
 
