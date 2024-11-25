@@ -349,10 +349,14 @@
     .details {
         display: flex;
         gap: 0.25rem;
-        margin: 1.5rem 0;
+        margin: 0.5rem 0;
         border: 1px solid var(--gray-3);
         border-radius: 0.5rem;
-        padding: 0.5rem;
+        padding: 0.3rem;
+        max-height: 2rem;
+        align-items: center;
+        transition: all 2s ease;
+        overflow: hidden;
 
         summary {
             font-weight: 700;
@@ -377,8 +381,15 @@
 
             &::before {
                 content: '\25B6';
+                transition: all 0.2s ease;
+                color: #748ffc;
             }
 
+        }
+
+        &.is-open {
+            max-height: 100vh;
+            animation: fadeIn 0.5s linear forwards;
         }
 
         &.is-open>button::before {
@@ -401,6 +412,16 @@
         }
     }
 
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 
