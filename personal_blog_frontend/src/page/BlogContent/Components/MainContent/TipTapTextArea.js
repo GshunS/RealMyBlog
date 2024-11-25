@@ -62,6 +62,7 @@ const TiptapTextArea = () => {
     const [showColorPicker, setShowColorPicker] = useState(false);
     const [color, setColor] = useState('#000000');
     const { tokenValid } = useSelector(state => state.blogContentLogin);
+    const [currentArticleId, setCurrentArticleId] = useState(null);
 
     const lowlight = createLowlight();
     lowlight.register({ javascript, xml, sql, csharp, python, css });
@@ -158,7 +159,7 @@ const TiptapTextArea = () => {
                 if ((event.ctrlKey || event.metaKey) && event.key === 'c' && !view.state.selection.empty) {
                     return false;
                 }
-                
+
                 if ((event.ctrlKey || event.metaKey) && event.key === 'x' && !view.state.selection.empty) {
                     return false;
                 }
@@ -167,24 +168,24 @@ const TiptapTextArea = () => {
                     if (view.state.selection.empty) {
                         const $pos = view.state.selection.$from;
                         const node = $pos.node();
-                        
+
                         if (!node) return false;
-                        
+
                         const from = $pos.start();
                         const to = $pos.end();
-                        
+
                         const text = node.textContent;
-                        
+
                         navigator.clipboard.writeText(text);
-                        
+
                         if (event.key === 'x') {
                             view.dispatch(view.state.tr.delete(from, to));
                         }
-                        
+
                         return true;
                     }
                 }
-                
+
                 return false;
             },
         },
@@ -238,6 +239,17 @@ const TiptapTextArea = () => {
                 }
             }
         },
+        onDestroy: async () => {
+            if (submitArticleContent) {
+                await submitArticleContent(currentArticleId);
+            }
+            if (handleSubmit) {
+                handleSubmit.cancel();
+            }
+        },
+        onCreate: () => {
+            setCurrentArticleId(articleInfo.articleId);
+        }
     });
 
     useEffect(() => {
@@ -278,13 +290,15 @@ const TiptapTextArea = () => {
         }
     }
 
-    const submitArticleContent = useCallback(async () => {
+    const submitArticleContent = useCallback(async (currentArtId = null) => {
         if (!editor || !articleInfo.articleId) {
             return;
         }
+        const articleId = currentArtId || articleInfo.articleId;
         dispatch(editArticleSaveStatus('saving'));
         const json = editor.getJSON();
         const text = editor.getText();
+        console.log(text);
         const images = [];
 
         const traverse = (node) => {
@@ -313,7 +327,7 @@ const TiptapTextArea = () => {
             index++;
         }
 
-        const url = `${process.env.REACT_APP_API_URL}/articles/id/${articleInfo.articleId}/content`;
+        const url = `${process.env.REACT_APP_API_URL}/articles/id/${articleId}/content`;
         await fetchData(
             url,
             "POST",
