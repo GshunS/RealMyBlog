@@ -7,9 +7,11 @@ public class ArticleDisplayDTO
     public int id { set; get; }
     public string title { get; set; }
     public string? content { get; set; }
+    public string? json_content { get; set; }
     public string? part_content { get; set; }
 
     public int author_id { get; set; }
+    public string? author_name {get; set;}
 
     public int view_count { get; set; }
     public int upvote_count { get; set; }

@@ -203,6 +203,7 @@ const TiptapTextArea = () => {
         if (editor && articleInfo.articleId) {
             editor.commands.setContent(JSON.parse(articleInfo.articleJsonContent));
             editor.commands.focus('start', { scrollIntoView: false });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         return () => {
             if (editor) {
@@ -389,40 +390,6 @@ const TiptapTextArea = () => {
         }
     };
 
-    const getSelectionPosition = (editor) => {
-        const { state, view } = editor;
-
-        const { from, to } = state.selection;
-
-
-        const domSelection = view.domAtPos(from);
-        const node = domSelection.node;
-
-        if (node.nodeType === Node.TEXT_NODE) {
-            const range = document.createRange();
-            range.setStart(node, domSelection.offset);
-            range.setEnd(node, domSelection.offset + (to - from));
-            const rect = range.getBoundingClientRect();
-            return {
-                top: rect.top,
-                left: rect.left,
-                bottom: rect.bottom,
-                right: rect.right,
-                width: rect.width,
-                height: rect.height,
-            };
-        } else {
-            const rect = node.getBoundingClientRect();
-            return {
-                top: rect.top,
-                left: rect.left,
-                bottom: rect.bottom,
-                right: rect.right,
-                width: rect.width,
-                height: rect.height,
-            };
-        }
-    };
 
     const [fontSizeDropdownPosition, setFontSizeDropdownPosition] = useState({ top: 0, left: 0 });
     const [colorPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });

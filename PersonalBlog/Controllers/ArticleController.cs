@@ -19,10 +19,14 @@ namespace PersonalBlog.Controllers;
 public class ArticleController : ControllerBase
 {
     private IArticleService _iArticleService;
+    private readonly IAuthorService _iAuthorService;
+    private readonly ICategoryService _iCategoryService;
     private IMapper _iMapper;
-    public ArticleController(IArticleService iArticleSercice, IMapper iMapper)
+    public ArticleController(IArticleService iArticleSercice, IAuthorService iAuthorService, ICategoryService iCategoryService, IMapper iMapper)
     {
         this._iArticleService = iArticleSercice;
+        this._iAuthorService = iAuthorService;
+        this._iCategoryService = iCategoryService;
         this._iMapper = iMapper;
     }
 
@@ -134,7 +138,16 @@ public class ArticleController : ControllerBase
         try
         {
             var article = await _iArticleService.QueryOneByConditionAsync(a => a.id == id && !a.is_hide);
-            return Ok(ApiResponse<Article>.Success(article));
+
+
+            var author = await _iAuthorService.QueryOneByIdAsync(article.author_id);
+
+            var category = await _iCategoryService.QueryOneByIdAsync(article.category_id);
+            var articleDisplayDTO = _iMapper.Map<ArticleDisplayDTO>(article);
+
+            articleDisplayDTO.author_name = author.nickname;
+            articleDisplayDTO.Category = _iMapper.Map<CategoryDisplayDTO>(category);
+            return Ok(ApiResponse<ArticleDisplayDTO>.Success(articleDisplayDTO));
         }
         catch (ServiceException e)
         {

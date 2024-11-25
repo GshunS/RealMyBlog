@@ -54,11 +54,6 @@ const replaceSrcInJson = (jsonContent, srcMap) => {
 
 const getArticleInfo = (articleId, cateNames = null) => {
     return async (dispatch, getState) => {
-        const currentAncestorNames = getState().blogContentNavbar.currentAncestorNames;
-        let articlePath = '/' + currentAncestorNames.join('/');
-        if (cateNames !== null) {
-            articlePath = '/' + cateNames.join('/');
-        }
         // request all images
         const mimeTypes = {
             '.jpg': 'image/jpeg',
@@ -98,17 +93,21 @@ const getArticleInfo = (articleId, cateNames = null) => {
             null,
             (data) => {
                 let updatedJson = data.json_content
-                if (mappedImages !== null) {
+                if (Object.keys(mappedImages).length !== 0) {
                     updatedJson = replaceSrcInJson(data.json_content, mappedImages);
                 }
+
+                const path = '/' + Object.values(data.category)
+                    .filter(ele => ele !== null)
+                    .join('/');
                 dispatch(editArticleInfo(
                     {
                         articleId: articleId,
                         articleTitle: data.title,
                         articleContent: data.content,
                         articleJsonContent: updatedJson,
-                        authorName: "123",
-                        articlePath: articlePath,
+                        authorName: data.author_name,
+                        articlePath: path,
                         articleViewAmount: data.view_count,
                         articleUpvoteAmount: data.upvote_count,
                         articleCreatedTime: data.created_time,
