@@ -63,6 +63,7 @@ const TiptapTextArea = () => {
     const [color, setColor] = useState('#000000');
     const { tokenValid } = useSelector(state => state.blogContentLogin);
     const [currentArticleId, setCurrentArticleId] = useState(null);
+    const [currentEditor, setCurrentEditor] = useState(null);
 
     const lowlight = createLowlight();
     lowlight.register({ javascript, xml, sql, csharp, python, css });
@@ -241,7 +242,7 @@ const TiptapTextArea = () => {
         },
         onDestroy: async () => {
             if (submitArticleContent) {
-                await submitArticleContent(currentArticleId);
+                await submitArticleContent(currentArticleId, currentEditor);
             }
             if (handleSubmit) {
                 handleSubmit.cancel();
@@ -249,6 +250,7 @@ const TiptapTextArea = () => {
         },
         onCreate: () => {
             setCurrentArticleId(articleInfo.articleId);
+            setCurrentEditor(editor);
         }
     });
 
@@ -290,15 +292,15 @@ const TiptapTextArea = () => {
         }
     }
 
-    const submitArticleContent = useCallback(async (currentArtId = null) => {
+    const submitArticleContent = useCallback(async (currentArtId = null, currentEditor = null) => {
         if (!editor || !articleInfo.articleId) {
             return;
         }
         const articleId = currentArtId || articleInfo.articleId;
+        const preEditor = currentEditor || editor;
         dispatch(editArticleSaveStatus('saving'));
-        const json = editor.getJSON();
-        const text = editor.getText();
-        console.log(text);
+        const json = preEditor.getJSON();
+        const text = preEditor.getText();
         const images = [];
 
         const traverse = (node) => {
