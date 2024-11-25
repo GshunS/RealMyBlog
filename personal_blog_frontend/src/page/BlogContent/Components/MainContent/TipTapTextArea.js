@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight, faRedo } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight, faRedo, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { HexColorPicker } from 'react-colorful';
 
 import FileHandler from '@tiptap-pro/extension-file-handler';
@@ -29,6 +29,9 @@ import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import TaskList from '@tiptap/extension-task-list';
 import Gapcursor from '@tiptap/extension-gapcursor';
 import Strike from '@tiptap/extension-strike';
+import Details from '@tiptap-pro/extension-details'
+import DetailsContent from '@tiptap-pro/extension-details-content'
+import DetailsSummary from '@tiptap-pro/extension-details-summary'
 
 import sql from 'highlight.js/lib/languages/sql';
 import csharp from 'highlight.js/lib/languages/csharp';
@@ -128,6 +131,15 @@ const TiptapTextArea = () => {
             TextStyle,
             FontSize,
             Color,
+            Details.configure({
+                persist: true,
+                openClassName: 'is-open',
+                HTMLAttributes: {
+                    class: 'details',
+                }
+            }),
+            DetailsSummary,
+            DetailsContent,
         ],
         editorProps: {
             handleDOMEvents: {
@@ -384,6 +396,9 @@ const TiptapTextArea = () => {
                 case 'redo':
                     editor.chain().focus().redo().run();
                     break;
+                case 'details':
+                    editor.chain().focus().setDetails().run();
+                    break;
                 default:
                     break;
             }
@@ -597,6 +612,9 @@ const TiptapTextArea = () => {
                 </button> */}
                     <button onClick={() => handleEditorAction('redo')} title="Redo (Ctrl+Y)">
                         <FontAwesomeIcon icon={faRedo} />
+                    </button>
+                    <button onClick={() => handleEditorAction('details')} title="Insert Details">
+                        <FontAwesomeIcon icon={faCaretDown} />
                     </button>
                 </div>
             </div>

@@ -21,6 +21,7 @@
     --shadow: 0px 12px 33px 0px rgba(0, 0, 0, 0.06), 0px 3.618px 9.949px 0px rgba(0, 0, 0, 0.04);
 
 }
+
 .react-colorful {
     width: 120px !important;
     height: 120px !important;
@@ -42,7 +43,7 @@
     align-items: center;
     gap: 5px;
     margin-bottom: 10px;
-    background-color:var(--background-color);
+    background-color: var(--background-color);
     padding: 8px;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -344,6 +345,62 @@
         cursor: col-resize;
     }
 
+    /* Details */
+    .details {
+        display: flex;
+        gap: 0.25rem;
+        margin: 1.5rem 0;
+        border: 1px solid var(--gray-3);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+
+        summary {
+            font-weight: 700;
+        }
+
+        >button {
+            align-items: center;
+            background: transparent;
+            border-radius: 4px;
+            display: flex;
+            font-size: 0.625rem;
+            height: 1.25rem;
+            justify-content: center;
+            line-height: 1;
+            margin-top: 0.1rem;
+            padding: 0;
+            width: 1.25rem;
+
+            &:hover {
+                background-color: var(--gray-3);
+            }
+
+            &::before {
+                content: '\25B6';
+            }
+
+        }
+
+        &.is-open>button::before {
+            transform: rotate(90deg);
+        }
+
+        >div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+
+            >[data-type="detailsContent"]> :last-child {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        .details {
+            margin: 0.5rem 0;
+        }
+    }
+
 }
 
 
@@ -448,7 +505,8 @@
 
 /* 确保标题按钮中的数字也使用相同颜色 */
 .toolbar button:has(.fa-heading) {
-    color: #da77f2;  /* 与图标相同的颜色 */
+    color: #da77f2;
+    /* 与图标相同的颜色 */
 }
 
 /* 悬停效果 */
