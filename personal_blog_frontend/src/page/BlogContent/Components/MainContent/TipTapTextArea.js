@@ -70,7 +70,7 @@ const TiptapTextArea = () => {
     const colorPickerRef = useRef(null);
     const colorPickerButtonRef = useRef(null);
 
-    const { articleInfo } = useSelector(state => state.blogContentMainContent);
+    const { articleInfo, articleSaveStatus } = useSelector(state => state.blogContentMainContent);
 
     const dispatch = useDispatch();
     const editor = useEditor({
@@ -241,8 +241,10 @@ const TiptapTextArea = () => {
             }
         },
         onDestroy: async () => {
-            if (submitArticleContent) {
-                await submitArticleContent(currentArticleId, currentEditor);
+            if (articleSaveStatus === 'saving' || articleSaveStatus === 'unsave') {
+                if (submitArticleContent) {
+                    await submitArticleContent(currentArticleId, currentEditor);
+                }
             }
             if (handleSubmit) {
                 handleSubmit.cancel();
