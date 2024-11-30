@@ -9,37 +9,47 @@ const TestPage = () => {
     const [timer, setTimer] = useState(null); // To store the interval ID
     const [showAddr, setShowAddr] = useState(true);
     const inputRef = useRef(null);
+    const abortControllerRef = useRef(null);
     const localIp = process.env.REACT_APP_LOCAL_IP;
 
     useEffect(() => {
-        const fetchLiveData = async () => {
+        const fetchLiveData = async (signal) => {
             try {
-                const response = await axios.get(`https://${localIp}:7219/api/live/live/8604981/0`);
+                const response = await axios.get(`https://${localIp}:7219/api/live/live/8604981/0`, {
+                    signal,
+                });
                 const roomTexts = response.data.data.room.map(item => ({
                     text: item.text,
-                    timeline: item.timeline
+                    timeline: item.timeline,
                 }));
 
                 const combinedTexts = [...roomTexts];
                 const sortedTexts = _.sortBy(combinedTexts, ['timeline']);
-                const pureText = sortedTexts.map(item => (item.text));
+                const pureText = sortedTexts.map(item => item.text);
                 setConstText(pureText);
 
             } catch (error) {
-                console.error("Error fetching data:", error);
-                // setConstText([error.config.url]);
+                if (axios.isCancel(error) || error.name === "CanceledError") {
+                    console.log("Request canceled");
+                } else {
+                    console.error("Error fetching data:", error);
+                }
             }
         };
 
         if (isFetching && !timer) {
-            const newTimer = setInterval(fetchLiveData, 1000);
-            setTimer(newTimer); // Save the interval ID
+            abortControllerRef.current = new AbortController(); // 创建新的 AbortController
+            const newTimer = setInterval(() => {
+                fetchLiveData(abortControllerRef.current.signal);
+            }, 1000);
+            setTimer(newTimer);
         }
 
         return () => {
+            // 清理定时器，避免组件卸载时定时器泄漏
             if (timer) {
                 clearInterval(timer);
-                setTimer(null); // Reset the timer when stopped
+                setTimer(null);
             }
         };
     }, [isFetching, timer, localIp]);
@@ -52,6 +62,13 @@ const TestPage = () => {
     // Function to stop continuous request sending
     const stopFetching = () => {
         setIsFetching(false);
+        if (timer) {
+            clearInterval(timer);
+            setTimer(null);
+        }
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort(); // 取消挂起的请求
+        }
     };
 
     const fetchStreamAddr = async () => {
