@@ -4,7 +4,7 @@ import './index.css';
 import _ from 'lodash';
 import flvjs from 'flv.js';
 
-const TestPage = () => {
+const LivePage = () => {
     const [messages, setMessages] = useState([]);
     const [displayMessages, setDisplayMessages] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
@@ -389,5 +389,5 @@ const TestPage = () => {
     );
 };
 
-export default TestPage;
+export default LivePage;
 
