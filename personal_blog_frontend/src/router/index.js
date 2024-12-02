@@ -1,12 +1,13 @@
 import Blog from '../page/BlogContent'
 import LivePage from '../page/LivePage'
 import NotFound from '../page/NotFound'
+import Home from '../page/Home'
 import {createBrowserRouter, Navigate} from 'react-router-dom'
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <Navigate to="/blog"/>
+        element: <Home />
     },
     {
         path: '/live',
@@ -21,6 +22,5 @@ const router = createBrowserRouter([
         element: <NotFound/>
     }
 ])
-
 
 export default router
