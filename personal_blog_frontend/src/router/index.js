@@ -1,15 +1,19 @@
 import Blog from '../page/BlogContent'
-import TestPage from '../page/TestPage'
+import LivePage from '../page/LivePage'
 import NotFound from '../page/NotFound'
-import {createBrowserRouter} from 'react-router-dom'
+import {createBrowserRouter, Navigate} from 'react-router-dom'
 
 const router = createBrowserRouter([
     {
-        path: '/test',
-        element: <TestPage/>
+        path: '/',
+        element: <Navigate to="/blog"/>
     },
     {
-        path: '/',
+        path: '/live',
+        element: <LivePage/>
+    },
+    {
+        path: '/blog',
         element: <Blog/>
     },
     {

@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace PersonalBlog.Controllers.LiveDataController;
 
 [ApiController]
@@ -45,19 +48,38 @@ public class LiveDataController : ControllerBase
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
-            return Ok(responseBody);
+
+            // 解析原始响应
+            using JsonDocument document = JsonDocument.Parse(responseBody);
+            var root = document.RootElement;
+            var roomData = root.GetProperty("data").GetProperty("room");
+
+            // 提取我们需要的字段
+            var messages = roomData.EnumerateArray().Select(item => new
+            {
+                text = item.GetProperty("text").GetString(),
+                timeline = item.GetProperty("timeline").GetString(),
+                nickname = item.GetProperty("nickname").GetString(),
+                medal_name = item.TryGetProperty("medal", out var medal) && medal.GetArrayLength() > 1 
+                    ? medal[1].GetString() 
+                    : null,
+                medal_level = item.TryGetProperty("medal", out var medalLevel) && medalLevel.GetArrayLength() > 0 
+                    ? medalLevel[0].GetInt32() 
+                    : 0,
+                uid = item.GetProperty("uid").GetInt64()
+            }).ToList();
+
+            return Ok(new { code = 0, data = messages });
         }
         catch (Exception e)
         {
             return BadRequest(new { message = e.Message });
         }
-
     }
 
     [HttpGet("liveStream/8604981")]
     public async Task<ActionResult> GetStreamAddr()
     {
-        string url = "https://api.live.bilibili.com/xlive/web-room/v1/playUrl/playUrl?cid=8604981&platform=web";
         string updatedUrl = "https://api.live.bilibili.com/room/v1/Room/playUrl?quality=4&cid=8604981";
         try
         {
@@ -65,12 +87,19 @@ public class LiveDataController : ControllerBase
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
-            return Ok(responseBody);
+
+            // 解析原始响应
+            using JsonDocument document = JsonDocument.Parse(responseBody);
+            var root = document.RootElement;
+            var data = root.GetProperty("data");
+            var durls = data.GetProperty("durl");
+            var streamUrl = durls.EnumerateArray().First().GetProperty("url").GetString();
+
+            return Ok(new { code = 0, data = new { url = streamUrl } });
         }
         catch (Exception e)
         {
             return BadRequest(new { message = e.Message });
         }
-
     }
 }
