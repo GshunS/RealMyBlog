@@ -6,7 +6,8 @@ import {
     faBook, 
     faTelevision,
     faChevronLeft,
-    faChevronRight
+    faChevronRight,
+    faBars
 } from '@fortawesome/free-solid-svg-icons';
 import './index.css';
 
@@ -53,7 +54,7 @@ const Home = () => {
                         className="home-nav-toggle"
                         onClick={() => setIsNavOpen(!isNavOpen)}
                     >
-                        <FontAwesomeIcon icon={isNavOpen ? faChevronLeft : faChevronRight} />
+                        <FontAwesomeIcon icon={faBars} />
                     </button>
                 </div>
                 <div className="home-nav-content">
