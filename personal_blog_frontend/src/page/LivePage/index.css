@@ -204,6 +204,8 @@
 
 .live-room__stream-url {
     padding: 12px;
+    padding-bottom: 0;
+    padding-top: 0;
     position: relative;
     z-index: 1;
 }
@@ -399,6 +401,9 @@
     .live-room {
         width: 100%;
         margin: 0 auto;
+    }
+    .live-room__content{
+        height: 270px;
     }
 }
 
