@@ -442,3 +442,106 @@
     background: #0095cc;
     transform: translateY(-1px);
 }
+
+.filter-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0.8rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.filter-container.collapsed {
+    padding: 0.8rem 0.8rem 0.4rem 0.8rem;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.filter-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.filter-level {
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.filter-toggle {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.filter-toggle:hover {
+    color: #333;
+}
+
+.filter-content {
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 24px;
+}
+
+.filter-container.collapsed .filter-content {
+    height: 0;
+    margin-bottom: 0;
+}
+
+.filter-slider {
+    width: 100%;
+    margin: 0;
+}
+
+/* 优化滑块样式 */
+.filter-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: #e1e1e1;
+    outline: none;
+}
+
+.filter-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #1890ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.filter-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background: #1890ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+}

@@ -4,6 +4,8 @@ import './index.css';
 import _ from 'lodash';
 import flvjs from 'flv.js';
 import Hls from 'hls.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const LivePage = () => {
     const [messages, setMessages] = useState([]);
@@ -26,6 +28,7 @@ const LivePage = () => {
     const flvPlayerRef = useRef(null);
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const [player, setPlayer] = useState(null);
+    const [isFilterCollapsed, setIsFilterCollapsed] = useState(false);
 
     useEffect(() => {
         const fetchLiveData = async (signal) => {
@@ -360,21 +363,31 @@ const LivePage = () => {
             </div>
             <div className="live-room">
                 <div className="live-room__filter">
-                    <div className="filter-slider-container">
-                        <div className="filter-slider-header">
-                            <span>粉丝牌等级过滤</span>
-                            <span className="filter-level">
-                                {medalLevelFilter === 0 ? '显示全部' : `≥ ${medalLevelFilter} 级`}
-                            </span>
+                    <div className={`filter-container ${isFilterCollapsed ? 'collapsed' : ''}`}>
+                        <div className="filter-header">
+                            <div className="filter-title">
+                                <span>粉丝牌等级过滤</span>
+                                <span className="filter-level">
+                                    {medalLevelFilter === 0 ? '显示全部' : `≥ ${medalLevelFilter} 级`}
+                                </span>
+                            </div>
+                            <button 
+                                className="filter-toggle"
+                                onClick={() => setIsFilterCollapsed(!isFilterCollapsed)}
+                            >
+                                <FontAwesomeIcon icon={isFilterCollapsed ? faChevronDown : faChevronUp} />
+                            </button>
                         </div>
-                        <input 
-                            type="range" 
-                            className="filter-slider"
-                            min="0" 
-                            max="40" 
-                            value={medalLevelFilter}
-                            onChange={(e) => setMedalLevelFilter(Number(e.target.value))}
-                        />
+                        <div className="filter-content">
+                            <input 
+                                type="range" 
+                                className="filter-slider"
+                                min="0" 
+                                max="40" 
+                                value={medalLevelFilter}
+                                onChange={(e) => setMedalLevelFilter(Number(e.target.value))}
+                            />
+                        </div>
                     </div>
                     {!autoScroll && isFetching && (
                         <button 
