@@ -146,9 +146,27 @@ const LivePage = () => {
                         const hls = new Hls();
                         hls.loadSource(hlsUrl);
                         hls.attachMedia(videoRef.current);
+                        
+                        // 添加错误处理
+                        hls.on(Hls.Events.ERROR, function (event, data) {
+                            console.error('HLS Error:', data);
+                            if (data.fatal) {
+                                switch(data.type) {
+                                    case Hls.ErrorTypes.NETWORK_ERROR:
+                                        hls.startLoad();
+                                        break;
+                                    case Hls.ErrorTypes.MEDIA_ERROR:
+                                        hls.recoverMediaError();
+                                        break;
+                                    default:
+                                        setPlayerError('播放器错误，请刷新重试');
+                                        break;
+                                }
+                            }
+                        });
+                        
                         setPlayer(hls);
                     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-                        // iOS Safari 原生支持 HLS
                         videoRef.current.src = hlsUrl;
                     } else {
                         setPlayerError('您的浏览器不支持视频播放');
@@ -177,6 +195,11 @@ const LivePage = () => {
                         enableWorker: true
                     });
 
+                    flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
+                        console.error('FLV Player Error:', errorType, errorDetail);
+                        setPlayerError(`播放器错误: ${errorDetail}`);
+                    });
+
                     flvPlayer.attachMediaElement(videoRef.current);
                     flvPlayer.load();
                     await flvPlayer.play();
@@ -192,9 +215,14 @@ const LivePage = () => {
 
         initPlayer();
 
+        // 清理函数
         return () => {
             if (player) {
-                player.destroy();
+                if (player instanceof Hls) {
+                    player.destroy();
+                } else {
+                    player.destroy();
+                }
                 setPlayer(null);
             }
         };
@@ -278,20 +306,27 @@ const LivePage = () => {
         }
     }, [showAddr])
 
-    // 清理组件卸载时的所有副作用
+    // 组件卸载时清理所有资源
     useEffect(() => {
         return () => {
-            if (toastTimeoutRef.current) {
-                clearTimeout(toastTimeoutRef.current);
-            }
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
+            // 清理定时器
             if (timer) {
                 clearInterval(timer);
             }
+            // 清理 abort controller
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+            // 清理 toast timeout
+            if (toastTimeoutRef.current) {
+                clearTimeout(toastTimeoutRef.current);
+            }
+            // 清理播放器
+            if (player) {
+                player.destroy();
+            }
         };
-    }, [timer]);
+    }, []);
 
     return (
         <>
