@@ -22,7 +22,7 @@ public class LiveDataController : ControllerBase
         // Common headers
         request.Headers.Add("accept", "application/json, text/plain, */*");
         request.Headers.Add("accept-language", "en-GB,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6");
-        request.Headers.Add("cookie", "buvid4=87BCF094-4D52-47BE-6A77-66BFF094612526041-022012117-a2WKZwKEHgPJH8LOOTTfXg%3D%3D; ...");
+        request.Headers.Add("cookie", "");
         request.Headers.Add("dnt", "1");
         request.Headers.Add("origin", "https://live.bilibili.com");
         request.Headers.Add("priority", "u=1, i");
