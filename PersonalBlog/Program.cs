@@ -11,6 +11,16 @@ using Microsoft.OpenApi.Models;
 using PersonalBlog.MyUtils.MyAutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 添加环境变量配置
+builder.Configuration.AddEnvironmentVariables();
+
+// 如果存在.env文件，加载它
+if (File.Exists(".env"))
+{
+    builder.Configuration.AddJsonFile(".env", optional: true, reloadOnChange: true);
+}
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.

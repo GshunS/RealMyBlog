@@ -10,9 +10,12 @@ namespace PersonalBlog.Controllers.LiveDataController;
 public class LiveDataController : ControllerBase
 {
     readonly HttpClient client;
-    public LiveDataController()
+    private readonly IConfiguration _configuration;
+
+    public LiveDataController(IConfiguration configuration)
     {
         client = new HttpClient();
+        _configuration = configuration;
     }
 
     private HttpRequestMessage CreateRequest(HttpMethod method, string url)
@@ -22,7 +25,7 @@ public class LiveDataController : ControllerBase
         // Common headers
         request.Headers.Add("accept", "application/json, text/plain, */*");
         request.Headers.Add("accept-language", "en-GB,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6");
-        request.Headers.Add("cookie", "buvid4=87BCF094-4D52-47BE-6A77-66BFF094612526041-022012117-a2WKZwKEHgPJH8LOOTTfXg%3D%3D; ...");
+        request.Headers.Add("cookie", _configuration["BILIBILI_COOKIE"]);
         request.Headers.Add("dnt", "1");
         request.Headers.Add("origin", "https://live.bilibili.com");
         request.Headers.Add("priority", "u=1, i");
