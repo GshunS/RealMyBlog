@@ -81,13 +81,17 @@ public class LiveDataController : ControllerBase
     }
 
     [HttpGet("liveStream/8604981")]
-    public async Task<ActionResult> GetStreamAddr()
+    public async Task<ActionResult> GetStreamAddr([FromQuery(Name = "format")] string? format = "flv")
     {
-        string updatedUrl = "https://api.live.bilibili.com/room/v1/Room/playUrl?quality=4&cid=8604981";
         try
         {
-            var request = this.CreateRequest(HttpMethod.Get, updatedUrl);
-            HttpResponseMessage response = await client.SendAsync(request);
+            string baseUrl = "https://api.live.bilibili.com/room/v1/Room/playUrl";
+            string updatedUrl = (format?.ToLower() ?? "flv") == "hls" 
+                ? $"{baseUrl}?quality=4&cid=8604981&platform=h5"
+                : $"{baseUrl}?quality=4&cid=8604981";
+
+            var httpRequest = this.CreateRequest(HttpMethod.Get, updatedUrl);
+            HttpResponseMessage response = await client.SendAsync(httpRequest);
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -98,7 +102,7 @@ public class LiveDataController : ControllerBase
             var durls = data.GetProperty("durl");
             var streamUrl = durls.EnumerateArray().First().GetProperty("url").GetString();
 
-            return Ok(new { code = 0, data = new { url = streamUrl } });
+            return Ok(new { code = 0, data = new { url = streamUrl, format = format } });
         }
         catch (Exception e)
         {

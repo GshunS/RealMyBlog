@@ -3,6 +3,7 @@ import axios from "axios";
 import './index.css';
 import _ from 'lodash';
 import flvjs from 'flv.js';
+import Hls from 'hls.js';
 
 const LivePage = () => {
     const [messages, setMessages] = useState([]);
@@ -23,6 +24,8 @@ const LivePage = () => {
     const [playerError, setPlayerError] = useState(null);
     const videoRef = useRef(null);
     const flvPlayerRef = useRef(null);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const [player, setPlayer] = useState(null);
 
     useEffect(() => {
         const fetchLiveData = async (signal) => {
@@ -124,58 +127,78 @@ const LivePage = () => {
     useEffect(() => {
         if (!videoRef.current || !streamUrl) return;
         
-        if (!flvjs.isSupported()) {
-            setPlayerError('您的浏览器不支持 FLV 播放');
-            return;
-        }
-        
         // 销毁旧的播放器实例
-        if (flvPlayerRef.current) {
-            flvPlayerRef.current.destroy();
-            flvPlayerRef.current = null;
-        }
-        
-        try {
-            // 创建新的播放器实例
-            const flvPlayer = flvjs.createPlayer({
-                type: 'flv',
-                url: streamUrl,
-                isLive: true,
-                hasAudio: true,
-                hasVideo: true,
-                cors: true,
-                enableStashBuffer: false,
-                stashInitialSize: 128,
-                enableWorker: true
-            });
-
-            // 添加错误处理
-            flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
-                console.error('FLV Player Error:', errorType, errorDetail);
-                setPlayerError(`播放器错误: ${errorDetail}`);
-            });
-            
-            flvPlayer.attachMediaElement(videoRef.current);
-            flvPlayer.load();
-            flvPlayer.play().catch(err => {
-                console.error('Play error:', err);
-                setPlayerError('播放失败，请重试');
-            });
-            
-            flvPlayerRef.current = flvPlayer;
-            setPlayerError(null);
-        } catch (error) {
-            console.error('Player initialization error:', error);
-            setPlayerError('播放器初始化失败');
+        if (player) {
+            player.destroy();
+            setPlayer(null);
         }
 
-        return () => {
-            if (flvPlayerRef.current) {
-                flvPlayerRef.current.destroy();
-                flvPlayerRef.current = null;
+        const initPlayer = async () => {
+            try {
+                if (isMobile) {
+                    // 移动端使用HLS
+                    const response = await axios.get(
+                        `https://${localIp}:7219/api/live/liveStream/8604981?format=hls`
+                    );
+                    const hlsUrl = response.data.data.url;
+
+                    if (Hls.isSupported()) {
+                        const hls = new Hls();
+                        hls.loadSource(hlsUrl);
+                        hls.attachMedia(videoRef.current);
+                        setPlayer(hls);
+                    } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+                        // iOS Safari 原生支持 HLS
+                        videoRef.current.src = hlsUrl;
+                    } else {
+                        setPlayerError('您的浏览器不支持视频播放');
+                    }
+                } else {
+                    // PC端使用FLV
+                    if (!flvjs.isSupported()) {
+                        setPlayerError('您的浏览器不支持 FLV 播放');
+                        return;
+                    }
+
+                    const response = await axios.get(
+                        `https://${localIp}:7219/api/live/liveStream/8604981?format=flv`
+                    );
+                    const flvUrl = response.data.data.url;
+
+                    const flvPlayer = flvjs.createPlayer({
+                        type: 'flv',
+                        url: flvUrl,
+                        isLive: true,
+                        hasAudio: true,
+                        hasVideo: true,
+                        cors: true,
+                        enableStashBuffer: false,
+                        stashInitialSize: 128,
+                        enableWorker: true
+                    });
+
+                    flvPlayer.attachMediaElement(videoRef.current);
+                    flvPlayer.load();
+                    await flvPlayer.play();
+                    setPlayer(flvPlayer);
+                }
+
+                setPlayerError(null);
+            } catch (error) {
+                console.error('Player initialization error:', error);
+                setPlayerError('播放器初始化失败');
             }
         };
-    }, [streamUrl]);
+
+        initPlayer();
+
+        return () => {
+            if (player) {
+                player.destroy();
+                setPlayer(null);
+            }
+        };
+    }, [streamUrl, isMobile]);
 
     const fetchStreamAddr = async () => {
         if (!showAddr) {
