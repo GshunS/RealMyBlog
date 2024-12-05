@@ -130,14 +130,31 @@ const LivePage = () => {
     useEffect(() => {
         if (!videoRef.current || !streamUrl) return;
         
-        // 销毁旧的播放器实例
-        if (player) {
-            player.destroy();
-            setPlayer(null);
-        }
+        let currentPlayer = null;
+
+        const destroyPlayer = (playerInstance) => {
+            if (!playerInstance) return;
+            
+            try {
+                if (playerInstance instanceof Hls) {
+                    playerInstance.destroy();
+                } else if (playerInstance && typeof playerInstance.destroy === 'function') {
+                    if (typeof playerInstance.unload === 'function') {
+                        playerInstance.unload();
+                    }
+                    playerInstance.destroy();
+                }
+            } catch (error) {
+                console.error('Error destroying player:', error);
+            }
+        };
 
         const initPlayer = async () => {
             try {
+                // 在创建新播放器之前销毁旧的
+                destroyPlayer(player);
+                setPlayer(null);
+
                 if (isMobile) {
                     // 移动端使用HLS
                     const response = await axios.get(
@@ -150,7 +167,6 @@ const LivePage = () => {
                         hls.loadSource(hlsUrl);
                         hls.attachMedia(videoRef.current);
                         
-                        // 添加错误处理
                         hls.on(Hls.Events.ERROR, function (event, data) {
                             console.error('HLS Error:', data);
                             if (data.fatal) {
@@ -168,6 +184,7 @@ const LivePage = () => {
                             }
                         });
                         
+                        currentPlayer = hls;
                         setPlayer(hls);
                     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
                         videoRef.current.src = hlsUrl;
@@ -206,6 +223,8 @@ const LivePage = () => {
                     flvPlayer.attachMediaElement(videoRef.current);
                     flvPlayer.load();
                     await flvPlayer.play();
+                    
+                    currentPlayer = flvPlayer;
                     setPlayer(flvPlayer);
                 }
 
@@ -218,18 +237,11 @@ const LivePage = () => {
 
         initPlayer();
 
-        // 清理函数
         return () => {
-            if (player) {
-                if (player instanceof Hls) {
-                    player.destroy();
-                } else {
-                    player.destroy();
-                }
-                setPlayer(null);
-            }
+            destroyPlayer(currentPlayer);
+            setPlayer(null);
         };
-    }, [streamUrl, isMobile]);
+    }, [streamUrl, isMobile, localIp]);
 
     const fetchStreamAddr = async () => {
         if (!showAddr) {
@@ -237,7 +249,6 @@ const LivePage = () => {
             inputRef.current.value = '';
             inputRef.current.classList.remove('visible');
             inputRef.current.classList.remove('collapsed');
-            setStreamUrl('');
             return;
         }
         setIsLoadingAddr(true);
@@ -309,7 +320,7 @@ const LivePage = () => {
         }
     }, [showAddr])
 
-    // 组件卸载时清理所有资源
+    // 组件卸载时理所有资源
     useEffect(() => {
         return () => {
             // 清理定时器
