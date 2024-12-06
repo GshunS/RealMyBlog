@@ -42,7 +42,7 @@ const LivePage = () => {
                     const uniqueMessages = combined.filter((message, index, self) =>
                         index === self.findIndex((m) => m.timeline === message.timeline)
                     );
-                    return uniqueMessages.slice(-1000);
+                    return uniqueMessages.slice(-100);
                 });
             } catch (error) {
                 if (axios.isCancel(error) || error.name === "CanceledError") {
@@ -97,7 +97,7 @@ const LivePage = () => {
         const filtered = messages.filter(message => {
             if (!message.medal_level) return medalLevelFilter === 0;
             return message.medal_level >= medalLevelFilter;
-        });
+        }).slice(-100);
         setDisplayMessages(filtered);
     }, [messages, medalLevelFilter]);
 
@@ -138,11 +138,22 @@ const LivePage = () => {
             try {
                 if (playerInstance instanceof Hls) {
                     playerInstance.destroy();
+                    if (videoRef.current) {
+                        videoRef.current.removeAttribute('src');
+                        videoRef.current.load();
+                    }
                 } else if (playerInstance && typeof playerInstance.destroy === 'function') {
                     if (typeof playerInstance.unload === 'function') {
                         playerInstance.unload();
                     }
+                    if (playerInstance.off) {
+                        playerInstance.off(flvjs.Events.ERROR);
+                    }
                     playerInstance.destroy();
+                    if (videoRef.current) {
+                        videoRef.current.removeAttribute('src');
+                        videoRef.current.load();
+                    }
                 }
             } catch (error) {
                 console.error('Error destroying player:', error);
@@ -151,7 +162,6 @@ const LivePage = () => {
 
         const initPlayer = async () => {
             try {
-                // 在创建新播放器之前销毁旧的
                 destroyPlayer(player);
                 setPlayer(null);
 
@@ -163,7 +173,12 @@ const LivePage = () => {
                     const hlsUrl = response.data.data.url;
 
                     if (Hls.isSupported()) {
-                        const hls = new Hls();
+                        const hls = new Hls({
+                            maxBufferSize: 30 * 1000 * 1000, // 30MB
+                            maxBufferLength: 30, // 30秒
+                            enableWorker: true,
+                            fragLoadingMaxRetry: 2
+                        });
                         hls.loadSource(hlsUrl);
                         hls.attachMedia(videoRef.current);
                         
@@ -212,7 +227,11 @@ const LivePage = () => {
                         cors: true,
                         enableStashBuffer: false,
                         stashInitialSize: 128,
-                        enableWorker: true
+                        enableWorker: true,
+                        lazyLoad: true,
+                        autoCleanupSourceBuffer: true,
+                        autoCleanupMaxBackwardDuration: 30,
+                        autoCleanupMinBackwardDuration: 15
                     });
 
                     flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
@@ -237,7 +256,21 @@ const LivePage = () => {
 
         initPlayer();
 
+        const cleanupInterval = setInterval(() => {
+            if (currentPlayer && !currentPlayer instanceof Hls) {
+                try {
+                    if (currentPlayer._mediaDataSource && currentPlayer._mediaElement) {
+                        currentPlayer.unload();
+                        currentPlayer.load();
+                    }
+                } catch (e) {
+                    console.error('Error during periodic cleanup:', e);
+                }
+            }
+        }, 5 * 60 * 1000); // 每5分钟清理一次
+
         return () => {
+            clearInterval(cleanupInterval);
             destroyPlayer(currentPlayer);
             setPlayer(null);
         };
