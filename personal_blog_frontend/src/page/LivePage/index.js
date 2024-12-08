@@ -260,14 +260,25 @@ const LivePage = () => {
             if (currentPlayer && !currentPlayer instanceof Hls) {
                 try {
                     if (currentPlayer._mediaDataSource && currentPlayer._mediaElement) {
-                        currentPlayer.unload();
-                        currentPlayer.load();
+                        try {
+                            const buffered = currentPlayer._mediaElement.buffered;
+                            if (buffered && buffered.length > 0) {
+                                currentPlayer.unload();
+                                currentPlayer.load();
+                            }
+                        } catch (bufferError) {
+                            if (bufferError.message.includes('SourceBuffer')) {
+                                console.debug('Ignored SourceBuffer error during cleanup');
+                            } else {
+                                console.error('Buffer error:', bufferError);
+                            }
+                        }
                     }
                 } catch (e) {
                     console.error('Error during periodic cleanup:', e);
                 }
             }
-        }, 5 * 60 * 1000); // 每5分钟清理一次
+        }, 5 * 60 * 1000);
 
         return () => {
             clearInterval(cleanupInterval);
