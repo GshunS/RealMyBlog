@@ -5,7 +5,7 @@ import _ from 'lodash';
 import flvjs from 'flv.js';
 import Hls from 'hls.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp, faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
 
 const LivePage = () => {
     const [messages, setMessages] = useState([]);
@@ -29,6 +29,7 @@ const LivePage = () => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const [player, setPlayer] = useState(null);
     const [isFilterCollapsed, setIsFilterCollapsed] = useState(false);
+    const [isFullscreenChat, setIsFullscreenChat] = useState(false);
 
     useEffect(() => {
         const fetchLiveData = async (signal) => {
@@ -101,7 +102,7 @@ const LivePage = () => {
         setDisplayMessages(filtered);
     }, [messages, medalLevelFilter]);
 
-    // 新消息时自动滚动到底部
+    // 新消息时自动滚动到底��
     useEffect(() => {
         if (contentRef.current && isFetching && autoScroll) {
             contentRef.current.scrollTop = contentRef.current.scrollHeight;
@@ -388,8 +389,8 @@ const LivePage = () => {
 
     return (
         <>
-        <div className="live-page">
-            <div className="live-player">
+        <div className={`live-page ${isFullscreenChat ? 'chat-fullscreen' : ''}`}>
+            <div className={`live-player ${isFullscreenChat ? 'hidden' : ''}`}>
                 <div data-vjs-player>
                     <video
                         ref={videoRef}
@@ -444,17 +445,25 @@ const LivePage = () => {
                             />
                         </div>
                     </div>
-                    {!autoScroll && isFetching && (
+                    <div className="filter-controls">
+                        {!autoScroll && isFetching && (
+                            <button 
+                                className="scroll-bottom-btn"
+                                onClick={() => {
+                                    contentRef.current.scrollTop = contentRef.current.scrollHeight;
+                                    setAutoScroll(true);
+                                }}
+                            >
+                                回到底部
+                            </button>
+                        )}
                         <button 
-                            className="scroll-bottom-btn"
-                            onClick={() => {
-                                contentRef.current.scrollTop = contentRef.current.scrollHeight;
-                                setAutoScroll(true);
-                            }}
+                            className="fullscreen-btn"
+                            onClick={() => setIsFullscreenChat(!isFullscreenChat)}
                         >
-                            回到底部
+                            <FontAwesomeIcon icon={isFullscreenChat ? faCompress : faExpand} />
                         </button>
-                    )}
+                    </div>
                 </div>
                 <div className="live-room__content" ref={contentRef}>
                     {displayMessages.map((message, index) => (
