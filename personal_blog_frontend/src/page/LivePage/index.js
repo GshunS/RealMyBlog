@@ -42,7 +42,7 @@ const LivePage = () => {
                     const uniqueMessages = combined.filter((message, index, self) =>
                         index === self.findIndex((m) => m.timeline === message.timeline)
                     );
-                    return uniqueMessages.slice(-1000);
+                    return uniqueMessages.slice(-100);
                 });
             } catch (error) {
                 if (axios.isCancel(error) || error.name === "CanceledError") {
@@ -150,7 +150,6 @@ const LivePage = () => {
                         hls.loadSource(hlsUrl);
                         hls.attachMedia(videoRef.current);
                         
-                        // 添加错误处理
                         hls.on(Hls.Events.ERROR, function (event, data) {
                             console.error('HLS Error:', data);
                             if (data.fatal) {
@@ -237,7 +236,6 @@ const LivePage = () => {
             inputRef.current.value = '';
             inputRef.current.classList.remove('visible');
             inputRef.current.classList.remove('collapsed');
-            setStreamUrl('');
             return;
         }
         setIsLoadingAddr(true);
