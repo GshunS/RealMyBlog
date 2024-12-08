@@ -97,7 +97,7 @@ const LivePage = () => {
         const filtered = messages.filter(message => {
             if (!message.medal_level) return medalLevelFilter === 0;
             return message.medal_level >= medalLevelFilter;
-        });
+        }).slice(-100);
         setDisplayMessages(filtered);
     }, [messages, medalLevelFilter]);
 
@@ -130,14 +130,41 @@ const LivePage = () => {
     useEffect(() => {
         if (!videoRef.current || !streamUrl) return;
         
-        // 销毁旧的播放器实例
-        if (player) {
-            player.destroy();
-            setPlayer(null);
-        }
+        let currentPlayer = null;
+
+        const destroyPlayer = (playerInstance) => {
+            if (!playerInstance) return;
+            
+            try {
+                if (playerInstance instanceof Hls) {
+                    playerInstance.destroy();
+                    if (videoRef.current) {
+                        videoRef.current.removeAttribute('src');
+                        videoRef.current.load();
+                    }
+                } else if (playerInstance && typeof playerInstance.destroy === 'function') {
+                    if (typeof playerInstance.unload === 'function') {
+                        playerInstance.unload();
+                    }
+                    if (playerInstance.off) {
+                        playerInstance.off(flvjs.Events.ERROR);
+                    }
+                    playerInstance.destroy();
+                    if (videoRef.current) {
+                        videoRef.current.removeAttribute('src');
+                        videoRef.current.load();
+                    }
+                }
+            } catch (error) {
+                console.error('Error destroying player:', error);
+            }
+        };
 
         const initPlayer = async () => {
             try {
+                destroyPlayer(player);
+                setPlayer(null);
+
                 if (isMobile) {
                     // 移动端使用HLS
                     const response = await axios.get(
@@ -146,7 +173,12 @@ const LivePage = () => {
                     const hlsUrl = response.data.data.url;
 
                     if (Hls.isSupported()) {
-                        const hls = new Hls();
+                        const hls = new Hls({
+                            maxBufferSize: 30 * 1000 * 1000, // 30MB
+                            maxBufferLength: 30, // 30秒
+                            enableWorker: true,
+                            fragLoadingMaxRetry: 2
+                        });
                         hls.loadSource(hlsUrl);
                         hls.attachMedia(videoRef.current);
                         
@@ -167,6 +199,7 @@ const LivePage = () => {
                             }
                         });
                         
+                        currentPlayer = hls;
                         setPlayer(hls);
                     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
                         videoRef.current.src = hlsUrl;
@@ -194,7 +227,11 @@ const LivePage = () => {
                         cors: true,
                         enableStashBuffer: false,
                         stashInitialSize: 128,
-                        enableWorker: true
+                        enableWorker: true,
+                        lazyLoad: true,
+                        autoCleanupSourceBuffer: true,
+                        autoCleanupMaxBackwardDuration: 30,
+                        autoCleanupMinBackwardDuration: 15
                     });
 
                     flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
@@ -205,6 +242,8 @@ const LivePage = () => {
                     flvPlayer.attachMediaElement(videoRef.current);
                     flvPlayer.load();
                     await flvPlayer.play();
+                    
+                    currentPlayer = flvPlayer;
                     setPlayer(flvPlayer);
                 }
 
@@ -217,18 +256,36 @@ const LivePage = () => {
 
         initPlayer();
 
-        // 清理函数
-        return () => {
-            if (player) {
-                if (player instanceof Hls) {
-                    player.destroy();
-                } else {
-                    player.destroy();
+        const cleanupInterval = setInterval(() => {
+            if (currentPlayer && !currentPlayer instanceof Hls) {
+                try {
+                    if (currentPlayer._mediaDataSource && currentPlayer._mediaElement) {
+                        try {
+                            const buffered = currentPlayer._mediaElement.buffered;
+                            if (buffered && buffered.length > 0) {
+                                currentPlayer.unload();
+                                currentPlayer.load();
+                            }
+                        } catch (bufferError) {
+                            if (bufferError.message.includes('SourceBuffer')) {
+                                console.debug('Ignored SourceBuffer error during cleanup');
+                            } else {
+                                console.error('Buffer error:', bufferError);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error during periodic cleanup:', e);
                 }
-                setPlayer(null);
             }
+        }, 5 * 60 * 1000);
+
+        return () => {
+            clearInterval(cleanupInterval);
+            destroyPlayer(currentPlayer);
+            setPlayer(null);
         };
-    }, [streamUrl, isMobile]);
+    }, [streamUrl, isMobile, localIp]);
 
     const fetchStreamAddr = async () => {
         if (!showAddr) {
@@ -307,7 +364,7 @@ const LivePage = () => {
         }
     }, [showAddr])
 
-    // 组件卸载时清理所有资源
+    // 组件卸载时理所有资源
     useEffect(() => {
         return () => {
             // 清理定时器
