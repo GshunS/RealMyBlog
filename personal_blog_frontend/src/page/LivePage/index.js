@@ -102,7 +102,7 @@ const LivePage = () => {
         setDisplayMessages(filtered);
     }, [messages, medalLevelFilter]);
 
-    // 新消息时自动滚动到底��
+    // 新消息时自动滚动到底
     useEffect(() => {
         if (contentRef.current && isFetching && autoScroll) {
             contentRef.current.scrollTop = contentRef.current.scrollHeight;
@@ -132,29 +132,31 @@ const LivePage = () => {
         if (!videoRef.current || !streamUrl) return;
         
         let currentPlayer = null;
+        let isDestroyed = false;
 
-        const destroyPlayer = (playerInstance) => {
+        const destroyPlayer = async (playerInstance) => {
             if (!playerInstance) return;
             
             try {
                 if (playerInstance instanceof Hls) {
                     playerInstance.destroy();
-                    if (videoRef.current) {
-                        videoRef.current.removeAttribute('src');
-                        videoRef.current.load();
-                    }
                 } else if (playerInstance && typeof playerInstance.destroy === 'function') {
                     if (typeof playerInstance.unload === 'function') {
-                        playerInstance.unload();
+                        await playerInstance.unload();
                     }
-                    if (playerInstance.off) {
-                        playerInstance.off(flvjs.Events.ERROR);
+                    if (playerInstance instanceof flvjs.FlvPlayer && playerInstance.off) {
+                        try {
+                            playerInstance.off(flvjs.Events.ERROR);
+                        } catch (e) {
+                            console.debug('Error removing event listener:', e);
+                        }
                     }
-                    playerInstance.destroy();
-                    if (videoRef.current) {
-                        videoRef.current.removeAttribute('src');
-                        videoRef.current.load();
-                    }
+                    await playerInstance.destroy();
+                }
+                
+                if (videoRef.current) {
+                    videoRef.current.removeAttribute('src');
+                    videoRef.current.load();
                 }
             } catch (error) {
                 console.error('Error destroying player:', error);
@@ -162,8 +164,11 @@ const LivePage = () => {
         };
 
         const initPlayer = async () => {
+            if (isDestroyed) return;
+
             try {
-                destroyPlayer(player);
+                await destroyPlayer(player);
+                if (isDestroyed) return;
                 setPlayer(null);
 
                 if (isMobile) {
@@ -217,6 +222,7 @@ const LivePage = () => {
                     const response = await axios.get(
                         `https://${localIp}:7219/api/live/liveStream/8604981?format=flv`
                     );
+                    if (isDestroyed) return;
                     const flvUrl = response.data.data.url;
 
                     const flvPlayer = flvjs.createPlayer({
@@ -235,44 +241,46 @@ const LivePage = () => {
                         autoCleanupMinBackwardDuration: 15
                     });
 
+                    if (isDestroyed) {
+                        flvPlayer.destroy();
+                        return;
+                    }
+
                     flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
                         console.error('FLV Player Error:', errorType, errorDetail);
                         setPlayerError(`播放器错误: ${errorDetail}`);
                     });
 
                     flvPlayer.attachMediaElement(videoRef.current);
-                    flvPlayer.load();
-                    await flvPlayer.play();
-                    
-                    currentPlayer = flvPlayer;
-                    setPlayer(flvPlayer);
+                    await flvPlayer.load();
+                    if (!isDestroyed) {
+                        await flvPlayer.play();
+                        currentPlayer = flvPlayer;
+                        setPlayer(flvPlayer);
+                    } else {
+                        flvPlayer.destroy();
+                    }
                 }
 
                 setPlayerError(null);
             } catch (error) {
                 console.error('Player initialization error:', error);
-                setPlayerError('播放器初始化失败');
+                if (!isDestroyed) {
+                    setPlayerError('播放器初始化失败');
+                }
             }
         };
 
         initPlayer();
 
         const cleanupInterval = setInterval(() => {
-            if (currentPlayer && !currentPlayer instanceof Hls) {
+            if (currentPlayer && !currentPlayer instanceof Hls && !isDestroyed) {
                 try {
                     if (currentPlayer._mediaDataSource && currentPlayer._mediaElement) {
-                        try {
-                            const buffered = currentPlayer._mediaElement.buffered;
-                            if (buffered && buffered.length > 0) {
-                                currentPlayer.unload();
-                                currentPlayer.load();
-                            }
-                        } catch (bufferError) {
-                            if (bufferError.message.includes('SourceBuffer')) {
-                                console.debug('Ignored SourceBuffer error during cleanup');
-                            } else {
-                                console.error('Buffer error:', bufferError);
-                            }
+                        const buffered = currentPlayer._mediaElement.buffered;
+                        if (buffered && buffered.length > 0) {
+                            currentPlayer.unload();
+                            currentPlayer.load();
                         }
                     }
                 } catch (e) {
@@ -282,6 +290,7 @@ const LivePage = () => {
         }, 5 * 60 * 1000);
 
         return () => {
+            isDestroyed = true;
             clearInterval(cleanupInterval);
             destroyPlayer(currentPlayer);
             setPlayer(null);
