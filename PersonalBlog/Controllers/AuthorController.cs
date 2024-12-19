@@ -82,7 +82,7 @@ public class AuthorController : ControllerBase
         }
         catch (ServiceException e)
         {
-            return Unauthorized(ApiResponse<object>.Error(401, e.Message));
+            return BadRequest(ApiResponse<object>.Error(400, e.Message));
         }
         catch (RepositoryException e)
         {

@@ -45,7 +45,8 @@ axiosInstance.interceptors.response.use(
                             return axiosInstance(originalRequest);
                         },
                         (err) => {
-                            console.log(err);
+                            store.dispatch(logout());
+                            errMsg = err;
                         }
                     );
                 } else {
