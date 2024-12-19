@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight, faRedo, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faListUl, faListOl, faBold, faItalic, faStrikethrough, faLink, faMinus, faHeading, faTable, faPalette, faTextHeight, faRedo, faCaretDown, faCalendarPlus } from '@fortawesome/free-solid-svg-icons';
 import { HexColorPicker } from 'react-colorful';
 
 import FileHandler from '@tiptap-pro/extension-file-handler';
@@ -56,6 +56,7 @@ import { editArticleSaveStatus, editArticleInfo } from '../../../../store/module
 import './TipTapTextArea.css';
 import { produce } from 'immer';
 import _ from 'lodash';
+import { getDateDetailsTemplate } from './templates/dateDetailsTemplate';
 
 const TiptapTextArea = () => {
     const [contextMenu, setContextMenu] = useState(null);
@@ -450,6 +451,15 @@ const TiptapTextArea = () => {
                 case 'details':
                     editor.chain().focus().setDetails().run();
                     break;
+                case 'dateDetails':
+                    const currentDate = new Date();
+                    const formattedDate = `${currentDate.getFullYear()}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getDate()).padStart(2, '0')}`;
+
+                    editor.chain()
+                        .focus()
+                        .insertContent(getDateDetailsTemplate(formattedDate))
+                        .run();
+                    break;
                 default:
                     break;
             }
@@ -610,7 +620,7 @@ const TiptapTextArea = () => {
                     <button onClick={() => handleEditorAction('link')} title="Ctrl+K">
                         <FontAwesomeIcon icon={faLink} />
                     </button>
-                    <button onClick={() => handleEditorAction('heading', 1)} title="Ctrl+Alt+1">
+                    {/* <button onClick={() => handleEditorAction('heading', 1)} title="Ctrl+Alt+1">
                         <FontAwesomeIcon icon={faHeading} />1
                     </button>
                     <button onClick={() => handleEditorAction('heading', 2)} title="Ctrl+Alt+2">
@@ -618,7 +628,7 @@ const TiptapTextArea = () => {
                     </button>
                     <button onClick={() => handleEditorAction('heading', 3)} title="Ctrl+Alt+3">
                         <FontAwesomeIcon icon={faHeading} />3
-                    </button>
+                    </button> */}
                     <button onClick={() => handleEditorAction('table')} title="Table">
                         <FontAwesomeIcon icon={faTable} />
                     </button>
@@ -661,15 +671,19 @@ const TiptapTextArea = () => {
                     {/* <button onClick={() => handleEditorAction('undo')} title="Undo (Ctrl+Z)">
                     <FontAwesomeIcon icon={faUndo} />
                 </button> */}
-                    <button onClick={() => handleEditorAction('redo')} title="Redo (Ctrl+Y)">
-                        <FontAwesomeIcon icon={faRedo} />
-                    </button>
+
                     <button onClick={() => handleEditorAction('details')} title="Insert Details">
                         <FontAwesomeIcon icon={faCaretDown} />
                     </button>
+                    <button onClick={() => handleEditorAction('dateDetails')} title="Insert Date Details">
+                        <FontAwesomeIcon icon={faCalendarPlus} />
+                    </button>
+                    <button onClick={() => handleEditorAction('redo')} title="Redo (Ctrl+Y)">
+                        <FontAwesomeIcon icon={faRedo} />
+                    </button>
                 </div>
             </div>
-            <EditorContent editor={editor} style={{'flexGrow': '1'}}/>
+            <EditorContent editor={editor} style={{ 'flexGrow': '1' }} />
             {contextMenu && editor && (
                 <TableContextMenu
                     editor={editor}
