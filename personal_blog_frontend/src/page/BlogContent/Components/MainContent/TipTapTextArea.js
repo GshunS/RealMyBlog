@@ -242,7 +242,7 @@ const TiptapTextArea = () => {
         },
         onDestroy: async () => {
             if (articleSaveStatus === 'saving' || articleSaveStatus === 'unsave') {
-                if (submitArticleContent) {
+                if (tokenValid && submitArticleContent) {
                     await submitArticleContent(currentArticleId, currentEditor);
                 }
             }
@@ -669,7 +669,7 @@ const TiptapTextArea = () => {
                     </button>
                 </div>
             </div>
-            <EditorContent editor={editor} style={{'flex-grow': '1'}}/>
+            <EditorContent editor={editor} style={{'flexGrow': '1'}}/>
             {contextMenu && editor && (
                 <TableContextMenu
                     editor={editor}

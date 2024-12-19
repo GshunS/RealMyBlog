@@ -49,9 +49,11 @@ const MainContent = () => {
     }, [articleSaveStatus])
 
 
+
+
     //#region title update
 
-    const [readOnly, setReadOnly] = useState(false);
+    const [readOnly, setReadOnly] = useState(!tokenValid);
 
     const [title, setTitle] = useState("");
     const [oldTitle, setOldTitle] = useState("")
@@ -63,6 +65,7 @@ const MainContent = () => {
             setOldTitle(articleInfo.articleTitle)
         }
     }, [articleInfo])
+
 
     const handleTitleClick = () => {
         if (tokenValid) {
