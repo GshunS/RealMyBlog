@@ -584,7 +584,7 @@ const TiptapTextArea = () => {
 
     return (
         <>
-            <div className="toolbarOuter">
+            <div className={`toolbarOuter ${tokenValid ? '' : 'hidden'}`}>
                 <div className="toolbar" ref={toolbarRef}>
                     <button onClick={() => handleEditorAction('codeBlock')} title="Ctrl+Alt+C">
                         <FontAwesomeIcon icon={faCode} />
@@ -669,7 +669,7 @@ const TiptapTextArea = () => {
                     </button>
                 </div>
             </div>
-            <EditorContent editor={editor} />
+            <EditorContent editor={editor} style={{'flex-grow': '1'}}/>
             {contextMenu && editor && (
                 <TableContextMenu
                     editor={editor}

@@ -35,6 +35,18 @@
     z-index: 100;
     background-color: var(--background-color);
     transition: all 0.3s ease;
+
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
+}
+
+.toolbarOuter.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    height: 0;
+    overflow: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease, height 0.5s ease;
 }
 
 .toolbar {
@@ -121,7 +133,8 @@
 
 .tiptap {
     outline: none;
-    min-height: 63vh;
+    /* min-height: 63vh; */
+    height: 100%;
     line-height: 1.1rem;
     padding: 0.1rem 1rem;
     border: 1px solid #ddd;
